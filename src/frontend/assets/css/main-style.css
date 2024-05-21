@@ -1,0 +1,535 @@
+/* :root {
+    --primary: #ec2044;
+    --primaryLight: #ec20440d;
+    --headGray: #a0a3a7;
+    --secondary: #323232;
+    --greenLight: #e0f4e1;
+    --primaryGreen: #48bb4e;
+} */
+@import '/src/colors.css';
+
+/******** GENERAL CSS *******/
+input,
+textarea {
+    font-size: 14px;
+    width: 100%;
+    border: 1px solid var(--headGray);
+    border-radius: 5px;
+    height: 40px;
+    padding: 4px 12px;
+}
+
+input:focus,
+textarea:focus {
+    border: 1px solid var(--primary);
+}
+
+input[type='text']::placeholder,
+input::placeholder {
+    color: #8b8b8b;
+}
+
+.fillBtn {
+    background: var(--primary);
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 8px 20px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.fillBtn:hover {
+    background: #fff;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+}
+
+input[type='checkbox'] {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--primary) !important;
+}
+
+/* HEADER CSS */
+.userIner {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: transparent;
+    border: 1px dashed var(--primary);
+    padding: 4px 6px;
+    border-radius: 7px;
+}
+
+.userIner:hover {
+    background: #bc263414;
+}
+
+.notifyBx {
+    background: var(--primary);
+    border-radius: 100%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.notifyBx i {
+    font-size: 16px !important;
+    color: #fff;
+}
+
+.notifyBx .notifyDot {
+    background: #30a500;
+    position: absolute;
+    top: -1px;
+    right: 3px;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+}
+
+.notifyBx .userCartCount {
+    background: var(--secondary);
+    position: absolute;
+    top: -2px;
+    right: 0px;
+    width: 17px;
+    height: 17px;
+    border-radius: 100%;
+    font-size: 8px;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 400;
+}
+
+.rating-box p {
+    font-weight: 700;
+    text-align: start;
+    margin-bottom: 0;
+}
+
+.ratingStar i {
+    color: #ff9900;
+}
+
+
+/* FOOTER CSS */
+#footerImgSide li.bgImg img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+#footerImgSide li.bgImg {
+    border-radius: 16px;
+}
+
+#footerImgSide li.bgImg:nth-child(even) {
+    /* margin-top: 20px; */
+}
+
+.footerChefBx {
+    position: absolute;
+    background: #fff;
+    padding: 30px 20px;
+    border-radius: 12px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45%;
+    z-index: 9;
+}
+
+.footerChefBxBtn {
+    background: var(--primaryLight);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px dashed var(--primary);
+    display: inline-grid;
+    width: 45%;
+    justify-content: start;
+    cursor: pointer;
+}
+
+.footerChefBxBtn:hover {
+    background: var(--primary);
+}
+
+.footerChefBxBtn:hover button {
+    color: #fff;
+}
+
+.footerChefBxBtn:hover img {
+    filter: brightness(1000);
+}
+
+.footerChefBxBtn:hover svg {
+    fill: #fff;
+}
+
+.footerChefBxBtn img {
+    width: 30px;
+}
+
+.footerChefBxBtn button {
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 3px;
+    text-transform: uppercase;
+}
+
+
+/********* LOGIN STYLE HERE **********/
+.authForm {
+    box-shadow: rgba(0, 0, 0, 0.04) 1px 8px 15px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #ebebeb;
+}
+
+.authForm h1 {
+    font-size: 32px;
+    font-weight: 700;
+    /* margin-bottom: 20px; */
+}
+
+.genHead {
+    position: relative;
+    display: inline-block;
+}
+
+.genHead::before {
+    /* content: ''; */
+    position: absolute;
+    right: 0;
+    bottom: -5px;
+    width: 40%;
+    height: 2px;
+    background: var(--primary);
+}
+
+.formSocial {
+    display: flex;
+    column-gap: 12px;
+    justify-content: center;
+}
+
+.formSocial .link {
+    background: var(--primary);
+    border: 1px solid transparent;
+    border-radius: 6px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.formSocial svg {
+    fill: #fff;
+}
+
+.formSocial .link:hover {
+    background: #fff;
+    border: 1px solid var(--primary);
+}
+
+.formSocial .link:hover svg {
+    fill: var(--primary);
+}
+
+.authForm .orTxt {
+    font-size: 18px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.forgotTxt {
+    font-size: 14px;
+    color: var(--secondary);
+}
+
+.authImgSide {
+    background-size: cover;
+    height: 100%;
+    position: relative;
+}
+
+.authImgSide::before {
+    /* content: ''; */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--primary);
+    top: 0;
+    left: 0;
+    opacity: 0.4;
+}
+
+.authForm .term {
+    display: flex;
+    justify-content: flex-start;
+    column-gap: 10px;
+    align-items: flex-start;
+}
+
+.authForm .term p {
+    text-align: start;
+    margin-top: 0px;
+    font-size: 11px;
+    line-height: 17px;
+}
+
+.authForm .term p a {
+    font-weight: 500;
+}
+
+/******** HERO BANNER SECTION *****/
+.heroBanner {
+    background-image: url('../../../../public/media/frontend/img/banner/hero-banner.jpg');
+    background-position: center;
+    background-size: cover;
+}
+
+/******** 3 POINT BANNER SECTION *****/
+.point_3Banner {
+    /* background-image: url('../../../../public/media/frontend/img/banner/short-delivery-banner.png');
+    background-position: center;
+    background-size: cover; */
+    background: var(--primaryLight);
+
+}
+
+.point3Bx {
+    background: #fff;
+    -webkit-box-shadow: 0px 10px 21px -7px rgba(176, 176, 176, 1);
+    -moz-box-shadow: 0px 10px 21px -7px rgba(176, 176, 176, 1);
+    box-shadow: 0px 10px 21px -7px rgba(176, 176, 176, 1);
+
+}
+
+.point3Bx:hover svg {
+    fill: var(--primary);
+}
+
+/******** 3 POINT BANNER SECTION *****/
+.loveLocalChef {
+    background-image: url('../../../../public/media/frontend/img/banner/slide-bg.jpg');
+    background-position: center;
+    background-size: cover;
+}
+
+
+/******** MOST LOVE SECTION *****/
+.chefSlidInner,
+.customerReviews {
+    background-image: url('../../../../public/media/frontend/img/banner/chef-bg.png');
+    background-position: center;
+    background-size: cover;
+    border: 1px solid var(--primaryLight);
+}
+
+.customerReview_slide .swiper-wrapper,
+.loveChef .swiper-wrapper {
+    padding-bottom: 60px;
+}
+
+.swiper-pagination-bullet-active {
+    background: var(--primary) !important;
+}
+
+.swiper-pagination-bullet {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+.storeisBx {
+    box-shadow: rgba(0, 0, 0, 0.04) 1px 8px 15px;
+}
+
+.meetChefImg {
+    height: 420px;
+}
+
+.subscribeBanner {
+    background-image: url('../../../../public/media/frontend/img/banner/review-bg.jpg');
+    background-position: center;
+    background-size: cover;
+}
+
+/******** BECOME A CHEF SECTION *****/
+.become_aChef {
+    background-image: url('../../../../public/media/frontend/img/become-a-chef/top-banner.jpg');
+    background-position: center;
+    background-size: cover;
+}
+
+.whyBcomeBxInr {
+    background: #ffffffd1;
+}
+
+.ready_toStart {
+    background-image: url('../../../../public/media/frontend/img/become-a-chef/background-white.jpg');
+    background-position: center;
+    background-size: cover;
+}
+
+/******** CHEF DETAIL SECTION *****/
+.chefDateBtn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 2px;
+    border: 1px solid #e7e9eb;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.chefDateBtn.active {
+    background: var(--primary);
+}
+
+.chefDateBtn.active h6 {
+    color: yellow;
+}
+
+.chefDateBtn.active h4 {
+    color: #fff;
+}
+
+/******** ABOUT SECTION *****/
+.pageBanr {
+    background-position: center;
+    background-size: cover;
+    position: relative;
+}
+.pageBanr::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-color: rgb(0 0 0 / 63%); /* Adjust the color and opacity as needed */
+}
+.bxShadow {
+    box-shadow: rgba(0, 0, 0, 0.04) 1px 8px 15px;
+}
+
+.ReactModal__Content--after-open[aria-label="cartModal"] {
+    z-index: 999;
+    width: 50% !important;
+    left: 50% !important;
+    top: 10% !important;
+    transform: translate(-50%, 0%) !important;
+    border-radius: 16px !important;
+    padding: 0 !important;
+    height: 80vh;
+}
+
+.ReactModal__Overlay.ReactModal__Overlay--after-open {
+    background-color: rgb(0 0 0 / 71%) !important;
+    z-index: 99;
+}
+
+.ReactModal__Content--after-open[aria-label="cartModal"]::-webkit-scrollbar {
+    width: 0px;
+}
+
+/* Track */
+.ReactModal__Content--after-open[aria-label="cartModal"]::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Handle */
+.ReactModal__Content--after-open[aria-label="cartModal"]::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+/* Handle on hover */
+.ReactModal__Content--after-open[aria-label="cartModal"]::-webkit-scrollbar-thumb:hover {
+    background: transparent;
+}
+
+.prtionRadio:has(input[type="radio"]:checked) {
+    background: rgb(242, 253, 251);
+    border: 1px solid var(--primaryGreen);
+}
+
+.filterTab.active {
+    background: var(--primary);
+    color: #fff;
+}
+
+.filterRedio:has(input[type="radio"]:checked),
+.filterChecbox:has(input[type="checkbox"]:checked) {
+    background: rgb(242, 253, 251);
+    border: 1px solid var(--primaryGreen);
+    color: var(--secondary);
+    font-weight: 500;
+}
+
+@media screen and (max-width: 480px) {
+    .meetChefImg {
+        height: 240px;
+    }
+
+    #footerImgSide li.bgImg {
+        height: 120px;
+    }
+
+    #footerImgSide li.bgImg img {
+        height: 100%;
+    }
+
+    .footerChefBx {
+        width: 85%;
+        box-shadow: rgba(0, 0, 0, 0.04) 1px 8px 15px;
+    }
+
+    .footerChefBxBtn {
+        width: 100%;
+        display: flex;
+        column-gap: 13px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .footerChefBxBtn img {
+        width: 22px;
+    }
+
+    .footerChefBxBtn svg {
+        width: 24px;
+    }
+}
+
+@media screen and (max-width: 1024px) and (min-width: 481px) {
+    #footerImgSide li.bgImg img {
+        height: 220px;
+    }
+
+    .footerChefBx {
+        width: 60%;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .ReactModal__Content--after-open[aria-label="cartModal"] {
+        width: 95% !important;
+    }
+}
