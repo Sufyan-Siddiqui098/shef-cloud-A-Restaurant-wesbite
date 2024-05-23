@@ -13,6 +13,7 @@ const SignUp = () => {
         first_name: "",
         last_name: ""
     })
+    const [isPending, setIsPending] = useState(false);
     
     const {userInfo} = useSelector((state)=>state.user)
     const navigate = useNavigate();
@@ -26,6 +27,7 @@ const SignUp = () => {
     const handleSubmit = async(e)=>{
         try{
             e.preventDefault();
+            setIsPending(true);
             const res = await handleUserSignUp(credentials);
             if(res.email) {
                 toast.success("Register Successfully")
@@ -33,6 +35,8 @@ const SignUp = () => {
             }
         }catch(error){
             toast.error(error.message);
+        } finally{
+            setIsPending(false);
         }
     }
 
@@ -72,7 +76,7 @@ const SignUp = () => {
                                             Already have an account? &nbsp;
                                             <Link className='font-semibold' to='/login'>Sign in</Link>
                                         </div>
-                                        <button className='mt-3 fillBtn' type=''>Submit</button>
+                                        <button disabled={isPending} className='mt-3 fillBtn disabled:cursor-not-disabled:opacity-60' type=''>Submit</button>
                                     </form>
                                 </div>
                             </div>
