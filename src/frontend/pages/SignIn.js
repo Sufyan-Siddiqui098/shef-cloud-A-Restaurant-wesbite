@@ -9,7 +9,9 @@ import { loginUser } from "../../store/slice/user";
 import { toast } from "react-toastify";
 
 const SignIn = () => {
-  const [credentials, setCredentials] = useState({email:"", password: ""})
+  const [credentials, setCredentials] = useState({email:"", password: ""});
+  const [isPending, setIsPending] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {userInfo} = useSelector((state)=>state.user)
@@ -31,6 +33,7 @@ const SignIn = () => {
   // Form submit
   const handleSubmit = async(e)=>{
     try{
+      setIsPending(true);
       e.preventDefault();
      const res = await handleUserLogin(credentials); 
      dispatch(loginUser(res))  // To update user in store instantly
@@ -38,6 +41,8 @@ const SignIn = () => {
 
     } catch(error){
       toast.error(error.message);
+    }finally{
+      setIsPending(false);
     }
   }
 
@@ -140,7 +145,7 @@ const SignIn = () => {
                       Sign up
                     </Link>
                   </div>
-                  <button className="mt-3 fillBtn" type="">
+                  <button disabled={isPending} className="mt-3 fillBtn disabled:cursor-not-allowed disabled:opacity-60" type="">
                     Submit
                   </button>
                 </form>
