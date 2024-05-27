@@ -121,11 +121,16 @@ export const handleUpdateAddress = async (token, credentials) => {
         Authorization:  `Bearer ${token}`
       }
     });
-    console.log("Update address data ", data);
     return data;
   } catch (error) {
+    console.log("error of update address ", error)
     if(error.response){
-      throw new Error(error.response.data.message);
+       //Error Object
+       const errorObj = error.response.data.message;
+       // Error object's key OR keys
+       const errorObjKey = Object.keys(error.response.data.message)[0];
+       //Array of Error message - getting first message
+       throw new Error(errorObj[errorObjKey][0]);
     }
     throw new Error(error.message ? error.message : "Something went wrong")
   }

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import {useJsApiLoader, Autocomplete} from '@react-google-maps/api'
 import { useDispatch, useSelector } from 'react-redux';
-import { handleShowProfile, handleUpdateProfile } from '../../../frontend/auth/Auth';
+import { handleShowProfile, handleUpdateAddress, handleUpdateProfile } from '../../../frontend/auth/Auth';
 import { updateUser } from '../../../store/slice/user';
 import { toast } from 'react-toastify';
 
@@ -9,6 +9,7 @@ export const ProfileForm = () => {
     const dispatch = useDispatch();
     const libraries = useMemo(() => ['places'], []); // Array of required libraries
 
+    const [ isPending , setIsPending ] = useState(false);
     const [profileData, setProfileData] = useState({
         id: "",
         first_name: "", 
@@ -16,10 +17,9 @@ export const ProfileForm = () => {
         email: "",
         phone: "", 
         bio: "", 
-        address: "",
         profile_pic: "",
     });
-    const [profileToUpload, setProfileToUpload] = useState("") // contain the image file to be uploaded
+    const [profileToUpload, setProfileToUpload] = useState("") // contain the image file to be uploaded on server
    const [coords, setCoords] = useState({
     longitude: "", 
     latitude: ""
@@ -59,8 +59,10 @@ export const ProfileForm = () => {
                 }
                 return acc;
               }, {});
-             //   console.log("Local var ", local)
-              setAddress(local.address)
+              // IF address is empty
+             if(!address){
+                 setAddress(local.address)
+             }
               setCity(local.locality)
               setCountry(local.country)
               
@@ -82,8 +84,8 @@ export const ProfileForm = () => {
             navigator.geolocation.getCurrentPosition((position) => {
               const { latitude, longitude } = position.coords;
               setCoords({latitude, longitude})
-            //   console.log("lat ", coords.latitude)
-            //   console.log("lng ", coords.longitude)
+              console.log("lat ", coords.latitude)
+              console.log("lng ", coords.longitude)
               // Use these coordinates for reverse geocoding
               getCityCountryZipFromCoords(latitude, longitude);
             }, (error) => {
@@ -93,7 +95,7 @@ export const ProfileForm = () => {
             console.warn('Geolocation is not supported by this browser.');
           }
           
-    },[isLoaded, authToken, dispatch, coords.latitude, coords.longitude])
+    },[isLoaded, coords.latitude, coords.longitude]) // !! TODO - remove authtoken, dispatch 
 
     // fetch user - (show-profile)
     useEffect(()=>{
@@ -104,7 +106,7 @@ export const ProfileForm = () => {
             const filteredData = Object.fromEntries(Object.entries(response).filter(([_, v]) => v != null));
             setProfileData(filteredData)
             localStorage.setItem("user", JSON.stringify(filteredData)); //update user in local-storage
-            dispatch(updateUser(filteredData))  // to instantly update user in redux-store.
+            dispatch(updateUser(filteredData))                          // to instantly update user in redux-store.
         })()
         // console.log("fetching user useEffect running...")
 
@@ -114,31 +116,56 @@ export const ProfileForm = () => {
     const handleProfileDataChange = (e)=>{
         setProfileData({...profileData, [e.target.name]: e.target.value})
     }
+
     
     // Update profile - ON SUBMIT
     const handleOnSubmit = async(e) => {
         try {
-            const formData = new FormData();
             e.preventDefault();
+            setIsPending(true)
+            // --- Update User detail - Form-data
+            const formData = new FormData();
             formData.append('id', profileData.id)
             formData.append('first_name', profileData.first_name)
             formData.append('last_name', profileData.last_name)
             formData.append('email', profileData.email)
             formData.append('phone', profileData.phone)
             formData.append('bio', profileData.bio)
-            formData.append('address', profileData.address)
             formData.append('profile_pic', profileToUpload)
+
+            //--- Update address - Form-data
+            const addressFormData = new FormData();
+            addressFormData.append("name", profileData.first_name);
+            addressFormData.append("phone", profileData.phone);
+            addressFormData.append("address", address)
+            if(!coords.latitude){
+                toast.error("Please Allow Location")
+                return;
+            }
+            addressFormData.append("longitude", coords.longitude);
+            addressFormData.append("latitude", coords.latitude);
+
             //--- api calling
             const response = await handleUpdateProfile(authToken, formData);
-            // filter null key-values
+            const addressResponse = await handleUpdateAddress(authToken, addressFormData)
+
+            //--- Update address resposne handling
+            console.log('address response ', addressResponse)
+            setAddress(addressResponse.address)
+            const { latitude, longitude } = addressResponse;        // Destructure the co-ordinates
+            setCoords({ latitude, longitude })
+            
+            //--- Update User Profile response handling
             const filteredData = Object.fromEntries(Object.entries(response).filter(([_, v]) => v != null)); // null values are removed
-            setProfileData(filteredData) // update current page 
+            setProfileData(filteredData)                                // update current page 
             localStorage.setItem("user", JSON.stringify(filteredData)); //update user in local-storage
             dispatch(updateUser(filteredData))    
             toast.success("Profile Updated")                  
             
         } catch (error) {
             toast.error(error.message)
+        }finally {
+            setIsPending(false);
         }
     }
 
@@ -303,7 +330,7 @@ export const ProfileForm = () => {
                         </div> 
                         
                         <div className='md:col-span-6 mt-3 col-span-12  flex items-end'>
-                            <button className="bg-primary text-white w-ful p-[4px_12px] rounded text-base font-semibold mb-1 uppercase" type="">Submit </button>
+                            <button disabled={isPending} className="bg-primary text-white w-ful p-[4px_12px] rounded text-base font-semibold mb-1 uppercase disabled:opacity-60" type="">Submit </button>
                         </div>
                         
                     </div>
