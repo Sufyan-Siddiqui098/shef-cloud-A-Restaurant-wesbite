@@ -1,23 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import Select from 'react-select';
-const IngredientsScreen = () => {
+import { handleGetIngredients } from '../../../services/shef';
+
+const IngredientsScreen = ({ updateFields }) => {
     // Multi Select Start
     const [selectedOptions, setSelectedOptions] = useState([]);
+    const [ options, setOptions ] = useState([]);
+    const { authToken } = useSelector((state)=>state.user)
 
-    const options = [
-        { value: 'salt', label: 'Salt' },
-        { value: 'ginger', label: 'Ginger' },
-        { value: 'turmeric', label: 'Turmeric' },
-        { value: 'sugar', label: 'Sugar' },
-        { value: 'onion', label: 'Onion' },
-        { value: 'tomatos', label: 'Tomatos' },
-        { value: 'cumin', label: 'Cumin' },
-        { value: 'garam masala', label: 'Garam Masala' },
-        // Add more options as needed
-    ];
+    useEffect(()=>{
+        (async()=>{
+            try{
+                const response = await handleGetIngredients(authToken);
+                const arrayOfList = response.map((elem) => ({id: elem.id, value: elem.name,  label: elem.name}))
+                // console.log(arr)
+                setOptions(arrayOfList)
 
+            } catch (error){
+                console.log(error)
+            }
+        })()
+    }, [authToken])
+
+   
     const handleSelectChange = (selectedValues) => {
         setSelectedOptions(selectedValues);
+        // Array containng ids of ingredients
+        const ingredientsIDsArray = selectedValues.map((elem) => elem.id);
+        updateFields({ingredients: ingredientsIDsArray})        // Set ingredients of ChefMenu
     };
     // Multi Select End
 
@@ -37,7 +48,7 @@ const IngredientsScreen = () => {
                         />
                         <ul className='mt-2'>
                             {selectedOptions.map((option) => (
-                                <li className='bg-secondary text-white inline-block rounded-[4px] px-2 mr-2' key={option.value}>{option.label}</li>
+                                <li className='bg-secondary text-white inline-block rounded-[4px] px-2 mr-2' key={option.id}>{option.value}</li>
                             ))}
                         </ul>
                         <div className='rounded-lg bg-grayBg pt-4'>
