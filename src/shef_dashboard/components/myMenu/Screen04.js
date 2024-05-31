@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import { handleGetIngredients } from '../../../services/shef';
 
-const IngredientsScreen = ({ updateFields }) => {
+const IngredientsScreen = ({ ingredients, updateFields }) => {
     // Multi Select Start
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [ options, setOptions ] = useState([]);
@@ -23,7 +23,7 @@ const IngredientsScreen = ({ updateFields }) => {
         })()
     }, [authToken])
 
-   
+    
     const handleSelectChange = (selectedValues) => {
         setSelectedOptions(selectedValues);
         // Array containng ids of ingredients
@@ -31,6 +31,17 @@ const IngredientsScreen = ({ updateFields }) => {
         updateFields({ingredients: ingredientsIDsArray})        // Set ingredients of ChefMenu
     };
     // Multi Select End
+
+    // Hanlde Selected if available in CHef Menu
+    useEffect(() => {
+      if (ingredients.length > 0 && options.length > 0) {
+        const ingredientsArray = options.filter((item) =>
+          ingredients.some((id) => id === item.id)
+        );
+        setSelectedOptions(ingredientsArray);
+      }
+      //eslint-disable-next-line
+    }, [options]);
 
     return (
         <div>

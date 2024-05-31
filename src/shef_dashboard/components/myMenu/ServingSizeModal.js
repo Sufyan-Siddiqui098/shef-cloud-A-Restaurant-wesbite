@@ -1,32 +1,210 @@
 
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Modal from 'react-modal';
-const MenuModal = ({ isOpen, onClose }) => {
+import { handleGetPortionType } from '../../../services/shef';
+import { toast } from 'react-toastify';
+const MenuModal = ({ 
+    isOpen, 
+    onClose, 
+    authToken, 
+    portion_type_id,
+    portion_size, 
+    portion_base_serving, 
+    delivery_price, 
+    platform_price,
+    chef_earning_fee,  
+    updateFields }) => {
     // Tabs Section Start
     const [activeTab, setActiveTab] = useState(1);
     const handleTabClick = (tabNumber) => {
         // Update the active tab when clicked
         setActiveTab(tabNumber);
+        // Reseting
+        // setPrice(""); -- no need 
+        // calculate(0); -- no need
+        setTextualPortionSize("");
+        setBaseServing("");
+        setNumericPortionSize(0)
     };
     // Tabs Section End
 
-    // Plus Minus Quantity Start
-    const [minutes, setMinutes] = useState(0);
+    // Plus Minus Quantity Start - Numeric Portion Size
+    const [numericPortionSize, setNumericPortionSize] = useState(0);
 
     const handleIncrement = () => {
-        setMinutes((prevMinutes) => prevMinutes + 1);
+        setNumericPortionSize((prev) => prev + 1);
+        // Reset the textual portionsize
+        if( textualPortionSize.length > 0 ) setTextualPortionSize("")
     };
 
     const handleDecrement = () => {
-        setMinutes((prevMinutes) => (prevMinutes > 0 ? prevMinutes - 1 : 0));
+        setNumericPortionSize((prev) => (prev > 0 ? prev - 1 : 0));
+        // Reset the textual portionsize
+        if( textualPortionSize.length > 0 ) setTextualPortionSize("")
     };
 
     const handleInputChange = (e) => {
         const value = parseInt(e.target.value, 10);
-        setMinutes(isNaN(value) ? 0 : value);
+        setNumericPortionSize(isNaN(value) ? 0 : value);
+        // Reset the textual portionsize
+        if( textualPortionSize.length > 0 ) setTextualPortionSize("")
     };
     // Plus Minus Quantity End
+
+     //-- Textual portion size
+     const [textualPortionSize, setTextualPortionSize] = useState("")
+     const handlePortionSizeChange = (e) => {
+         setTextualPortionSize(e.target.value);
+         // Reset the numeric portionsize
+         if(numericPortionSize>0) setNumericPortionSize(0);
+     }
+
+     //-- Base number of servings
+     const [baseServing, setBaseServing] = useState("")
+     const handleBaseServing = (e) => {
+        setBaseServing(e.target.value);
+     }
+
+     // -- Price Handling
+    const [price, setPrice] = useState("")
+    const hanldePriceChange = (e) => {
+        // Regular expression to match only numbers and one dot
+        const regex = /^[+-]?\d+(\.\d+)?$/; // Allows optional sign, numbers, one or more decimals
+        let value = e.target.value;
+      
+        if (regex.test(value)) {
+          const parsedValue = parseFloat(value);
+          calculate(parsedValue)
+          setPrice(parsedValue);
+        } else {
+            setPrice("")
+            calculate(0)     
+        }
+    }
+
+     const onCancel = ()=>{
+        setNumericPortionSize(0); 
+        setTextualPortionSize("");
+        setBaseServing("");
+        setPrice("");
+        onClose();
+     }
+
+     const [portionTypes, setPortionTypes] = useState([]);
+    const [chefEarning, setChefEarning ] = useState(0);
+    const [platformRate, setPlatformRate] = useState({
+        platform_percentage: 10,
+        delivery_percentage: 20,
+    })
+    const calculate = (price) => {
+        const deliveryCost = parseFloat((price * (platformRate.delivery_percentage/100)).toFixed(2));
+        const platformCost = parseFloat((price * (platformRate.platform_percentage/100)).toFixed(2));
+        const chefEarning = parseFloat((price - deliveryCost - platformCost).toFixed(2));
+
+        // Update Delivery price & platform_price in Chef-Menu
+        updateFields({ delivery_price: deliveryCost })
+        updateFields({ platform_price: platformCost })
+        updateFields({ chef_earning_fee: chefEarning })  // After minus delivery and platform cost
+        setChefEarning(chefEarning)
+    }
+     //--- Handle Portion type -api 
+     useEffect(()=>{
+        (async()=>{
+            try {
+                const portionTypeResponse = await handleGetPortionType(authToken);
+                setPortionTypes(portionTypeResponse);
+                //  console.log("portion type response ", portionTypeResponse)
+            } catch (error) {
+                console.log("Error while fetching Portion Type \n", error)
+            }
+        })()
+     }, [authToken]);
+
+     //--- Handle data from Chef-Menu
+     useEffect(()=>{
+        // When Modal is open - Set the data fetched from chef-menu
+        if(isOpen){
+            if(typeof portion_size === "number") setNumericPortionSize(portion_size)
+            if(typeof portion_size ==="string") setTextualPortionSize(portion_size)
+            // Active Corresponding tab to portion_type_id
+            if(portionTypes.length>0) portionTypes.forEach((el, index)=> {
+                // Set the active - When Id is matched with Chef-menu
+                if(el.id === portion_type_id){
+                    setActiveTab(index+1)
+                }
+            })
+
+            setBaseServing(portion_base_serving)
+            if(delivery_price > 0 && platform_price > 0 && chef_earning_fee >0 ) {
+                setChefEarning(chef_earning_fee)
+                setPrice( delivery_price + platform_price + chef_earning_fee )
+
+            }
+        }
+        //eslint-disable-next-line
+     }, [isOpen])
+     
+     //--- On Submit - Done
+     const onSubmit = (e) =>{
+        try {
+            // Validation 
+            if(activeTab === 1 || activeTab === 2){
+                if(numericPortionSize ===0) {
+                    toast.error("Portion Size is Required")
+                    inputRefPortionSize.current.focus();
+                    return;
+                } 
+                else if( price <1 || !price ) {
+                    toast.error("Base Price is Required");
+                    inputRefPrice.current.focus();
+                    return ;
+                } 
+                else if(!baseServing ){
+                    toast.error("Base Number of Serving is Required ");
+                    inputRefBaseServing.current.focus();
+                    return;
+                }
+                else {
+                    updateFields({ portion_size: numericPortionSize });
+                }
+            }
+            if(activeTab === 3) {
+                if(textualPortionSize.length<1) {
+                    toast.error("Portion Size is Required");
+                    inputRefPortionSize.current.focus();
+                    return;
+                } 
+                else if( price <1 || !price ) {
+                    toast.error("Base Price is Required");
+                    inputRefPrice.current.focus();
+                    return ;
+                } 
+                else if(!baseServing ){
+                    toast.error("Base Number of Serving is Required ");
+                    inputRefBaseServing.current.focus();
+                    return;
+                }
+                else {
+                    updateFields({ portion_size: textualPortionSize })
+                } 
+            }
+
+            // Update portion_type_id for - Create Menu
+            updateFields({ portion_type_id: portionTypes[activeTab-1].id })  
+            updateFields({ portion_base_serving: baseServing })
+            toast.success("Base Portion Added")
+            onClose();
+
+        } catch (error) {
+            toast.error(error);
+        }
+     }
+
+     // Reference input fields
+     const inputRefPrice = useRef(null);
+     const inputRefBaseServing = useRef(null);
+     const inputRefPortionSize = useRef(null)
 
     return (
         <Modal
@@ -114,8 +292,10 @@ const MenuModal = ({ isOpen, onClose }) => {
                                     </button>
                                     <div className='flex items-center w-[50%]'>
                                         <input className='text-center border-0 bg-transparent text-base px-1 focus:border-0 w-[60%]'
+                                            required
+                                            ref={inputRefPrice}
                                             placeholder='1'
-                                            value={minutes}
+                                            value={numericPortionSize}
                                             onChange={handleInputChange}
                                         />
                                         <span className='w-[40%]'>oz</span>
@@ -133,14 +313,14 @@ const MenuModal = ({ isOpen, onClose }) => {
                                         This should be your smallest serving for this dish. You can add larger options on the next page.
                                     </p>
                                 </div>
-                                <select id="selectOption">
+                                <select ref={inputRefBaseServing} value={baseServing} onChange={handleBaseServing} id="selectOption">
                                     <option value="">Servings</option>
-                                    <option value="option1">1 Serving</option>
-                                    <option value="option2">1-2 Serving</option>
-                                    <option value="option3">2 Serving</option>
-                                    <option value="option4">2-3 Serving</option>
-                                    <option value="option6">3 Serving</option>
-                                    <option value="option7">3-4 Serving</option>
+                                    <option value="1 Serving">1 Serving</option>
+                                    <option value="1-2 Serving">1-2 Serving</option>
+                                    <option value="2 Serving">2 Serving</option>
+                                    <option value="2-3 Serving">2-3 Serving</option>
+                                    <option value="3 Serving">3 Serving</option>
+                                    <option value="3-4 Serving">3-4 Serving</option>
                                 </select>
                                 <p className='text-[12px] my-1'>
                                     Similar sized dishes are usually 1-2 servings.
@@ -156,8 +336,16 @@ const MenuModal = ({ isOpen, onClose }) => {
                                 </div>
                                 <div className='md:w-[20%] w-[45%] flex items-center justify-start border border-headGray rounded-lg px-2'>
                                     <span className='text-lg font-semibold mr-1 w-[10%]'>$</span>
-                                    <input className='text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]'
+                                    <input 
+                                        required
+                                        className='text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]'
                                         placeholder=''
+                                        ref={inputRefPrice}
+                                        type='number'
+                                        min={0} 
+                                        step={0.01}
+                                        value={price}
+                                        onChange={hanldePriceChange}
                                     />
                                 </div>
                             </div>
@@ -208,9 +396,12 @@ const MenuModal = ({ isOpen, onClose }) => {
                                         <svg xmlns="http://www.w3.org/2000/svg" className='mx-auto' viewBox="0 0 24 24" width="18" height="18" fill="rgba(0,0,0,1)"><path d="M5 11V13H19V11H5Z"></path></svg>
                                     </button>
                                     <div className='flex items-center w-[50%]'>
-                                        <input className='text-center border-0 bg-transparent text-base px-1 focus:border-0 w-[60%]'
+                                        <input 
+                                            required
+                                            ref={inputRefPortionSize}
+                                            className='text-center border-0 bg-transparent text-base px-1 focus:border-0 w-[60%]'
                                             placeholder='1'
-                                            value={minutes}
+                                            value={numericPortionSize}
                                             onChange={handleInputChange}
                                         />
                                         <span className='w-[50%]'>Pieces</span>
@@ -228,14 +419,14 @@ const MenuModal = ({ isOpen, onClose }) => {
                                         This should be your smallest serving for this dish. You can add larger options on the next page.
                                     </p>
                                 </div>
-                                <select id="selectOption">
+                                <select ref={inputRefBaseServing} value={baseServing} onChange={handleBaseServing} id="selectOption">
                                     <option value="">Servings</option>
-                                    <option value="option1">1 Serving</option>
-                                    <option value="option2">1-2 Serving</option>
-                                    <option value="option3">2 Serving</option>
-                                    <option value="option4">2-3 Serving</option>
-                                    <option value="option6">3 Serving</option>
-                                    <option value="option7">3-4 Serving</option>
+                                    <option value="1 Serving">1 Serving</option>
+                                    <option value="1-2 Serving">1-2 Serving</option>
+                                    <option value="2 Serving">2 Serving</option>
+                                    <option value="2-3 Serving">2-3 Serving</option>
+                                    <option value="3 Serving">3 Serving</option>
+                                    <option value="3-4 Serving">3-4 Serving</option>
                                 </select>
                                 <p className='text-[12px] my-1'>
                                     Similar sized dishes are usually 1-2 servings.
@@ -251,8 +442,16 @@ const MenuModal = ({ isOpen, onClose }) => {
                                 </div>
                                 <div className='md:w-[20%] w-[45%] flex items-center justify-start border border-headGray rounded-lg px-2'>
                                     <span className='text-lg font-semibold mr-1 w-[10%]'>$</span>
-                                    <input className='text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]'
+                                    <input 
+                                        required
+                                        className='text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]'
                                         placeholder=''
+                                        ref={inputRefPrice}
+                                        type='number'
+                                        min={0} 
+                                        step={0.01}
+                                        value={price}
+                                        onChange={hanldePriceChange}
                                     />
                                 </div>
                             </div>
@@ -299,8 +498,13 @@ const MenuModal = ({ isOpen, onClose }) => {
                                     </p>
                                 </div>
                                 <div className=''>
-                                    <input className='text-start text-base px-3 '
+                                    <input 
+                                        required
+                                        ref={inputRefPortionSize}
+                                        className='text-start text-base px-3 '
                                         placeholder='500gm + 2 pieces roti + salad'
+                                        value={textualPortionSize}
+                                        onChange={handlePortionSizeChange}
                                     />
                                 </div>
                             </div>
@@ -312,14 +516,14 @@ const MenuModal = ({ isOpen, onClose }) => {
                                         This should be your smallest serving for this dish. You can add larger options on the next page.
                                     </p>
                                 </div>
-                                <select id="selectOption">
+                                <select ref={inputRefBaseServing} value={baseServing} onChange={handleBaseServing} id="selectOption">
                                     <option value="">Servings</option>
-                                    <option value="option1">1 Serving</option>
-                                    <option value="option2">1-2 Serving</option>
-                                    <option value="option3">2 Serving</option>
-                                    <option value="option4">2-3 Serving</option>
-                                    <option value="option6">3 Serving</option>
-                                    <option value="option7">3-4 Serving</option>
+                                    <option value="1 Serving">1 Serving</option>
+                                    <option value="1-2 Serving">1-2 Serving</option>
+                                    <option value="2 Serving">2 Serving</option>
+                                    <option value="2-3 Serving">2-3 Serving</option>
+                                    <option value="3 Serving">3 Serving</option>
+                                    <option value="3-4 Serving">3-4 Serving</option>
                                 </select>
                                 <p className='text-[12px] my-1'>
                                     Similar sized dishes are usually 1-2 servings.
@@ -335,8 +539,16 @@ const MenuModal = ({ isOpen, onClose }) => {
                                 </div>
                                 <div className='md:w-[20%] w-[45%] flex items-center justify-start border border-headGray rounded-lg px-2'>
                                     <span className='text-lg font-semibold mr-1 w-[10%]'>$</span>
-                                    <input className='text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]'
+                                    <input 
+                                        required
+                                        className='text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]'
                                         placeholder=''
+                                        ref={inputRefPrice}
+                                        type='number'
+                                        min={0}
+                                        step={0.01}
+                                        value={price}
+                                        onChange={hanldePriceChange}
                                     />
                                 </div>
                             </div>
@@ -392,7 +604,7 @@ const MenuModal = ({ isOpen, onClose }) => {
                                                 <path d="M12 21.9967C6.47715 21.9967 2 17.5196 2 11.9967C2 6.47386 6.47715 1.9967 12 1.9967C17.5228 1.9967 22 6.47386 22 11.9967C22 17.5196 17.5228 21.9967 12 21.9967ZM12 19.9967C16.4183 19.9967 20 16.415 20 11.9967C20 7.57843 16.4183 3.9967 12 3.9967C7.58172 3.9967 4 7.57843 4 11.9967C4 16.415 7.58172 19.9967 12 19.9967ZM12 17.9967V5.9967C15.3137 5.9967 18 8.683 18 11.9967C18 15.3104 15.3137 17.9967 12 17.9967Z"></path>
                                             </svg>
                                         </span>
-                                        <span>You earn <span className='text-primaryGreen font-semibold'>$9.00</span> from each dish sold!</span>
+                                        <span>You earn <span className='text-primaryGreen font-semibold'>${chefEarning}</span> from each dish sold!</span>
                                     </div>
                                 </li>
                                 <li className='text-lg leading-tight mb-3 '>
@@ -403,7 +615,9 @@ const MenuModal = ({ isOpen, onClose }) => {
                                             </svg>
                                         </span>
                                         <span>
-                                            Shef collects <span className='text-[#fca5a5] font-semibold'>15%</span> to cover marketing, customer support and software development
+                                            {/* {((platformRate.platform_percentage/100)*price).toFixed(2)} */}
+                                            {/* Platform collects --> might be !! */}
+                                            Shef collects <span className='text-[#fca5a5] font-semibold'>{platformRate.platform_percentage}%</span> to cover marketing, customer support and software development
                                         </span>
                                     </div>
                                 </li>
@@ -415,7 +629,7 @@ const MenuModal = ({ isOpen, onClose }) => {
                                             </svg>
                                         </span>
                                         <span>
-                                            Separately,<span className='text-[#30abaf] font-semibold'> $1.20</span> goes towards operations and delivery costs.
+                                            Separately,<span className='text-[#30abaf] font-semibold'> ${((platformRate.delivery_percentage/100)*price).toFixed(2)}</span> goes towards operations and delivery costs.
                                         </span>
                                     </div>
                                 </li>
@@ -423,8 +637,8 @@ const MenuModal = ({ isOpen, onClose }) => {
                         </div>
                     </div>
                     <div className='flex items-center justify-end mt-4 gap-2'>
-                        <button className='shefBtnBorder'>Cancel</button>
-                        <button className='text-lg font-bold bg-primaryDark px-[22px] py-[6px] uppercase text-white rounded-[6px]'>Submit</button>
+                        <button type='button' onClick={onCancel} className='shefBtnBorder'>Cancel</button>
+                        <button onClick={onSubmit} type='submit' className='text-lg font-bold bg-primaryDark px-[22px] py-[6px] uppercase text-white rounded-[6px] disabled:opacity-60'>Submit</button>
                     </div>
                 </div>
             </div>

@@ -1,21 +1,65 @@
-import React, { useState } from 'react';
-const MoreInformationScreen = () => {
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { handleGetHeatingInstruction } from '../../../services/shef';
+const   MoreInformationScreen = ({  instruction_template_id, reheating_instruction, expiry_days, packaging, updateFields}) => {
     // Plus Minus Quantity Start
-    const [minutes, setMinutes] = useState(0);
+    // const [minutes, setMinutes] = useState(0);
 
     const handleIncrement = () => {
-        setMinutes((prevMinutes) => prevMinutes + 1);
+        // setMinutes((prev)=> prev+1)
+        updateFields({ expiry_days: expiry_days + 1 })
     };
-
+    
     const handleDecrement = () => {
-        setMinutes((prevMinutes) => (prevMinutes > 0 ? prevMinutes - 1 : 0));
+        updateFields({ expiry_days: expiry_days > 0 ? expiry_days - 1 : 0 })
+        // setMinutes((prev)=> prev > 0 ? prev - 1 : 0)
+        
     };
 
     const handleInputChange = (e) => {
         const value = parseInt(e.target.value, 10);
-        setMinutes(isNaN(value) ? 0 : value);
+        //--- Update expiry in Chef-Menu
+        updateFields({ expiry_days: isNaN(value) ? 0 : value })
     };
     // Plus Minus Quantity End
+    
+    const { authToken } = useSelector((state)=>state.user)
+    const [heatInstruction, setHeatInstruction] = useState([])
+
+
+    useEffect(()=>{
+        (async()=>{
+            try {
+                const response = await handleGetHeatingInstruction(authToken);   
+                setHeatInstruction(response)
+            } catch (error) {
+                console.log("Error While fetching instructions \n", error)
+            }
+        })()
+    }, [authToken])
+
+
+    const instructionTemplateOnChange = (e)=> {
+        const value = parseInt(e.target.value, 10);
+        //--- Update Instruction-template-id in Chef-Menu
+        updateFields({ instruction_template_id: isNaN(value) ? "" : value })
+
+        if(e.target.value === ""){
+            updateFields({ reheating_instruction: "" })
+            return;
+        }
+        //--- Update Reheating-instruction in Chef-Menu
+        heatInstruction.forEach((obj)=>{
+            if(obj.id === value)
+            updateFields({ reheating_instruction: obj.instruction })
+        })
+    }
+
+    const handlePackageChange = (e) => {
+        const value = parseInt(e.target.value, 10);
+        updateFields({ packaging: value })
+    }
+
     return (
         <div>
             <div className='container mx-auto'>
@@ -27,18 +71,27 @@ const MoreInformationScreen = () => {
                             Include how many minutes dish needs to be reheated on stove top/oven or microwave and heat level (low, medium, high/degrees F).
                         </p>
                         <div className='mb-3'>
-                            <select id="selectOption">
+                            <select value={instruction_template_id} onChange={instructionTemplateOnChange} id="selectOption">
                                 <option value="">Select A Template</option>
-                                <option value="option1">Curry or Stew </option>
+                                {/* <option value="option1">Curry or Stew </option>
                                 <option value="option2">Dry Curry or Stew </option>
                                 <option value="option3">Non-Veg Curry </option>
                                 <option value="option4">Bone-in Non-Veg Curry or Stew </option>
                                 <option value="option4">Rice Dishes </option>
                                 <option value="option4">Rice & Protein Dishes </option>
-                                <option value="option4">Stir-Fry </option>
+                                <option value="option4">Stir-Fry </option> */}
+                                {heatInstruction.map((option)=>(
+                                    <option value={option.id} key={option.id}>{option.title}</option>
+                                ))}
                             </select>
                         </div>
-                        <textarea className='h-[130px] p-3' value='*Beware of bones. Place into a bowl & microwave for 1-2 min. Stir food midway through microwaving. Or heat in a saucepan with 1 tbsp of water over low heat for 4-5 min. Let cool before enjoying.' placeholder="Description of Dish..."></textarea>
+                        <textarea 
+                            className='h-[130px] p-3' 
+                            disabled={!instruction_template_id} 
+                            onChange={(e)=> updateFields({ reheating_instruction: e.target.value })} 
+                            value={reheating_instruction} 
+                            placeholder="Description of Dish..."
+                        />
                         <p className='text-headGray'>0 / 400</p>
                     </div>
                     <div className='mt-7 mb-5 border-b'></div>
@@ -50,13 +103,15 @@ const MoreInformationScreen = () => {
                             </p>
                         </div>
                         <div className='flex items-center justify-between md:w-[35%] w-[65%] bg-grayBg rounded-lg'>
-                            <button onClick={handleDecrement} className='w-[25%]'>
+                            <button disabled={expiry_days<1} onClick={handleDecrement} className='w-[25%]'>
                                 <svg xmlns="http://www.w3.org/2000/svg" className='mx-auto' viewBox="0 0 24 24" width="18" height="18" fill="rgba(0,0,0,1)"><path d="M5 11V13H19V11H5Z"></path></svg>
                             </button>
                             <div className='flex items-center w-[50%]'>
-                                <input className='text-center border-0 bg-transparent text-base px-1 focus:border-0 w-[60%]'
+                                <input 
+                                    className='text-center border-0 bg-transparent text-base px-1 focus:border-0 w-[60%]'
                                     placeholder='1'
-                                    value={minutes}
+                                    type='text'
+                                    value={expiry_days}
                                     onChange={handleInputChange}
                                 />
                                 <span className='w-[40%]'>Days</span>
@@ -74,13 +129,23 @@ const MoreInformationScreen = () => {
                                 <div>
                                     <span className="text-base font-medium mr-2">Regular</span>
                                 </div>
-                                <input type="radio" className="form-radio text-primary w-[16px] h-[16px]" name="radioGroup" value="option1" />
+                                <input 
+                                    type="radio" className="form-radio text-primary w-[16px] h-[16px]" 
+                                    name="radioGroup" value="1" 
+                                    checked={packaging === 1}
+                                    onChange={ handlePackageChange } 
+                                />
                             </label>
                             <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 md:mb-4 mb-2 prtionRadio">
                                 <div>
                                     <span className="text-base font-medium mr-2">Compostable</span>
                                 </div>
-                                <input type="radio" className="form-radio text-primary w-[16px] h-[16px]" name="radioGroup" value="option2" />
+                                <input 
+                                    type="radio" className="form-radio text-primary w-[16px] h-[16px]" 
+                                    name="radioGroup" value="2" 
+                                    checked={packaging === 2}
+                                    onChange={ handlePackageChange } 
+                                />
                             </label>
                         </div>
                     </div>

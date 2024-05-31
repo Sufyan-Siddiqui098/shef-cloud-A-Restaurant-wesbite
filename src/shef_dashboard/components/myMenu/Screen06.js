@@ -1,10 +1,14 @@
-import React, { useState, useRef } from 'react';
-const IngredientsScreen = () => {
+import React, { useState, useRef, useEffect } from 'react';
+const IngredientsScreen = ({updateFields, logo}) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const fileInputRef = useRef(null);
+
+    // Image handling
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            // --- Update logo in Chef-Menu
+            updateFields({ logo: file })
             const reader = new FileReader();
             reader.onload = () => {
                 // Set the selected image in state
@@ -13,6 +17,20 @@ const IngredientsScreen = () => {
             reader.readAsDataURL(file);
         }
     };
+    
+    // Getting image from Chef-Menu
+    useEffect(()=> {
+        if(logo){
+            const reader = new FileReader();
+            reader.onload = () => {
+                // Set the selected image in state
+                setSelectedImage(reader.result);
+            };
+            reader.readAsDataURL(logo);
+        }
+        console.log("logo is running ")
+    }, [logo])
+
     const handleBoxClick = () => {
         // Trigger click on the hidden file input
         if (fileInputRef.current) {

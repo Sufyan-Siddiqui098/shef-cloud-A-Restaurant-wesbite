@@ -1,5 +1,24 @@
 import React from 'react';
-const DescScreen = () => {
+const DescScreen = ({
+    description,
+    item_limit,
+    is_monday,
+    is_tuesday,
+    is_wednesday,
+    is_thursday,
+    is_friday,
+    is_saturday,
+    is_sunday,
+    limit_item_availibility,
+    limit_start,
+    limit_end , updateFields}) => {
+
+        const OnItemAvailabilityChange = (e) =>{
+            if(e.target.value===''){
+                updateFields({ limit_start: "",  limit_end: "" })
+            }
+            updateFields({ limit_item_availibility: e.target.value })
+        }
     return (
         <div>
             <div className='container mx-auto'>
@@ -8,8 +27,24 @@ const DescScreen = () => {
                     <div className=''>
                         <h3 className='text-lg font-semibold mb-1 leading-tight'>Description</h3>
                         <p className='text-[12px]'>Dish Description: Tell customers about your dish.</p>
-                        <textarea className='h-[130px]' placeholder="Description of Dish..."></textarea>
-                        <p className='text-headGray'>0 / 400</p>
+                        <textarea 
+                            className='h-[130px]' value={description} 
+                            onChange={(e) => {
+                                const newDescription = e.target.value.slice(0, 400);  // Limit to 400 characters
+                                const currentDescription = e.target.value;
+                              
+                                // Check if backspace was pressed (considering key deletion)
+                                const backspaceKeyPressed = currentDescription.length === newDescription.length + 1;
+                                if (backspaceKeyPressed || newDescription === currentDescription) {
+                                  e.target.value = newDescription;  // Update value only on backspace or no change
+                                }
+                              
+                                updateFields({ description: newDescription }); // Update state regardless
+                              }}
+                              
+                            placeholder="Description of Dish..."
+                        />
+                        <p className='text-headGray'>{description.length} / 400</p>
                     </div>
                     <div className='rounded-lg bg-grayBg mt-4 p-4'>
                         <div className='flex items-center gap-2'>
@@ -45,54 +80,96 @@ const DescScreen = () => {
                     <div className=''>
                         <h3 className='text-lg font-semibold mb-1 leading-tight'>Dish order limit</h3>
                         <p className='text-[12px]'>How many of this item you want to offer on a delivery day (1-100).</p>
-                        <input className='w-1/2' placeholder="1 / 100" />
+                        <input 
+                            type='number' className='w-1/2'
+                            value={item_limit===0 ? "": item_limit} 
+                            onChange={(e)=>{const value = parseInt(e.target.value, 10);
+                                        updateFields({item_limit: isNaN(value) ? "" : value})
+                                    }} 
+                            placeholder="1 / 100" 
+                        />
                     </div>
                     <div className='mt-7 mb-5 border-b'></div>
                     <div>
                         <h3 className='text-lg font-semibold mb-1 leading-tight'>Dish availability</h3>
                         <p className='text-[12px]'>Delivery days this dish will be available on your menu. You can also edit this from your availability page.</p>
                         <div className='grid md:grid-cols-7 grid-cols-4 cols-4 gap-3'>
-                            <label className="flex items-center justify-between cursor-pointer rounded-md  px-3 py-6 daysCheckbox">
+                            <label className="flex items-center justify-between cursor-pointer border rounded-md  px-3 py-6 daysCheckbox">
                                 <div className='flex justify-center items-center w-full'>
                                     <span className="text-lg font-semibold">Mon</span>
                                 </div>
-                                <input type="checkbox" className="form-radio w-[16px] h-[16px] hidden" checked name="" value="value2" />
+                                <input 
+                                    type="checkbox" className="form-radio w-[16px] h-[16px] hidden" 
+                                    checked={is_monday===1} 
+                                    onChange={(e) => { is_monday===1 ? updateFields({ is_monday: 0 }) : updateFields({ is_monday: 1})  }} 
+                                    name="" value={is_monday} 
+                                />
                             </label>
                             <label className="flex items-center justify-between cursor-pointer rounded-md border px-3 py-6 daysCheckbox">
                                 <div className='flex justify-center items-center w-full'>
                                     <span className="text-lg font-semibold">Tue</span>
                                 </div>
-                                <input type="checkbox" className="form-radio w-[16px] h-[16px] hidden" name="" value="value2" />
+                                <input 
+                                    type="checkbox" className="form-radio w-[16px] h-[16px] hidden" 
+                                    checked={is_tuesday===1}
+                                    onChange={(e) => { is_tuesday ===1 ? updateFields({ is_tuesday: 0 }) : updateFields({ is_tuesday: 1})  }} 
+                                    name="" value={is_tuesday}
+                                />
                             </label>
                             <label className="flex items-center justify-between cursor-pointer rounded-md border px-3 py-6 daysCheckbox">
                                 <div className='flex justify-center items-center w-full'>
                                     <span className="text-lg font-semibold">Wed</span>
                                 </div>
-                                <input type="checkbox" className="form-radio w-[16px] h-[16px] hidden" name="" value="value2" />
+                                <input 
+                                    type="checkbox" className="form-radio w-[16px] h-[16px] hidden" 
+                                    checked={is_wednesday===1}
+                                    onChange={(e) => { is_wednesday ===1 ? updateFields({ is_wednesday: 0 }) : updateFields({ is_wednesday: 1})  }} 
+                                    name="" value={is_wednesday}
+                                />
                             </label>
                             <label className="flex items-center justify-between cursor-pointer rounded-md border px-3 py-6 daysCheckbox">
                                 <div className='flex justify-center items-center w-full'>
                                     <span className="text-lg font-semibold">Thu</span>
                                 </div>
-                                <input type="checkbox" className="form-radio w-[16px] h-[16px] hidden" name="" value="value2" />
+                                <input 
+                                    type="checkbox" className="form-radio w-[16px] h-[16px] hidden" 
+                                    checked={is_thursday===1}
+                                    onChange={(e) => { is_thursday ===1 ? updateFields({ is_thursday: 0 }) : updateFields({ is_thursday: 1})  }} 
+                                    name="" value={is_thursday} 
+                                />
                             </label>
                             <label className="flex items-center justify-between cursor-pointer rounded-md border px-3 py-6 daysCheckbox">
                                 <div className='flex justify-center items-center w-full'>
                                     <span className="text-lg font-semibold">Fri</span>
                                 </div>
-                                <input type="checkbox" className="form-radio w-[16px] h-[16px] hidden" name="" value="value2" />
+                                <input 
+                                    type="checkbox" className="form-radio w-[16px] h-[16px] hidden" 
+                                    checked={is_friday===1}
+                                    onChange={(e) => { is_friday ===1 ? updateFields({ is_friday: 0 }) : updateFields({ is_friday: 1})  }} 
+                                    name="" value={is_friday}
+                                />
                             </label>
                             <label className="flex items-center justify-between cursor-pointer rounded-md border px-3 py-6 daysCheckbox">
                                 <div className='flex justify-center items-center w-full'>
                                     <span className="text-lg font-semibold">Sat</span>
                                 </div>
-                                <input type="checkbox" className="form-radio w-[16px] h-[16px] hidden" name="" value="value2" />
+                                <input 
+                                    type="checkbox" className="form-radio w-[16px] h-[16px] hidden" 
+                                    checked={is_saturday===1}
+                                    onChange={(e) => { is_saturday ===1 ? updateFields({ is_saturday: 0 }) : updateFields({ is_saturday: 1})  }}
+                                    name="" value={is_saturday} 
+                                />
                             </label>
                             <label className="flex items-center justify-between cursor-pointer rounded-md border px-3 py-6 p-relative daysCheckbox">
                                 <div className='flex justify-center items-center w-full'>
                                     <span className="text-lg font-semibold">Sun</span>
                                 </div>
-                                <input type="checkbox" className="form-radio w-[16px] h-[16px] hidden" name="" value="value1" />
+                                <input 
+                                    type="checkbox" className="form-radio w-[16px] h-[16px] hidden" 
+                                    checked={is_sunday===1}
+                                    onChange={(e) => { is_sunday ===1 ? updateFields({ is_sunday: 0 }) : updateFields({ is_sunday: 1})  }}
+                                    name="" value="value1" 
+                                />
                             </label>
                         </div>
                     </div>
@@ -103,12 +180,12 @@ const DescScreen = () => {
                             Use this feature if you want to limit this item's availability on a specific calendar date or date range.
                         </p>
                         <div>
-                            <select id="selectOption">
-                                <option value="">No Limit</option>
-                                <option value="option1">Available On</option>
-                                <option value="option2">Unvailable On</option>
-                                <option value="option3">Available During</option>
-                                <option value="option4">Unvailable During</option>
+                            <select value={limit_item_availibility} onChange={OnItemAvailabilityChange} id="selectOption">
+                                <option selected value="">No Limit</option>
+                                <option value="Available On">Available On</option>
+                                <option value="Unvailable On">Unvailable On</option>
+                                <option value="Available During">Available During</option>
+                                <option value="Unvailable During">Unvailable During</option>
                             </select>
                         </div>
                         <div className='grid md:grid-cols-2 grid-cols-1 gap-3 mt-5'>
@@ -117,14 +194,26 @@ const DescScreen = () => {
                                 <p className='text-[12px]'>
                                     Date item will become available
                                 </p>
-                                <input type='date' className='w-full' />
+                                <input 
+                                    disabled={limit_item_availibility.length<1} 
+                                    onChange={(e)=> updateFields({ limit_start: e.target.value }) } 
+                                    value={limit_start}
+                                    type='date' 
+                                    className='w-full' 
+                                />
                             </div>
                             <div>
                                 <h5 className='text-base font-bold mb-0'>End Date</h5>
                                 <p className='text-[12px]'>
                                     Date item will stop being available again
                                 </p>
-                                <input type='date' className='w-full' />
+                                <input 
+                                    disabled={limit_item_availibility.length<1} 
+                                    onChange={(e)=> updateFields({ limit_end: e.target.value }) } 
+                                    value={limit_end}
+                                    type='date' 
+                                    className='w-full' 
+                                />
                             </div>
                         </div>
                     </div>
