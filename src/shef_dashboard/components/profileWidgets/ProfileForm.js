@@ -36,58 +36,54 @@ export const ProfileForm = () => {
         libraries: libraries
     })
 
-    function getCityCountryZipFromCoords(latitude, longitude) {
-        const geocoder = new window.google.maps.Geocoder();
-        geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
-            // console.log("result ", results)
-          if (status === 'OK') {
-            if (results[0]) {
-              const { address_components } = results[0];
-              const local = address_components.reduce((acc, component) => {
-                const { types } = component;
-                if(types.includes("premise")){
-                    acc.address = component.long_name;
-                }
-                if(types.includes("sublocality")){
-                    acc.address += ", " + component.long_name;
-                } else if (types.includes('country')) {
-                  acc.country = component.long_name;
-                } else if (types.includes('locality')) {
-                  acc.locality = component.long_name;
-                } else if (types.includes('postal_code')) {
-                  acc.postal_code = component.long_name;
-                }
-                return acc;
-              }, {});
-              // IF address is empty
-             if(!address){
-                 setAddress(local.address)
-             }
-              setCity(local.locality)
-              setCountry(local.country)
+    // function getCityCountryZipFromCoords(latitude, longitude) {
+    //     const geocoder = new window.google.maps.Geocoder();
+    //     geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
+    //       if (status === 'OK') {
+    //         if (results[0]) {
+    //           const { address_components } = results[0];
+    //           const local = address_components.reduce((acc, component) => {
+    //             const { types } = component;
+    //             if(types.includes("premise")){
+    //                 acc.address = component.long_name;
+    //             }
+    //             if(types.includes("sublocality")){
+    //                 acc.address += ", " + component.long_name;
+    //             } else if (types.includes('country')) {
+    //               acc.country = component.long_name;
+    //             } else if (types.includes('locality')) {
+    //               acc.locality = component.long_name;
+    //             } else if (types.includes('postal_code')) {
+    //               acc.postal_code = component.long_name;
+    //             }
+    //             return acc;
+    //           }, {});
+    //           // IF address is empty
+    //          if(!address){
+    //              setAddress(local.address)
+    //          }
+    //           setCity(local.locality)
+    //           setCountry(local.country)
               
-              setZipCode(local.postal_code? local.postal_code: "");
-              // Update your component state or display the data
-            } else {
-              console.warn('No results found');
-            }
-          } else {
-            console.error('Geocode was not successful:', status);
-          }
-        });
-    }
+    //           setZipCode(local.postal_code? local.postal_code: "");
+    //           // Update your component state or display the data
+    //         } else {
+    //           console.warn('No results found');
+    //         }
+    //       } else {
+    //         console.error('Geocode was not successful:', status);
+    //       }
+    //     });
+    // }
       
     // geolocation - getting latitude & longitude
     useEffect(()=>{
-        // console.log("useEffect running...")
         if (navigator.geolocation && isLoaded) {
             navigator.geolocation.getCurrentPosition((position) => {
               const { latitude, longitude } = position.coords;
               setCoords({latitude, longitude})
-              console.log("lat ", coords.latitude)
-              console.log("lng ", coords.longitude)
               // Use these coordinates for reverse geocoding
-              getCityCountryZipFromCoords(latitude, longitude);
+            //   getCityCountryZipFromCoords(latitude, longitude);
             }, (error) => {
               console.error('Error getting location:', error.message);
             });
@@ -95,20 +91,19 @@ export const ProfileForm = () => {
             console.warn('Geolocation is not supported by this browser.');
           }
           
-    },[isLoaded, coords.latitude, coords.longitude]) // !! TODO - remove authtoken, dispatch 
+          // eslint-disable-next-line
+    },[isLoaded, coords.latitude, coords.longitude])  
 
     // fetch user - (show-profile)
     useEffect(()=>{
         (async()=>{
             const response =await handleShowProfile(authToken);
-            // console.log("fetched data ", response)
             //Object.entries - creates array from object && Object.entries - create an object from array
             const filteredData = Object.fromEntries(Object.entries(response).filter(([_, v]) => v != null));
             setProfileData(filteredData)
             localStorage.setItem("user", JSON.stringify(filteredData)); //update user in local-storage
             dispatch(updateUser(filteredData))                          // to instantly update user in redux-store.
         })()
-        // console.log("fetching user useEffect running...")
 
     }, [authToken, dispatch])
 
@@ -150,7 +145,6 @@ export const ProfileForm = () => {
             const addressResponse = await handleUpdateAddress(authToken, addressFormData)
 
             //--- Update address resposne handling
-            console.log('address response ', addressResponse)
             setAddress(addressResponse.address)
             const { latitude, longitude } = addressResponse;        // Destructure the co-ordinates
             setCoords({ latitude, longitude })
