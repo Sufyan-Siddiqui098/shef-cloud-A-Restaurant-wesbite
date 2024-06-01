@@ -181,7 +181,7 @@ const DescScreen = ({
                         </p>
                         <div>
                             <select value={limit_item_availibility} onChange={OnItemAvailabilityChange} id="selectOption">
-                                <option selected value="">No Limit</option>
+                                <option value="">No Limit</option>
                                 <option value="Available On">Available On</option>
                                 <option value="Unvailable On">Unvailable On</option>
                                 <option value="Available During">Available During</option>
