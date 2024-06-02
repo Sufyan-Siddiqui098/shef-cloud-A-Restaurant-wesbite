@@ -61,7 +61,6 @@ const MenuModal = ({
      }
 
      //-- Base number of servings
-     const [baseServing, setBaseServing] = useState("")
      const handleBaseServing = (e) => {
         // setBaseServing(e.target.value);
         const value = parseInt(e.target.value, 10);
@@ -69,7 +68,6 @@ const MenuModal = ({
      }
 
      // -- Price Handling
-    const [price, setPrice] = useState("")
     const hanldePriceChange = (e) => {
         // Regular expression to match only numbers and one dot
         const regex = /^[+-]?\d+(\.\d+)?$/; // Allows optional sign, numbers, one or more decimals
@@ -77,23 +75,21 @@ const MenuModal = ({
       
         if (regex.test(value)) {
           const parsedValue = parseFloat(value);
+          updateFields({ chef_earning_fee: parsedValue })
           calculate(parsedValue)
-          setPrice(parsedValue);
         } else {
-            setPrice("")
+            updateFields({ chef_earning_fee: "" })
             calculate(0)     
         }
     }
 
-     const onCancel = ()=>{
+    const onCancel = ()=>{
         setNumericPortionSize(0); 
         setTextualPortionSize("");
-        setPrice("");
         onClose();
-     }
+    }
 
-     const [portionTypes, setPortionTypes] = useState([]);
-    const [chefEarning, setChefEarning ] = useState(0);
+    const [portionTypes, setPortionTypes] = useState([]);
     const [platformRate, setPlatformRate] = useState({
         platform_percentage: 10,
         delivery_percentage: 20,
@@ -102,13 +98,10 @@ const MenuModal = ({
     const calculate = (price) => {
         const deliveryCost = parseFloat((price * (platformRate.delivery_percentage/100)).toFixed(2));
         const platformCost = parseFloat((price * (platformRate.platform_percentage/100)).toFixed(2));
-        const chefEarning = parseFloat((price - deliveryCost - platformCost).toFixed(2));
 
         // Update Delivery price & platform_price in Chef-Menu
         updateFields({ delivery_price: deliveryCost })
         updateFields({ platform_price: platformCost })
-        updateFields({ chef_earning_fee: chefEarning })  // After minus delivery and platform cost
-        setChefEarning(chefEarning)
     }
      //--- Handle Portion type -api 
      useEffect(()=>{
@@ -129,27 +122,12 @@ const MenuModal = ({
         if(isOpen){
             if(typeof portion_size === "number") setNumericPortionSize(portion_size)
             if(typeof portion_size ==="string") setTextualPortionSize(portion_size)
-
+            
+                // Set Active tab
             if(base_type_id) {
                 setActiveTab(base_type_id)
             }
-                // Need changes !!
-            // Active Corresponding tab to portion_type_id
-            // if(portionTypes.length>0) portionTypes.forEach((el, index)=> {
-            //     // Set the active - When Id is matched with Chef-menu
-            //     if(el.id === portion_type_id){
-            //         setActiveTab(index+1)
-            //     }
-            // })
-
-            // setBaseServing(portion_base_serving)
-            if(delivery_price > 0 && platform_price > 0 && chef_earning_fee >0 ) {
-                setChefEarning(chef_earning_fee)
-                setPrice( delivery_price + platform_price + chef_earning_fee )
-
-            }
-
-            // ---Need changes end !!
+          
         }
         //eslint-disable-next-line
      }, [isOpen])
@@ -164,7 +142,7 @@ const MenuModal = ({
                     inputRefPortionSize.current.focus();
                     return;
                 } 
-                else if( price <1 || !price ) {
+                else if( chef_earning_fee <1 || !chef_earning_fee ) {
                     toast.error("Base Price is Required");
                     inputRefPrice.current.focus();
                     return ;
@@ -185,7 +163,7 @@ const MenuModal = ({
                     inputRefPortionSize.current.focus();
                     return;
                 } 
-                else if( price <1 || !price ) {
+                else if( chef_earning_fee <1 || !chef_earning_fee ) {
                     toast.error("Base Price is Required");
                     inputRefPrice.current.focus();
                     return ;
@@ -325,7 +303,7 @@ const MenuModal = ({
                                 <select ref={inputRefBaseServing} value={portion_type_id} onChange={handleBaseServing} id="selectOption">
                                     <option value="">Servings</option>
                                     {portionTypes.map((item) => (
-                                        <option value={item.id}>{item.name}</option>
+                                        <option key={item.id} value={item.id}>{item.name}</option>
                                     ))}
                                     {/* <option value="1 Serving">1 Serving</option>
                                     <option value="2 Serving">2 Serving</option>
@@ -355,7 +333,7 @@ const MenuModal = ({
                                         type='number'
                                         min={0} 
                                         step={0.01}
-                                        value={price}
+                                        value={chef_earning_fee}
                                         onChange={hanldePriceChange}
                                     />
                                 </div>
@@ -433,7 +411,7 @@ const MenuModal = ({
                                 <select ref={inputRefBaseServing} value={portion_type_id} onChange={handleBaseServing} id="selectOption">
                                     <option value="">Servings</option>
                                     {portionTypes.map((item) => (
-                                        <option value={item.id}>{item.name}</option>
+                                        <option key={item.id} value={item.id}>{item.name}</option>
                                     ))}
                                     {/* <option value="1 Serving">1 Serving</option>
                                     <option value="1-2 Serving">1-2 Serving</option>
@@ -464,7 +442,7 @@ const MenuModal = ({
                                         type='number'
                                         min={0} 
                                         step={0.01}
-                                        value={price}
+                                        value={chef_earning_fee}
                                         onChange={hanldePriceChange}
                                     />
                                 </div>
@@ -533,7 +511,7 @@ const MenuModal = ({
                                 <select ref={inputRefBaseServing} value={portion_type_id} onChange={handleBaseServing} id="selectOption">
                                     <option value="">Servings</option>
                                     {portionTypes.map((item) => (
-                                        <option value={item.id}>{item.name}</option>
+                                        <option key={item.id} value={item.id}>{item.name}</option>
                                     ))}
                                     {/* <option value="1 Serving">1 Serving</option>
                                     <option value="1-2 Serving">1-2 Serving</option>
@@ -564,7 +542,7 @@ const MenuModal = ({
                                         type='number'
                                         min={0}
                                         step={0.01}
-                                        value={price}
+                                        value={chef_earning_fee}
                                         onChange={hanldePriceChange}
                                     />
                                 </div>
@@ -621,7 +599,7 @@ const MenuModal = ({
                                                 <path d="M12 21.9967C6.47715 21.9967 2 17.5196 2 11.9967C2 6.47386 6.47715 1.9967 12 1.9967C17.5228 1.9967 22 6.47386 22 11.9967C22 17.5196 17.5228 21.9967 12 21.9967ZM12 19.9967C16.4183 19.9967 20 16.415 20 11.9967C20 7.57843 16.4183 3.9967 12 3.9967C7.58172 3.9967 4 7.57843 4 11.9967C4 16.415 7.58172 19.9967 12 19.9967ZM12 17.9967V5.9967C15.3137 5.9967 18 8.683 18 11.9967C18 15.3104 15.3137 17.9967 12 17.9967Z"></path>
                                             </svg>
                                         </span>
-                                        <span>You earn <span className='text-primaryGreen font-semibold'>${chefEarning}</span> from each dish sold!</span>
+                                        <span>You earn <span className='text-primaryGreen font-semibold'>${chef_earning_fee}</span> from each dish sold!</span>
                                     </div>
                                 </li>
                                 <li className='text-lg leading-tight mb-3 '>
@@ -646,7 +624,7 @@ const MenuModal = ({
                                             </svg>
                                         </span>
                                         <span>
-                                            Separately,<span className='text-[#30abaf] font-semibold'> ${((platformRate.delivery_percentage/100)*price).toFixed(2)}</span> goes towards operations and delivery costs.
+                                            Separately,<span className='text-[#30abaf] font-semibold'> ${((platformRate.delivery_percentage/100)*chef_earning_fee).toFixed(2)}</span> goes towards operations and delivery costs.
                                         </span>
                                     </div>
                                 </li>
