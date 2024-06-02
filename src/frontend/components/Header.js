@@ -23,7 +23,7 @@ const Header = () => {
     const handleSignOut = ()=>{
         dispatch(signOutUser()); 
         toast.success("Logout Successfully ")
-        navigate('/login')
+        navigate('/')
     }
     return (
         <>
