@@ -9,8 +9,8 @@ const MenuModal = ({
     onClose, 
     authToken, 
     portion_type_id,
-    portion_size, 
-    portion_base_serving, 
+    base_type_id,
+    portion_size,  
     delivery_price, 
     platform_price,
     chef_earning_fee,  
@@ -20,11 +20,10 @@ const MenuModal = ({
     const handleTabClick = (tabNumber) => {
         // Update the active tab when clicked
         setActiveTab(tabNumber);
+        // base_type_id in ChefMenu
+        updateFields({ base_type_id: tabNumber });
         // Reseting
-        // setPrice(""); -- no need 
-        // calculate(0); -- no need
         setTextualPortionSize("");
-        setBaseServing("");
         setNumericPortionSize(0)
     };
     // Tabs Section End
@@ -44,7 +43,7 @@ const MenuModal = ({
         if( textualPortionSize.length > 0 ) setTextualPortionSize("")
     };
 
-    const handleInputChange = (e) => {
+    const handleNumericPortionSizeChange = (e) => {
         const value = parseInt(e.target.value, 10);
         setNumericPortionSize(isNaN(value) ? 0 : value);
         // Reset the textual portionsize
@@ -54,7 +53,8 @@ const MenuModal = ({
 
      //-- Textual portion size
      const [textualPortionSize, setTextualPortionSize] = useState("")
-     const handlePortionSizeChange = (e) => {
+
+     const handleTextPortionSizeChange = (e) => {
          setTextualPortionSize(e.target.value);
          // Reset the numeric portionsize
          if(numericPortionSize>0) setNumericPortionSize(0);
@@ -63,7 +63,9 @@ const MenuModal = ({
      //-- Base number of servings
      const [baseServing, setBaseServing] = useState("")
      const handleBaseServing = (e) => {
-        setBaseServing(e.target.value);
+        // setBaseServing(e.target.value);
+        const value = parseInt(e.target.value, 10);
+        updateFields({ portion_type_id: isNaN(value) ? "" : value });
      }
 
      // -- Price Handling
@@ -86,7 +88,6 @@ const MenuModal = ({
      const onCancel = ()=>{
         setNumericPortionSize(0); 
         setTextualPortionSize("");
-        setBaseServing("");
         setPrice("");
         onClose();
      }
@@ -97,6 +98,7 @@ const MenuModal = ({
         platform_percentage: 10,
         delivery_percentage: 20,
     })
+    // need changes !!
     const calculate = (price) => {
         const deliveryCost = parseFloat((price * (platformRate.delivery_percentage/100)).toFixed(2));
         const platformCost = parseFloat((price * (platformRate.platform_percentage/100)).toFixed(2));
@@ -127,25 +129,32 @@ const MenuModal = ({
         if(isOpen){
             if(typeof portion_size === "number") setNumericPortionSize(portion_size)
             if(typeof portion_size ==="string") setTextualPortionSize(portion_size)
-            // Active Corresponding tab to portion_type_id
-            if(portionTypes.length>0) portionTypes.forEach((el, index)=> {
-                // Set the active - When Id is matched with Chef-menu
-                if(el.id === portion_type_id){
-                    setActiveTab(index+1)
-                }
-            })
 
-            setBaseServing(portion_base_serving)
+            if(base_type_id) {
+                setActiveTab(base_type_id)
+            }
+                // Need changes !!
+            // Active Corresponding tab to portion_type_id
+            // if(portionTypes.length>0) portionTypes.forEach((el, index)=> {
+            //     // Set the active - When Id is matched with Chef-menu
+            //     if(el.id === portion_type_id){
+            //         setActiveTab(index+1)
+            //     }
+            // })
+
+            // setBaseServing(portion_base_serving)
             if(delivery_price > 0 && platform_price > 0 && chef_earning_fee >0 ) {
                 setChefEarning(chef_earning_fee)
                 setPrice( delivery_price + platform_price + chef_earning_fee )
 
             }
+
+            // ---Need changes end !!
         }
         //eslint-disable-next-line
      }, [isOpen])
      
-     //--- On Submit - Done
+     //--- On Submit - Done -- Need Review and Changes 
      const onSubmit = (e) =>{
         try {
             // Validation 
@@ -160,7 +169,8 @@ const MenuModal = ({
                     inputRefPrice.current.focus();
                     return ;
                 } 
-                else if(!baseServing ){
+                // -- need changes !!
+                else if(!portion_type_id ){
                     toast.error("Base Number of Serving is Required ");
                     inputRefBaseServing.current.focus();
                     return;
@@ -180,7 +190,7 @@ const MenuModal = ({
                     inputRefPrice.current.focus();
                     return ;
                 } 
-                else if(!baseServing ){
+                else if(!portion_type_id ){
                     toast.error("Base Number of Serving is Required ");
                     inputRefBaseServing.current.focus();
                     return;
@@ -192,7 +202,6 @@ const MenuModal = ({
 
             // Update portion_type_id for - Create Menu
             updateFields({ portion_type_id: portionTypes[activeTab-1].id })  
-            updateFields({ portion_base_serving: baseServing })
             toast.success("Base Portion Added")
             onClose();
 
@@ -296,7 +305,7 @@ const MenuModal = ({
                                             ref={inputRefPrice}
                                             placeholder='1'
                                             value={numericPortionSize}
-                                            onChange={handleInputChange}
+                                            onChange={handleNumericPortionSizeChange}
                                         />
                                         <span className='w-[40%]'>oz</span>
                                     </div>
@@ -313,14 +322,16 @@ const MenuModal = ({
                                         This should be your smallest serving for this dish. You can add larger options on the next page.
                                     </p>
                                 </div>
-                                <select ref={inputRefBaseServing} value={baseServing} onChange={handleBaseServing} id="selectOption">
+                                <select ref={inputRefBaseServing} value={portion_type_id} onChange={handleBaseServing} id="selectOption">
                                     <option value="">Servings</option>
-                                    <option value="1 Serving">1 Serving</option>
-                                    <option value="1-2 Serving">1-2 Serving</option>
+                                    {portionTypes.map((item) => (
+                                        <option value={item.id}>{item.name}</option>
+                                    ))}
+                                    {/* <option value="1 Serving">1 Serving</option>
                                     <option value="2 Serving">2 Serving</option>
                                     <option value="2-3 Serving">2-3 Serving</option>
                                     <option value="3 Serving">3 Serving</option>
-                                    <option value="3-4 Serving">3-4 Serving</option>
+                                    <option value="3-4 Serving">3-4 Serving</option> */}
                                 </select>
                                 <p className='text-[12px] my-1'>
                                     Similar sized dishes are usually 1-2 servings.
@@ -402,7 +413,7 @@ const MenuModal = ({
                                             className='text-center border-0 bg-transparent text-base px-1 focus:border-0 w-[60%]'
                                             placeholder='1'
                                             value={numericPortionSize}
-                                            onChange={handleInputChange}
+                                            onChange={handleNumericPortionSizeChange}
                                         />
                                         <span className='w-[50%]'>Pieces</span>
                                     </div>
@@ -419,14 +430,17 @@ const MenuModal = ({
                                         This should be your smallest serving for this dish. You can add larger options on the next page.
                                     </p>
                                 </div>
-                                <select ref={inputRefBaseServing} value={baseServing} onChange={handleBaseServing} id="selectOption">
+                                <select ref={inputRefBaseServing} value={portion_type_id} onChange={handleBaseServing} id="selectOption">
                                     <option value="">Servings</option>
-                                    <option value="1 Serving">1 Serving</option>
+                                    {portionTypes.map((item) => (
+                                        <option value={item.id}>{item.name}</option>
+                                    ))}
+                                    {/* <option value="1 Serving">1 Serving</option>
                                     <option value="1-2 Serving">1-2 Serving</option>
                                     <option value="2 Serving">2 Serving</option>
                                     <option value="2-3 Serving">2-3 Serving</option>
                                     <option value="3 Serving">3 Serving</option>
-                                    <option value="3-4 Serving">3-4 Serving</option>
+                                    <option value="3-4 Serving">3-4 Serving</option> */}
                                 </select>
                                 <p className='text-[12px] my-1'>
                                     Similar sized dishes are usually 1-2 servings.
@@ -504,7 +518,7 @@ const MenuModal = ({
                                         className='text-start text-base px-3 '
                                         placeholder='500gm + 2 pieces roti + salad'
                                         value={textualPortionSize}
-                                        onChange={handlePortionSizeChange}
+                                        onChange={handleTextPortionSizeChange}
                                     />
                                 </div>
                             </div>
@@ -516,14 +530,17 @@ const MenuModal = ({
                                         This should be your smallest serving for this dish. You can add larger options on the next page.
                                     </p>
                                 </div>
-                                <select ref={inputRefBaseServing} value={baseServing} onChange={handleBaseServing} id="selectOption">
+                                <select ref={inputRefBaseServing} value={portion_type_id} onChange={handleBaseServing} id="selectOption">
                                     <option value="">Servings</option>
-                                    <option value="1 Serving">1 Serving</option>
+                                    {portionTypes.map((item) => (
+                                        <option value={item.id}>{item.name}</option>
+                                    ))}
+                                    {/* <option value="1 Serving">1 Serving</option>
                                     <option value="1-2 Serving">1-2 Serving</option>
                                     <option value="2 Serving">2 Serving</option>
                                     <option value="2-3 Serving">2-3 Serving</option>
                                     <option value="3 Serving">3 Serving</option>
-                                    <option value="3-4 Serving">3-4 Serving</option>
+                                    <option value="3-4 Serving">3-4 Serving</option> */}
                                 </select>
                                 <p className='text-[12px] my-1'>
                                     Similar sized dishes are usually 1-2 servings.
