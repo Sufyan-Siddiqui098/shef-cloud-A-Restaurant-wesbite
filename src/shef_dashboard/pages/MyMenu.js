@@ -26,9 +26,10 @@ export const MyMenu = () => {
         spice_level_id: "",
         tags: "",
         portion_size: "",
-        portion_base_serving: "",   // Added
-        portion_type_id: "",         // was 1
-        chef_earning_fee: 0,
+        // portion_base_serving: "",   // Added - no need
+        portion_type_id: "",         // --- base serving id
+        base_type_id: 1,             // Container/Pieces/Other 1,2,3 respectively
+        chef_earning_fee: "",         // value was ==0
         platform_price: 0,
         delivery_price: 0,
         description: "",            //--- Screen 2
