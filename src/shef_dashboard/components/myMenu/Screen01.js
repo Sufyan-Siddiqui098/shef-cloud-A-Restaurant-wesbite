@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import ServingSizeModal from './ServingSizeModal';
-import { handleGetFoodType, handleGetSpiceLevel } from '../../../services/shef';
+import { handleGetFoodType, handleGetSpiceLevel, handleGetTags } from '../../../services/shef';
 import { useSelector } from 'react-redux';
 
 const DetailStep = ({
     name, 
     food_type_id, 
     side_item, 
+    spice_level_id,
     tags, 
+    base_type_id,
     portion_size, 
-    portion_base_serving, 
     portion_type_id, 
     chef_earning_fee,
     platform_price,
@@ -18,14 +19,15 @@ const DetailStep = ({
     updateFields}) => {
     // Dish cuisine tags Start
     const [cusineSelectedOptions, setcusineSelectedOptions] = useState([]);
-    const options = [
-        { value: 'Mexican', label: 'Mexican' },
-        { value: 'North Macedonian', label: 'North Macedonian' },
-        { value: 'Swedish', label: 'Swedish' },
-        { value: 'American', label: 'American' },
-        { value: 'Persion', label: 'Persion' },
-        // Add more options as needed
-    ];
+    // const options = [
+    //     { value: 'Mexican', label: 'Mexican' },
+    //     { value: 'North Macedonian', label: 'North Macedonian' },
+    //     { value: 'Swedish', label: 'Swedish' },
+    //     { value: 'American', label: 'American' },
+    //     { value: 'Persion', label: 'Persion' },
+    //     // Add more options as needed
+    // ];
+    const [tagOptions, setTagOptions] = useState([]);
     
     const handleCusineSelectChange = (selectedValues) => {
         let tags_string = "";
@@ -59,8 +61,10 @@ const DetailStep = ({
     const [ foodType, setFoodType ] = useState([]);
     const { authToken } = useSelector((state)=>state.user)
     
+    // Get Food_type, Tags and Spice_leve (API)
     useEffect(()=>{
         (async()=>{
+            // Food type api
             try {
                 const foodTypeResponse = await handleGetFoodType(authToken);
                 setFoodType(foodTypeResponse);
@@ -68,7 +72,7 @@ const DetailStep = ({
             } catch (error) {
                 console.log("Error While Fetching Food-type level \n", error)
             }
-
+            // spice leve api
             try {
                 const spiceResponse = await handleGetSpiceLevel(authToken)
                 // const arr = response.map((el)=> ({...el, name: el.name.charAt(0).toUpperCase() + el.name.slice(1)}))
@@ -77,13 +81,32 @@ const DetailStep = ({
             } catch (error) {
                 console.log("Error While Fetching Spice level \n", error)
             }
+            // Tag api
+            try { 
+                const tagResponse = await handleGetTags(authToken);
+                // Formation == {id, name, label} -- where reponse is {id,}
+                const formatedTags = tagResponse.map((tag) => {return{id: tag.id, value: tag.name, label: tag.name}})
+                // console.log("tag response ", formatedTags)
+                setTagOptions(formatedTags)
+            } catch (error) {
+                console.log("Error While Fetching tags \n", error)
+            }
         })()
     }, [authToken])
 
+    // Tags from Chef Menu
     useEffect(()=>{
-        console.log("tags are ", tags)
-        console.log(tags.split(", "))
-    }, [tags])
+        if(tags.length>0){
+            const temp = tagOptions.filter((item) => tags.split(", ").some((elem) => elem === item.value));
+            setcusineSelectedOptions(temp)
+        }
+    }, [])
+
+    // handle spice level id chage
+    const handleSpiceLevelChange = (e) => {
+        const value = parseInt(e.target.value, 10);
+        updateFields({ spice_level_id: isNaN(value) ? "" : value })
+    }
 
     return (
         <div>
@@ -158,8 +181,8 @@ const DetailStep = ({
                     <div className=''>
                         <h3 className='text-lg font-semibold mb-1 leading-tight'>Spice options</h3>
                         <p className='text-[12px]'>Choose whether the spice level can be customized for this dish.</p>
-                        <select id="selectOption" onChange={(e)=> updateFields({ spice_level_id: e.target.value }) } >
-                            <option selected disabled >--- Select Spice Option ---</option>
+                        <select id="selectOption" value={spice_level_id} onChange={handleSpiceLevelChange} >
+                            <option value="" >--- Select Spice Option ---</option>
                             {/* <option value="option1">Yes, spice level can be customized</option>
                             <option value="option2">No, spice level cannot be customized</option> */}
                             {spiceLevel.map((option)=>(
@@ -176,7 +199,7 @@ const DetailStep = ({
                         </p>
                         <Select
                             isMulti
-                            options={options}
+                            options={tagOptions}
                             value={cusineSelectedOptions}
                             onChange={handleCusineSelectChange}
                             placeholder="+ Add geographical cuisine tags"
@@ -241,8 +264,8 @@ const DetailStep = ({
                         </div>
                         <div>
                             <ServingSizeModal 
+                                base_type_id= {base_type_id}
                                 portion_type_id={portion_type_id} 
-                                portion_base_serving={portion_base_serving}
                                 portion_size={portion_size}
                                 delivery_price={delivery_price}
                                 platform_price={platform_price}
