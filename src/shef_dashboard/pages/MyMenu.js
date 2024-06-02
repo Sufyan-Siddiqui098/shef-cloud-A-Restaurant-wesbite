@@ -50,7 +50,7 @@ export const MyMenu = () => {
         ingredients: [],            //--- Screen 4
         //Screen 5 - will be added soon
         logo: "",                   //--- Screen 6 
-        is_live: 1,
+        // is_live: 1,
     }
 
     const [chefMenu, setChefMenu] = useState(chefMenuInitialState)
