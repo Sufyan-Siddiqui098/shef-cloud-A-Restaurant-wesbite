@@ -83,7 +83,8 @@ const DescScreen = ({
                         <input 
                             type='number' className='w-1/2'
                             value={(item_limit==="0" || item_limit===0) ? "": item_limit} 
-                            onChange={(e)=>{const value = parseInt(e.target.value, 10);
+                            onChange={(e)=>{
+                                        const value = parseInt(e.target.value, 10);
                                         updateFields({item_limit: isNaN(value) ? "" : value})
                                     }} 
                             placeholder="1 / 100" 
