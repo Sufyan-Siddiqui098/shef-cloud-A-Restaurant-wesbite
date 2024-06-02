@@ -84,6 +84,20 @@ export const hanldeGetPlatformRate = async (token) => {
   }
 };
 
+export const handleGetTags = async (token) => {
+  try {
+    const { data } = await api.get("/api/tags", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw new Error(
+      error.message || "Something is wrong while fetching tags"
+    );
+  }
+}
+
 // Create Menu
 export const handleCreateMenu = async (token, payload) => {
   try {
@@ -98,3 +112,19 @@ export const handleCreateMenu = async (token, payload) => {
     );
   }
 };
+
+
+// Get All Dishes
+export const handleGetAllDishes = async (token) => {
+  try {
+    const { data } = await api.get("/api/menu", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw new Error(
+      error.message || "Something is wrong while Fetching Dishes"
+    );
+  }
+}
