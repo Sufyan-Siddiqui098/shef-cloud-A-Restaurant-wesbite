@@ -1,9 +1,10 @@
 import React from 'react';
 import Modal from 'react-modal';
-const MenuStepFormModal = ({ isOpen, onClose, steps, currentStep, setCurrentStep, onNext, onBack }) => {
+const MenuStepFormModal = ({ isOpen, onClose, steps, currentStep, setCurrentStep, onNext, onBack, onSubmit }) => {
   if (!isOpen) {
     return null;
   }
+
 
   return (
     <div className="modal">
@@ -56,7 +57,10 @@ const MenuStepFormModal = ({ isOpen, onClose, steps, currentStep, setCurrentStep
               )}
 
               {currentStep === steps.length - 1 && (
-                <button className='text-lg font-bold bg-primaryDark px-[22px] py-[6px] uppercase text-white rounded-[6px]' onClick={onClose}>Finish</button>
+                <button 
+                className='text-lg font-bold bg-primaryDark px-[22px] py-[6px] uppercase text-white rounded-[6px]' 
+                onClick={onSubmit} // onSubmit will be handles
+                >Finish</button>
               )}
             </div>
           </div>
