@@ -34,7 +34,7 @@ const IngredientsScreen = ({ ingredients, updateFields }) => {
 
     // Hanlde Selected if available in CHef Menu
     useEffect(() => {
-      if (ingredients.length > 0 && options.length > 0) {
+      if ((ingredients && ingredients.length > 0) && options.length > 0) {
         const ingredientsArray = options.filter((item) =>
           ingredients.some((id) => id === item.id)
         );
