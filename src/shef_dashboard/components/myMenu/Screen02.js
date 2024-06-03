@@ -181,7 +181,7 @@ const DescScreen = ({
                             Use this feature if you want to limit this item's availability on a specific calendar date or date range.
                         </p>
                         <div>
-                            <select value={limit_item_availibility} onChange={OnItemAvailabilityChange} id="selectOption">
+                            <select value={limit_item_availibility===null ? "": limit_item_availibility} onChange={OnItemAvailabilityChange} id="selectOption">
                                 <option value="">No Limit</option>
                                 <option value="Available On">Available On</option>
                                 <option value="Unvailable On">Unvailable On</option>
@@ -196,7 +196,7 @@ const DescScreen = ({
                                     Date item will become available
                                 </p>
                                 <input 
-                                    disabled={limit_item_availibility.length<1} 
+                                    disabled={ !limit_item_availibility || limit_item_availibility.length<1} 
                                     onChange={(e)=> updateFields({ limit_start: e.target.value }) } 
                                     value={limit_start}
                                     type='date' 
@@ -209,7 +209,7 @@ const DescScreen = ({
                                     Date item will stop being available again
                                 </p>
                                 <input 
-                                    disabled={limit_item_availibility.length<1} 
+                                    disabled={ !limit_item_availibility || limit_item_availibility.length<1 } 
                                     onChange={(e)=> updateFields({ limit_end: e.target.value }) } 
                                     value={limit_end}
                                     type='date' 
