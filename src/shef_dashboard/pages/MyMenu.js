@@ -133,16 +133,11 @@ export const MyMenu = () => {
             } 
             // handle create menu api
             else{
-                console.log("calling create menu with payload ", chefMenu)
                 const response =await handleCreateMenu(authToken, chefMenu);
-                if(response.name && typeof response.name === 'string'){
-                    toast.success(response.message)
-                    setDishes((prevDish) => [...prevDish, response.form]);
-                } else {
-                    const errMessage = response.form[Object.keys(response.form)[0]][0];
-                    throw new Error(errMessage)
-                }
-                console.log("create-menu is called response = ", response);
+                toast.success(response.message);
+                // refetch all dishes
+                const updateDishes = await handleGetAllDishes(authToken);
+                setDishes(updateDishes);
             }
             closeStepFormModal();
         } catch (error) {
