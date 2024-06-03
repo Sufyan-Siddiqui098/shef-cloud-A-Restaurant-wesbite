@@ -102,13 +102,20 @@ export const handleGetTags = async (token) => {
 export const handleCreateMenu = async (token, payload) => {
   try {
     const { data } = await api.post("/api/menu", payload, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 
+        Authorization: `Bearer ${token}` ,
+        'Content-Type': 'multipart/form-data'
+      },
     });
     return data;
   } catch (error) {
-    console.log(error);
+    console.log("Error while create menu ", error);
+    let err;
+    if(error.response){
+      err = error.response.data.errors[Object.keys(error.response.data.errors)[0]][0]
+    }
     throw new Error(
-      error.message || "Something is wrong while Creating Menu"
+      err || error.message
     );
   }
 };
