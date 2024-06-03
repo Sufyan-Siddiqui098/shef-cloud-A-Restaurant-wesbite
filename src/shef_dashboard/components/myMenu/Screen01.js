@@ -96,11 +96,11 @@ const DetailStep = ({
 
     // Tags from Chef Menu
     useEffect(()=>{
-        if(tags.length>0){
+        if(tags && tags.length>0){
             const temp = tagOptions.filter((item) => tags.split(", ").some((elem) => elem === item.value));
             setcusineSelectedOptions(temp)
         }
-    }, [])
+    }, [tagOptions])
 
     // handle spice level id chage
     const handleSpiceLevelChange = (e) => {
