@@ -20,7 +20,12 @@ const IngredientsScreen = ({updateFields, logo}) => {
     
     // Getting image from Chef-Menu
     useEffect(()=> {
-        if(logo){
+        // if logo is url
+        if(logo && typeof logo ==='string'){
+            setSelectedImage(logo)
+        } 
+        // if logo is file
+        else if(logo) {
             const reader = new FileReader();
             reader.onload = () => {
                 // Set the selected image in state
