@@ -120,6 +120,28 @@ export const handleCreateMenu = async (token, payload) => {
   }
 };
 
+// Update Menu
+export const handleUpdateMenu = async (id, token, payload) => {
+  try {
+    const { data } = await api.put(`/api/menu/${id}`, payload, {
+      headers: { 
+        Authorization: `Bearer ${token}` ,
+      },
+    });
+    return data;
+  } catch (error) {
+    console.log("Error while update menu ", error);
+    let err;
+    if(error.response && error.response.data.errors){
+      err = error.response.data?.errors[Object.keys(error.response.data.errors)[0]][0]; 
+    } else if(error.response){
+      err =   error.response.data.error;
+    }
+    throw new Error(
+      err || error.message
+    );
+  }
+}
 
 // Get All Dishes
 export const handleGetAllDishes = async (token) => {
