@@ -9,7 +9,7 @@ import Screen05 from '../components/myMenu/Screen05'
 import Screen06 from '../components/myMenu/Screen06'
 import { toast } from 'react-toastify'
 import { useSelector } from 'react-redux'
-import { handleCreateMenu, handleGetAllDishes } from '../../services/shef'
+import { handleCreateMenu, handleGetAllDishes, handleUpdateMenu } from '../../services/shef'
 
 
 // const PriceStep = () => <div>Step 3 content</div>;
@@ -26,7 +26,6 @@ export const MyMenu = () => {
         spice_level_id: "",
         tags: "",
         portion_size: "",
-        // portion_base_serving: "",   // Added - no need
         portion_type_id: "",         // --- base serving id
         base_type_id: 1,             // Container/Pieces/Other 1,2,3 respectively
         chef_earning_fee: "",         // value was ==0
@@ -113,32 +112,39 @@ export const MyMenu = () => {
 
     // Handle Update -- TODO 
     const [isUpdateDish, setIsUpdateDish] = useState(false);
-    // const openStepFormModalToUpdate = (dish) => {
-    //     setIsUpdateDish(true)
-    //     setStepFormModalOpen(true);
-    //     // setChefMenu(dish)
-    // }
+    const openStepFormModalToUpdate = (dish) => {
+        setIsUpdateDish(true)
+        setStepFormModalOpen(true);
+        setChefMenu(dish)
+        // To get just ID of ingredients in array
+        const ingredientsId = dish.ingredients.map((obj) => obj.ingredient_id);
+        updateFields({ ingredients: ingredientsId })
+    }
 
     // Create Menu API Handle start
     const [isPending, setIsPending] = useState(false)
 
+    // console.log("ChefMenu ", chefMenu);
     const onSubmit = async(e) =>{
         try {
             setIsPending(true)
             if(isUpdateDish){
                 // Handle update api
                 console.log("Update-menu is called")
+                const updateMenu = await handleUpdateMenu(chefMenu.id, authToken, chefMenu);
                 // --- When req is successfull
+                toast.success(updateMenu.message);
                 setIsUpdateDish(false);
             } 
             // handle create menu api
             else{
+                console.log("create menu is called ")
                 const response =await handleCreateMenu(authToken, chefMenu);
                 toast.success(response.message);
-                // refetch all dishes
-                const updateDishes = await handleGetAllDishes(authToken);
-                setDishes(updateDishes);
             }
+            // refetch all dishes
+            const updateDishes = await handleGetAllDishes(authToken);
+            setDishes(updateDishes);
             closeStepFormModal();
         } catch (error) {
             toast.error(error.message || "Something went wrong")
@@ -226,8 +232,7 @@ export const MyMenu = () => {
                                                 </td>
                                                 <td data-title="Action">
                                                     <div className='flex items-center gap-3'>
-                                                        {/* onClick={(dish) => openStepFormModalToUpdate(dish)}  */}
-                                                        <div  className='hover:scale-110 focus:scale-110 editDish cursor-pointer'>
+                                                        <div onClick={ () => openStepFormModalToUpdate(dish) }  className='hover:scale-110 focus:scale-110 editDish cursor-pointer'>
                                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="rgba(0,0,0,1)">
                                                                 <path d="M15.7279 9.57627L14.3137 8.16206L5 17.4758V18.89H6.41421L15.7279 9.57627ZM17.1421 8.16206L18.5563 6.74785L17.1421 5.33363L15.7279 6.74785L17.1421 8.16206ZM7.24264 20.89H3V16.6473L16.435 3.21231C16.8256 2.82179 17.4587 2.82179 17.8492 3.21231L20.6777 6.04074C21.0682 6.43126 21.0682 7.06443 20.6777 7.45495L7.24264 20.89Z"></path>
                                                             </svg>
