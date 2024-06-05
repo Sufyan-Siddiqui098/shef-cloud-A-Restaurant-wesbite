@@ -126,6 +126,7 @@ export const handleUpdateMenu = async (id, token, payload) => {
     const { data } = await api.put(`/api/menu/${id}`, payload, {
       headers: { 
         Authorization: `Bearer ${token}` ,
+        'Content-Type': 'multipart/form-data'
       },
     });
     return data;
