@@ -123,7 +123,8 @@ export const handleCreateMenu = async (token, payload) => {
 // Update Menu
 export const handleUpdateMenu = async (id, token, payload) => {
   try {
-    const { data } = await api.put(`/api/menu/${id}`, payload, {
+    payload._method = "PUT";
+    const { data } = await api.post(`/api/menu/${id}`, payload, {
       headers: { 
         Authorization: `Bearer ${token}` ,
         'Content-Type': 'multipart/form-data'
