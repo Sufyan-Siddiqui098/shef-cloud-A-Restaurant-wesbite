@@ -140,7 +140,7 @@ const handleButtonClick = (buttonId) => {
                             <div>
                                 <div className='flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg'>
                                     <img src='./media/frontend/img/banner/female-chef.png' className='object-top rounded-full w-[30px] object-cover h-[30px]' alt='ef' />
-                                    <Link className='!underline !text-secondary text-base font-semibold'> Shef Swarnamali</Link>
+                                    <Link to="/shef-detail" className='!underline !text-secondary text-base font-semibold'> Shef Swarnamali</Link>
                                 </div>
                                 {/* Order Box */}
                                 <div className='flex items-center justify-between border border-primary border-dashed rounded-lg p-2 gap-x-2 mt-4'>
