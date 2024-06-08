@@ -12,19 +12,19 @@ export const DishDetailSingle = () => {
     // Description Tabs End
 
     // Plus Minus Quantity Start
-    const [minutes, setMinutes] = useState(0);
+    const [quantity, setQuantity] = useState(0);
 
     const handleIncrement = () => {
-        setMinutes((prevMinutes) => prevMinutes + 1);
+        setQuantity((prevQuantity) => prevQuantity + 1);
     };
 
     const handleDecrement = () => {
-        setMinutes((prevMinutes) => (prevMinutes > 0 ? prevMinutes - 1 : 0));
+        setQuantity((prevQuantity) => (prevQuantity > 0 ? prevQuantity - 1 : 0));
     };
 
     const handleInputChange = (e) => {
         const value = parseInt(e.target.value, 10);
-        setMinutes(isNaN(value) ? 0 : value);
+        setQuantity(isNaN(value) ? 0 : value);
     };
     // Plus Minus Quantity End
     return (
@@ -315,7 +315,7 @@ export const DishDetailSingle = () => {
                                             <div className='flex items-center w-[50%]'>
                                                 <input className='text-center border-0 bg-transparent text-base px-1 focus:border-0'
                                                     placeholder='1'
-                                                    value={minutes}
+                                                    value={quantity}
                                                     onChange={handleInputChange}
                                                 />
                                             </div>
