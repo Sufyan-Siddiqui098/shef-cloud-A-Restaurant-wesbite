@@ -51,7 +51,7 @@ const PopularCollection = () => {
                                     <div className="ex-collection-box h-full relative rounded-lg overflow-hidden">
                                         <img src="./media/frontend/img/about/blog/740x442/blog-1.jpg" className="img-fluid full-width h-full object-cover" alt="Dish"/>
                                         <div className="absolute bottom-4 px-4 z-1 w-full"> 
-                                            <Link className="text-center rounded-md py-2 px-6 text-base tracking-wider uppercase font-semibold whitespace-nowrap bg-primary !text-white border border-transparent hover:border-primaryGreen hover:!text-green-400 w-full block">See All</Link>
+                                            <Link to="/all-dish-detail" className="text-center rounded-md py-2 px-6 text-base tracking-wider uppercase font-semibold whitespace-nowrap bg-primary !text-white border border-transparent hover:border-primaryGreen hover:!text-green-400 w-full block">See All</Link>
                                         </div>
                                     </div>
                                 </div>
