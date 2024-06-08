@@ -325,7 +325,7 @@ export const DishDetailSingle = () => {
                                         </div>
                                     </div>
                                     <div className='md:col-span-7 col-span-6'>
-                                        <button className='text-lg font-bold bg-primary w-full h-full uppercase text-white rounded-[6px]'>Add to Cart</button>
+                                        <button disabled={quantity===0} className='text-lg font-bold bg-primary w-full h-full uppercase text-white rounded-[6px] disabled:opacity-60'>Add to Cart</button>
                                     </div>
 
                                 </div>
