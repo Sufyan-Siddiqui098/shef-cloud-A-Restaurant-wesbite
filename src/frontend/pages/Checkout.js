@@ -1,11 +1,129 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { Link } from 'react-router-dom'
+import { handleCreateOrder } from '../../services/order';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 export const Checkout = () => {
 const [activeButton, setActiveButton] = useState(null);
-const handleButtonClick = (buttonId) => {
+const handleButtonClick = (buttonId, percent) => {
     setActiveButton(buttonId);
+    //Calculate and update tip_price
+    calculateTip(percent)
 };
+const [order, setOrder] = useState({
+    chef_id: 1,
+    chef_availability_id: 1,
+    delivery_time: "", //date and Time
+    name: "Hammad",
+    email: "hammad@mail.com",
+    phone: "+923412436079",
+    status: 1,
+    payment_mode: 1,
+    delivery_notes: "delivery notes", 
+    sub_total:  100,
+    delivery_percentage: 10,
+    delivery_price: 10,
+    service_fee: 10,
+    discount_promo_id: 1,
+    discount_price: 0,
+    tip_price: 5,
+    chef_earning_price : 20,
+    total_price: 120,
+    
+})
+const [orderDetails, setOrderDetails] = useState([
+    {
+        name: "Guajillo ", // user menu name
+        user_menu_id: 1,
+        unit_price: 100,
+        quantity: 1,
+        platform_percentage: 10,
+        platform_price: 10,
+        delivery_percentage: 10,
+        delivery_price: 10,
+        chef_price: 20,    
+    }
+])
+
+const [orderDeliveryAddress, setOrderDeliveryAddress] = useState({
+        address: "Street 1",
+        line2: "House 1",
+        latitude: "12.123456",
+        longitude: "12.123456",
+        name: "Hammad",
+        phone: "+923412436079",
+        postal_code: "12345",
+        city: "Lahore",
+        state: "Punjab",
+        delivery_instruction: "Carefully",
+        delivery_notes: "delivery notes"
+})
+
+// Calculate and update tip_price
+const calculateTip = (percent) => {
+    const tip_amount = parseFloat((order.sub_total * (percent/100)).toFixed(2));
+    updateOrder({ tip_price: tip_amount });
+}
+
+// Update Fields States - (Order, OrderDeliveryAddress, OrderDetail)
+const updateOrder = (field) => {
+    setOrder(prev=>{
+        return {...prev, ...field}
+    })
+}
+const updateOrderDeliveryAddress = (field) => {
+    setOrderDeliveryAddress(prev => {
+        return {...prev, ...field}
+    })
+}
+const updateOrderDetail = (field) => {
+    setOrderDetails(prev => {
+        return {...prev, field}
+    })
+}
+
+// longitude & latitude 
+useEffect(()=>{
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const { latitude, longitude } = position.coords;
+        //   console.log("latitude ", latitude, " Longitude ", longitude)
+          updateOrderDeliveryAddress({ latitude: latitude, longitude: longitude })
+        }, (error) => {
+          console.error('Error getting location:', error.message);
+        });
+      } else {
+        console.warn('Geolocation is not supported by this browser.');
+      }
+      
+},[]) 
+
+// ---- On submit 
+const [isPending, setIsPending] = useState(false);
+const {authToken} = useSelector((state)=>state.user)
+
+const onSubmit = async(e) => {
+    try {
+        setIsPending(true);
+        const payload = order;
+        payload.orderDeliveryAddress = orderDeliveryAddress;
+        payload.orderDetails = orderDetails;
+        // console.log("Pyalod is ", payload);
+        const response = await handleCreateOrder(authToken, payload);
+        console.log("response ", response);
+    } catch (error) {
+        console.error("Error on Placing order ", error)
+        toast.error(error.message, { theme: 'colored' } )
+    } finally {
+        setIsPending(false);
+    }
+}
+
+// console.log("order ", order)
+// console.log("orderDeliveryAddress ", orderDeliveryAddress)
+// console.log("orderDetails ", orderDetails)
+
     return (
         <>
            
@@ -33,25 +151,103 @@ const handleButtonClick = (buttonId) => {
                                 </h2>
                                 <div className='border-b border-primary border-dashed pb-5 mb-4'>
                                     <h4 className='text-base font-semibold mb-1'>Phone <span className='text-primary'>*</span></h4>
-                                    <input className='border rounded-md w-1/2' name='' placeholder='Enter Phone' />
+                                    <input 
+                                        className='border rounded-md w-1/2' 
+                                        name='' 
+                                        value={order.phone}
+                                        onChange={(e)=>{
+                                            updateOrder({ phone: e.target.value });
+                                            updateOrderDeliveryAddress({ phone: e.target.value })
+                                        }}
+                                        placeholder='Enter Phone' 
+                                    />
                                 </div>
                                 <div className='border-b border-primary border-dashed pb-5 mb-4'>
                                     <h4 className='text-base font-semibold mb-1'>Name <span className='text-primary'>*</span></h4>
-                                    <input className='border rounded-md w-full' name='' placeholder='Enter Phone' />
+                                    <input 
+                                        className='border rounded-md w-full' 
+                                        name='' 
+                                        value={order.name}
+                                        onChange={(e) => {
+                                            updateOrder({ name: e.target.value })
+                                            updateOrderDeliveryAddress({ name: e.target.value })
+                                        }}
+                                        placeholder='Enter Name' 
+                                    />
                                 </div>
                                 <div className='border-b border-primary border-dashed pb-5 mb-4'>
                                     <h4 className='text-base font-semibold mb-1'>Address <span className='text-primary'>*</span></h4>
-                                    <input className='border rounded-md w-full' name='' placeholder='Apartment, suite, unit, building, floor, etc.' />
+                                    <input 
+                                        className='border rounded-md w-full' 
+                                        name='' 
+                                        value={orderDeliveryAddress.address}
+                                        onChange={(e)=> updateOrderDeliveryAddress({ address: e.target.value })}
+                                        placeholder='Apartment, suite, unit, building, floor, etc.' 
+                                    />
                                     <h4 className='text-base font-semibold mb-1 mt-3'>Address Line 2 <span className='text-primary'>*</span></h4>
-                                    <input className='border rounded-md w-full' name='' placeholder="Apartment, suite, unit, building, floor, etc." />
+                                    <input 
+                                        className='border rounded-md w-full' 
+                                        name='' 
+                                        value={orderDeliveryAddress.line2}
+                                        onChange={(e)=> updateOrderDeliveryAddress({ line2: e.target.value })}
+                                        placeholder="Apartment, suite, unit, building, floor, etc." 
+                                    />
+                                    <h4 className='text-base font-semibold mb-1 mt-3'>City <span className='text-primary'>*</span></h4>
+                                    <input 
+                                        className='border rounded-md w-full' 
+                                        name='' 
+                                        value={orderDeliveryAddress.city}
+                                        onChange={(e)=> updateOrderDeliveryAddress({ city: e.target.value })}
+                                        placeholder="City" 
+                                    />
+                                    <h4 className='text-base font-semibold mb-1 mt-3'>Postal Code <span className='text-primary'>*</span></h4>
+                                    <input 
+                                        className='border rounded-md w-full' 
+                                        name='' 
+                                        value={orderDeliveryAddress.postal_code}
+                                        onChange={(e)=> updateOrderDeliveryAddress({ postal_code: e.target.value })}
+                                        placeholder="Postal Code" 
+                                    />
+                                    <h4 className='text-base font-semibold mb-1 mt-3'>State <span className='text-primary'>*</span></h4>
+                                    <input 
+                                        className='border rounded-md w-full' 
+                                        name='' 
+                                        value={orderDeliveryAddress.state}
+                                        onChange={(e)=> updateOrderDeliveryAddress({ state: e.target.value })}
+                                        placeholder="State" 
+                                    />
                                 </div>
                                 <div className='border-b border-primary border-dashed pb-5 mb-4'>
                                     <h4 className='text-base font-semibold mb-1'>Delivery Instruction <span className='text-primary'>*</span></h4>
-                                    <textarea className='border rounded-md w-full h-[100px]' placeholder='Type Query...'></textarea>
+                                    <textarea 
+                                        className='border rounded-md w-full h-[100px]' 
+                                        value={orderDeliveryAddress.delivery_instruction}
+                                        onChange={(e)=> updateOrderDeliveryAddress({ delivery_instruction: e.target.value })}
+                                        placeholder='Type Query...'
+                                    ></textarea>
+                                </div>
+                                <div className='border-b border-primary border-dashed pb-5 mb-4'>
+                                    <h4 className='text-base font-semibold mb-1'>Delivery Notes <span className='text-primary'>*</span></h4>
+                                    <textarea 
+                                        className='border rounded-md w-full h-[100px]' 
+                                        value={order.delivery_notes}
+                                        onChange={(e)=> {
+                                            updateOrderDeliveryAddress({ delivery_notes: e.target.value });
+                                            updateOrder({ delivery_notes: e.target.value })
+                                        }}
+                                        placeholder='Delivery Notes '
+                                    ></textarea>
                                 </div>
                                 <div className='border-b border-primary border-dashed pb-5 mb-4'>
                                     <h4 className='text-base font-semibold mb-1'>Delivery time <span className='text-primary'>*</span></h4>
-                                    <input className='border rounded-md w-full' name='' placeholder="" value='Monday Feb 12, 4:00 pm - 6:00 pm' readOnly />
+                                    <input 
+                                        className='border rounded-md w-full' 
+                                        type='datetime-local' 
+                                        name='' 
+                                        value={order.delivery_time} 
+                                        onChange={(e)=> updateOrder({ delivery_time: e.target.value })}
+                                        placeholder="" 
+                                    />
                                 </div>
                                 <div className='border-b border-primary border-dashed pb-5 mb-4'>
                                     <h4 className='text-base font-semibold mb-1'>Promo code or Gift card <span className='text-primary'>*</span></h4>
@@ -66,32 +262,33 @@ const handleButtonClick = (buttonId) => {
                                             Tip Shef Carla:
                                         </h2>
                                         <h2 className='font-semibold text-2xl uppercase text-primary tracking-widest'>
-                                            $5.99
+                                            {/* $5.99 */}
+                                            {order.tip_price.toLocaleString('en-US',{ style: "currency", currency: "USD" })}
                                         </h2>
                                     </div>
                                     <div className='grid lg:grid-cols-8 md:grid-cols-8 grid-cols-4 gap-3 mb-4'>
                                         <div className={`chefDateBtn ${activeButton === 'btn1' ? 'active' : ''}`}
-                                            onClick={() => handleButtonClick('btn1')}
+                                            onClick={() => handleButtonClick('btn1', 0)}
                                         >
                                             <h4 className='text-[14px] font-semibold mb-0 leading-tight'>No Tip</h4>
                                         </div>
                                         <div className={`chefDateBtn ${activeButton === 'btn2' ? 'active' : ''}`}
-                                            onClick={() => handleButtonClick('btn2')}
+                                            onClick={() => handleButtonClick('btn2', 10)}
                                         >
                                             <h4 className='text-[14px] font-semibold mb-0 leading-tight'>10%</h4>
                                         </div>
                                         <div className={`chefDateBtn ${activeButton === 'btn3' ? 'active' : ''}`}
-                                            onClick={() => handleButtonClick('btn3')}
+                                            onClick={() => handleButtonClick('btn3', 15)}
                                         >
                                             <h4 className='text-[14px] font-semibold mb-0 leading-tight'>15%</h4>
                                         </div>
                                         <div className={`chefDateBtn ${activeButton === 'btn4' ? 'active' : ''}`}
-                                            onClick={() => handleButtonClick('btn4')}
+                                            onClick={() => handleButtonClick('btn4', 20)}
                                         >
                                             <h4 className='text-[14px] font-semibold mb-0 leading-tight'>20%</h4>
                                         </div>
                                         <div className={`chefDateBtn ${activeButton === 'btn5' ? 'active' : ''}`}
-                                            onClick={() => handleButtonClick('btn5')}
+                                            onClick={() => handleButtonClick('btn5', 25)}
                                         >
                                         <h4 className='text-[14px] font-semibold mb-0 leading-tight'>25%</h4>
                                         </div>
@@ -130,7 +327,12 @@ const handleButtonClick = (buttonId) => {
                                 {/* BANK API */}
                             </div>
                             <div className='mt-4 text-center'>
-                                <button type='button' className='bg-primary text-white text-lg w-full uppercase px-6 py-2 font-semibold rounded-lg'>Place Order</button>
+                                <button 
+                                    disabled={isPending}
+                                    onClick={onSubmit} type='button' 
+                                    className='bg-primary text-white text-lg w-full uppercase px-6 py-2 font-semibold rounded-lg disabled:opacity-60'>
+                                        Place Order
+                                </button>
                             </div>
                         </form>
                     </div>
