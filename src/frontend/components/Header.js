@@ -30,7 +30,6 @@ const Header = () => {
     const { cartItem } = useSelector((state) => state.cart);
     const subTotal = cartItem.reduce((acc, item) => acc + (item.unit_price || 0) * item.quantity, 0);
     console.log("Subt total ", subTotal)
-    // console.log(cartItem.reduce((acc, item) => acc + (item.unit_price || 0), 0))
 
     return (
         <>
@@ -314,13 +313,15 @@ const Header = () => {
                                                                     <div className="delete-btn">
                                                                         {/* <NavLink className="text-dark-white"> <i className="far fa-trash-alt"></i>
                                                                         </NavLink> */}
-                                                                        <button onClick={() => dispatch(removeFromCart(index)) } className="text-dark-white"> 
+                                                                        <button 
+                                                                            onClick={() => dispatch(removeFromCart(index)) } className="text-dark-white"
+                                                                        > 
                                                                             <FontAwesomeIcon icon={faTrashAlt} />
                                                                         </button>
                                                                     </div>
                                                                     <div className="price"> 
                                                                         <NavLink className="text-dark-white fw-500">
-                                                                        { (product.quantity * (product.unit_price)).toLocaleString('en-US',{ style: "currency", currency: "USD" }) 
+                                                                        { (product.unit_price).toLocaleString('en-US',{ style: "currency", currency: "USD" }) 
                                                                         } 
                                                                         </NavLink>
                                                                     </div>
