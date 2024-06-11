@@ -59,7 +59,7 @@ function App() {
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/order-summary" element={<OrderSummary />} />
       <Route path="/all-dish-detail" element={<AllDishDetail />} />
-      <Route path="/dish-detail-single" element={<DishDetailSingle />} />
+      <Route path="/dish-detail-single/:dishId?" element={<DishDetailSingle />} />
       <Route path="/terms-of-servies" element={<TermsOfServices />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/homemade-food-delivery" element={<HomeFoodDelivery />} />
