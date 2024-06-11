@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import { Link } from 'react-router-dom'
 import { handleCreateOrder } from '../../services/order';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { emptyCart, removeFromCart, updateCartItem } from '../../store/slice/cart';
 
 export const Checkout = () => {
 const [activeButton, setActiveButton] = useState(null);
@@ -11,54 +12,59 @@ const handleButtonClick = (buttonId, percent) => {
     //Calculate and update tip_price
     calculateTip(percent)
 };
-const [order, setOrder] = useState({
+
+//--- START - Initial values for States
+const orderInitial = {
     chef_id: 1,
     chef_availability_id: 1,
     delivery_time: "", //date and Time
-    name: "Hammad",
-    email: "hammad@mail.com",
-    phone: "+923412436079",
+    name: "",
+    email: "",
+    phone: "",
     status: 1,
     payment_mode: 1,
-    delivery_notes: "delivery notes", 
-    sub_total:  100,
-    delivery_percentage: 10,
-    delivery_price: 10,
-    service_fee: 10,
+    delivery_notes: "", 
+    sub_total:   0,
+    delivery_percentage: 0,
+    delivery_price: 0,
+    service_fee: 0,
     discount_promo_id: 1,
     discount_price: 0,
-    tip_price: 5,
-    chef_earning_price : 20,
-    total_price: 120,
-    
-})
-const [orderDetails, setOrderDetails] = useState([
+    tip_price: 0,
+    chef_earning_price : 0,
+    total_price: 0,
+}
+const orderDetailInitial = [ 
     {
-        name: "Guajillo ", // user menu name
+        name: "", // user menu name
         user_menu_id: 1,
-        unit_price: 100,
-        quantity: 1,
-        platform_percentage: 10,
-        platform_price: 10,
-        delivery_percentage: 10,
-        delivery_price: 10,
-        chef_price: 20,    
+        unit_price: 0,
+        quantity: 0,
+        platform_percentage: 0,
+        platform_price: 0,
+        delivery_percentage: 0,
+        delivery_price: 0,
+        chef_price: 0,    
     }
-])
+]
+const orderDeliveryAddressInitial = {
+    address: "",
+        line2: "",
+        latitude: "",
+        longitude: "",
+        name: "",
+        phone: "",
+        postal_code: "",
+        city: "",
+        state: "",
+        delivery_instruction: "",
+        delivery_notes: ""
+}
+//--- END - Initial Value for State
 
-const [orderDeliveryAddress, setOrderDeliveryAddress] = useState({
-        address: "Street 1",
-        line2: "House 1",
-        latitude: "12.123456",
-        longitude: "12.123456",
-        name: "Hammad",
-        phone: "+923412436079",
-        postal_code: "12345",
-        city: "Lahore",
-        state: "Punjab",
-        delivery_instruction: "Carefully",
-        delivery_notes: "delivery notes"
-})
+const [order, setOrder] = useState(orderInitial);
+const [orderDetails, setOrderDetails] = useState(orderDetailInitial)
+const [orderDeliveryAddress, setOrderDeliveryAddress] = useState(orderDeliveryAddressInitial)
 
 // Calculate and update tip_price
 const calculateTip = (percent) => {
@@ -77,11 +83,11 @@ const updateOrderDeliveryAddress = (field) => {
         return {...prev, ...field}
     })
 }
-const updateOrderDetail = (field) => {
-    setOrderDetails(prev => {
-        return {...prev, field}
-    })
-}
+// const updateOrderDetail = (field) => {
+//     setOrderDetails(prev => {
+//         return {...prev, field}
+//     })
+// }
 
 // longitude & latitude 
 useEffect(()=>{
@@ -99,6 +105,52 @@ useEffect(()=>{
       
 },[]) 
 
+// Cart Item from Redux
+const { cartItem } = useSelector((state) => state.cart)
+const dispatch = useDispatch();
+
+// increment/decrement Quantity - Update directly in redux-store
+const updateQuantityInStore = (index, quantity, operation) => {
+    let updatedQuantity ;
+    if(operation === "increment") {
+        updatedQuantity = quantity+1;
+    } else {
+        updatedQuantity = (quantity-1)>0 ? quantity-1 : 1;
+    }
+    // console.log("Update quantity ", updatedQuantity)
+    dispatch(updateCartItem({ productIndex: index, key: "quantity", value: updatedQuantity }))
+} 
+
+// Get values from Cart item and update the above states.
+useEffect(()=>{
+    const sub_total = cartItem.reduce((acc, item) => acc + (item.chef_earning_fee || 0) * item.quantity, 0);
+    const deliverPriceSum = cartItem.reduce((acc, item) => acc + (item.delivery_price || 0) * item.quantity, 0)
+    const platformPriceSum = cartItem.reduce((acc, item) => acc + (item.platform_price || 0) * item.quantity, 0);
+
+    const total = sub_total + order.tip_price + deliverPriceSum + platformPriceSum;
+    // Update - Order(state) 
+    updateOrder({ sub_total, delivery_price: deliverPriceSum, service_fee: platformPriceSum })
+    updateOrder({ total_price: total })
+    // extract each Dish's detail a/c to OrderDetails(state)
+    const ordersDetail = cartItem.map((item ) => {
+        return {
+            name: item.name, 
+            user_menu_id: item.id,
+            unit_price: item.unit_price,
+            quantity: item.quantity,
+            platform_percentage: item.platform_percentage || 0,
+            platform_price: item.platform_price,
+            delivery_percentage: item.delivery_percentage || 0,
+            delivery_price: item.delivery_price,
+            chef_price: item.chef_earning_fee
+        }
+    })
+    // Update - OrderDetail(state)
+    setOrderDetails(ordersDetail);
+
+    console.log("UseEffect for cart updation is running .. CartItem", cartItem)
+}, [cartItem, order.tip_price])
+
 // ---- On submit 
 const [isPending, setIsPending] = useState(false);
 const {authToken} = useSelector((state)=>state.user)
@@ -111,7 +163,14 @@ const onSubmit = async(e) => {
         payload.orderDetails = orderDetails;
         // console.log("Pyalod is ", payload);
         const response = await handleCreateOrder(authToken, payload);
-        console.log("response ", response);
+        // console.log("response ", response);
+        toast.success(response.success || "Order created Successfully", { theme: "colored" })
+        dispatch(emptyCart());
+        // Resetting
+        setOrder(orderInitial)
+        setOrderDetails(orderDetailInitial)
+        setOrderDeliveryAddress(orderDeliveryAddressInitial)
+
     } catch (error) {
         console.error("Error on Placing order ", error)
         toast.error(error.message, { theme: 'colored' } )
@@ -120,9 +179,6 @@ const onSubmit = async(e) => {
     }
 }
 
-// console.log("order ", order)
-// console.log("orderDeliveryAddress ", orderDeliveryAddress)
-// console.log("orderDetails ", orderDetails)
 
     return (
         <>
@@ -173,6 +229,18 @@ const onSubmit = async(e) => {
                                             updateOrderDeliveryAddress({ name: e.target.value })
                                         }}
                                         placeholder='Enter Name' 
+                                    />
+                                </div>
+                                <div className='border-b border-primary border-dashed pb-5 mb-4'>
+                                    <h4 className='text-base font-semibold mb-1'>Email <span className='text-primary'>*</span></h4>
+                                    <input 
+                                        className='border rounded-md w-full' 
+                                        name='' 
+                                        value={order.email}
+                                        onChange={(e) => {
+                                            updateOrder({ email: e.target.value })
+                                        }}
+                                        placeholder='Enter Email' 
                                     />
                                 </div>
                                 <div className='border-b border-primary border-dashed pb-5 mb-4'>
@@ -328,7 +396,7 @@ const onSubmit = async(e) => {
                             </div>
                             <div className='mt-4 text-center'>
                                 <button 
-                                    disabled={isPending}
+                                    disabled={isPending || cartItem.length<1}
                                     onClick={onSubmit} type='button' 
                                     className='bg-primary text-white text-lg w-full uppercase px-6 py-2 font-semibold rounded-lg disabled:opacity-60'>
                                         Place Order
@@ -345,7 +413,40 @@ const onSubmit = async(e) => {
                                     <Link to="/shef-detail" className='!underline !text-secondary text-base font-semibold'> Shef Swarnamali</Link>
                                 </div>
                                 {/* Order Box */}
-                                <div className='flex items-center justify-between border border-primary border-dashed rounded-lg p-2 gap-x-2 mt-4'>
+                                {cartItem.map((item, index) =>(<div key={index} className='flex items-center justify-between border border-primary border-dashed rounded-lg p-2 gap-x-2 mt-4'>
+                                    <div className='flex items-center gap-x-2 w-[65%]'>
+                                        <img src='./media/frontend/img/restaurants/255x104/order-2.jpg' className='object-top rounded-lg w-[60px] object-cover h-[60px]' alt='ef' />
+                                        <div>
+                                            <h3 className='mb-1 text-base font-semibold leading-tight'>{item.name} </h3>
+                                            <div className='flex items-center gap-x-3'>
+                                                <div className='flex items-center justify-between w-[55%] bg-primaryLight rounded-lg'>
+                                                    <button 
+                                                        onClick={()=>updateQuantityInStore(index, item.quantity, "decrement")} className='w-[25%]'
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className='mx-auto' viewBox="0 0 24 24" width="15" height="15" fill="rgba(0,0,0,1)"><path d="M5 11V13H19V11H5Z"></path></svg>
+                                                    </button>
+                                                    <input value={item.quantity} className='w-[50%] text-center border-0 bg-transparent text-xs px-1 h-[30px]' readOnly placeholder='1' />
+                                                    <button 
+                                                        onClick={()=>updateQuantityInStore(index, item.quantity, "increment")}
+                                                        className='w-[25%]'>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className='mx-auto' viewBox="0 0 24 24" width="15" height="15" fill="rgba(0,0,0,1)"><path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path></svg>
+                                                    </button>
+                                                </div>
+                                                <h4 className='text-lg fontsemibold mb-0'>
+                                                    x 
+                                                    {item.unit_price.toLocaleString('en-US',{ style: "currency", currency: "USD" })}
+                                                </h4>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    <div onClick={()=> dispatch(removeFromCart(index))} className='cursor-pointer'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="rgba(0,0,0,1)">
+                                            <path d="M17 6H22V8H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V8H2V6H7V3C7 2.44772 7.44772 2 8 2H16C16.5523 2 17 2.44772 17 3V6ZM18 8H6V20H18V8ZM9 11H11V17H9V11ZM13 11H15V17H13V11ZM9 4V6H15V4H9Z"></path>
+                                        </svg>
+                                    </div>
+                                </div>))}
+                                {/* {(<div className='flex items-center justify-between border border-primary border-dashed rounded-lg p-2 gap-x-2 mt-4'>
                                     <div className='flex items-center gap-x-2 w-[65%]'>
                                         <img src='./media/frontend/img/restaurants/255x104/order-2.jpg' className='object-top rounded-lg w-[60px] object-cover h-[60px]' alt='ef' />
                                         <div>
@@ -370,30 +471,43 @@ const onSubmit = async(e) => {
                                             <path d="M17 6H22V8H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V8H2V6H7V3C7 2.44772 7.44772 2 8 2H16C16.5523 2 17 2.44772 17 3V6ZM18 8H6V20H18V8ZM9 11H11V17H9V11ZM13 11H15V17H13V11ZM9 4V6H15V4H9Z"></path>
                                         </svg>
                                     </div>
-                                </div>
+                                </div>)} */}
                             </div>
                         </div>
                         <div className='d:p-4 p-3 bg-primaryLight rounded-lg mt-6'>
                             <h3 className='mb-6 border-b border-primary border-dashed pb-2 font-semibold text-xl uppercase text-secondary tracking-widest'>Order Summary</h3>
                             <div className='flex justify-between gap-2 mb-3'>
                                 <h3 className='text-lg font-bold mb-0'>Subtotal</h3>
-                                <h4 className='text-lg font-bold mb-0'>$44.97</h4>
+                                {/* <h4 className='text-lg font-bold mb-0'>$44.97</h4> */}
+                                <h4 className='text-lg font-bold mb-0'>
+                                    {order.sub_total.toLocaleString('en-US',{ style: "currency", currency: "USD" })}
+                                </h4>
                             </div>
                             <div className='flex justify-between gap-2 mb-1'>
                                 <h3 className='text-lg font-medium mb-0'>Delivery Fee</h3>
-                                <h4 className='text-lg font-medium mb-0'>$2.49</h4>
+                                {/* <h4 className='text-lg font-medium mb-0'>$2.49</h4> */}
+                                <h4 className='text-lg font-medium mb-0'>
+                                    {order.delivery_price.toLocaleString('en-US', { style: "currency", currency: "USD" })}
+                                </h4>
                             </div>
                             <div className='flex justify-between gap-2 mb-1'>
                                 <h3 className='text-lg font-medium mb-0'>Fees & Taxes</h3>
-                                <h4 className='text-lg font-medium mb-0'>$6.86</h4>
+                                {/* <h4 className='text-lg font-medium mb-0'>$6.86</h4> */}
+                                <h4 className='text-lg font-medium mb-0'>
+                                    { order.service_fee.toLocaleString('en-US', { style: "currency", currency: "USD" }) }
+                                </h4>
                             </div>
                             <div className='flex justify-between gap-2 mb-1'>
                                 <h3 className='text-lg font-medium mb-0'>Shef Tip</h3>
-                                <h4 className='text-lg font-medium mb-0'>$6.74</h4>
+                                {/* <h4 className='text-lg font-medium mb-0'>$6.74</h4> */}
+                                <h4 className='text-lg font-medium mb-0'>{order.tip_price.toLocaleString('en-US',{ style: "currency", currency: "USD" })}</h4>
                             </div>
                             <div className='flex justify-between gap-2 mb-1 bg-primaryLight py-2 px-3 rounded-md'>
                                 <h3 className='text-lg font-bold mb-0'>Total</h3>
-                                <h4 className='text-lg font-bold mb-0'>$61.06</h4>
+                                {/* <h4 className='text-lg font-bold mb-0'>$61.06</h4> */}
+                                <h4 className='text-lg font-bold mb-0'>
+                                    {order.total_price.toLocaleString('en-US',{ style: "currency", currency: "USD" })}
+                                </h4>
                             </div>
                         </div>
                     </div>
