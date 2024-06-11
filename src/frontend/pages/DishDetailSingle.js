@@ -1,6 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
+import { handleGetSingleDish } from '../../services/dish';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../../store/slice/cart';
+import { toast } from 'react-toastify';
 
 export const DishDetailSingle = () => {
     // Description Tabs Start
@@ -27,6 +31,38 @@ export const DishDetailSingle = () => {
         setQuantity(isNaN(value) ? 0 : value);
     };
     // Plus Minus Quantity End
+
+    // -- Get dishId from Param
+    const { dishId } = useParams();
+    // -- authtoken from redux store
+    const {authToken} = useSelector((state) => state.user);
+    // -- Single Dish
+    const [ dish, setDish ] = useState({});
+    useEffect(() => {
+        const fetchSingleDish = async() => {
+            try {
+                const response = await handleGetSingleDish(authToken, dishId);
+                console.log("response of single dish ", response)
+                setDish(response);
+            } catch (error) {
+                console.error("Error while fetching single dish \n", error)
+            }
+        }
+        console.log("Useffect is runnng ")
+        fetchSingleDish();
+    }, [authToken, dishId] )
+
+    // add to cart
+    const dispatch = useDispatch();
+    const handleAddToCart = () => {
+        const unit_price = parseFloat((dish.chef_earning_fee + dish.platform_price + dish.delivery_price).toFixed(2));
+
+        console.log("add to cart payload ", {...dish, quantity, unit_price});
+        dispatch(addToCart({...dish, quantity, unit_price}));
+        toast.success("Added to Cart ", { autoClose: 2000 })
+        setQuantity(0);
+    }
+
     return (
         <div>
             <Header />
@@ -54,17 +90,24 @@ export const DishDetailSingle = () => {
                                             <path d="M16.5 3C19.5376 3 22 5.5 22 9C22 16 14.5 20 12 21.5C9.5 20 2 16 2 9C2 5.5 4.5 3 7.5 3C9.35997 3 11 4 12 5C13 4 14.64 3 16.5 3Z"></path>
                                         </svg> */}
                                 </div>
-                                <img src="./media/frontend/img/restaurants/255x104/order-1.jpg" className="img-fluid object-cover h-full max-h-[400px] w-full rounded-xl" alt="product-img" />
+                                <img src="/media/frontend/img/restaurants/255x104/order-1.jpg" className="img-fluid object-cover h-full max-h-[400px] w-full rounded-xl" alt="product-img" />
                             </div>
                         </div>
                         <div className='lg:col-span-7 col-span-12'>
                             <div className="md:py-4 py-0">
                                 <div className='flex md:flex-row flex-col md:items-center text-start justify-between gap-2'>
                                     <h2 className="md:text-3xl text-2xl text-secondary font-semibold leading-tight md:mb-2 mb-0">
-                                        Chilli Chicken Pizza
+                                        {/* Chilli Chicken Pizza */}
+                                        { dish.name }
                                     </h2>
                                     <h2 className="md:text-4xl text-2xl text-secondary font-bold mb-2">
-                                        $12.99
+                                        {/* $12.99 */}
+                                        {(      
+                                            dish.chef_earning_fee + 
+                                            dish.platform_price + 
+                                            dish.delivery_price
+                                            ).toLocaleString('en-US',{ style: "currency", currency: "USD" }) 
+                                        } 
                                     </h2>
                                 </div>
                                 <div className='text-lg text-secondary  flex items-center gap-2 mb-3'>
@@ -99,11 +142,12 @@ export const DishDetailSingle = () => {
                                     <div>
                                         {activeDescTab === 1 &&
                                             <p className='text-base'>
-                                                Juicy, sweet and rich Air Fried Chicken Breast and Steamed Cilantro Rice.
+                                                {/* Juicy, sweet and rich Air Fried Chicken Breast and Steamed Cilantro Rice.
                                                 This dish ties with the General Tso Chicken. Both a dedication to a
                                                 childhood Chinese Carryout that happens to no longer be with us serving
                                                 the Shaw-Howard Community. This dish is garnished with green onions and
-                                                orange slices.
+                                                orange slices. */}
+                                                { dish.description }
                                             </p>
                                         }
                                         {activeDescTab === 2 &&
@@ -126,7 +170,7 @@ export const DishDetailSingle = () => {
                             <h4 className='text-lg font-bold uppercase mb-2'>Portion size</h4>
                             <div className='grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3 mt-2'>
                                 {/* 1 Serving Box */}
-                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" for="portion_1">
+                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" htmlFor="portion_1">
                                     <div className='flex items-center gap-x-3 '>
                                         <div className='text-center border-r pr-3'>
                                             <div className=' mb-1'>
@@ -146,7 +190,7 @@ export const DishDetailSingle = () => {
                                 </label>
 
                                 {/* 2 Serving Box */}
-                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" for="portion_2">
+                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" htmlFor="portion_2">
                                     <div className='flex items-center gap-x-3'>
                                         <div className='text-center border-r pr-3'>
                                             <div className=' mb-1'>
@@ -164,7 +208,7 @@ export const DishDetailSingle = () => {
                                     <input type="radio" className="form-radio text-primary w-[16px] h-[16px]" name="portion_radio" id="portion_2" value="" />
                                 </label>
                                 {/* 3 Serving Box */}
-                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" for="portion_3">
+                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" htmlFor="portion_3">
                                     <div className='flex items-center gap-x-3'>
                                         <div className='text-center border-r pr-3'>
                                             <div className=' mb-1'>
@@ -189,7 +233,7 @@ export const DishDetailSingle = () => {
                             <h4 className='text-lg font-bold uppercase mb-2'>Spice level</h4>
                             <div className='grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3 mt-2'>
                                 {/* 1 Spice Box */}
-                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" for="spice_1">
+                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" htmlFor="spice_1">
                                     <div className='flex items-center gap-x-3 '>
                                         <div className='flex items-center mb-2 border-r pr-3'>
                                             <svg className="sc-jSgupP ckDfJz" height="18" width="18" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="none" >
@@ -211,7 +255,7 @@ export const DishDetailSingle = () => {
                                     <input type="radio" className="form-radio text-primary w-[16px] h-[16px]" name="spice_radio" id="spice_1" value="" />
                                 </label>
                                 {/* 2 Spice Box */}
-                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" for="spice_2">
+                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" htmlFor="spice_2">
                                     <div className='flex items-center gap-x-3 '>
                                         <div className='flex items-center mb-2 border-r pr-3'>
                                             <svg className="sc-jSgupP ckDfJz" height="16" width="16" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="none">
@@ -232,7 +276,7 @@ export const DishDetailSingle = () => {
                                     <input type="radio" className="form-radio text-primary w-[16px] h-[16px]" name="spice_radio" value="" id="spice_2" />
                                 </label>
                                 {/* 3 Spice Box */}
-                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" for="spice_3">
+                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" htmlFor="spice_3">
                                     <div className='flex items-center gap-x-3 '>
                                         <div className='flex items-center mb-2 border-r pr-3'>
                                             <svg className="sc-jSgupP ckDfJz" height="16" width="16" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="none">
@@ -253,7 +297,7 @@ export const DishDetailSingle = () => {
                                     <input type="radio" className="form-radio text-primary w-[16px] h-[16px]" name="spice_radio" value="" id="spice_3" />
                                 </label>
                                 {/* 4 Spice Box */}
-                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" for="spice_4">
+                                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio" htmlFor="spice_4">
                                     <div className='flex items-center gap-x-3 '>
                                         <div className='flex items-center mb-2 border-r pr-3'>
                                             <svg className="sc-jSgupP ckDfJz" height="16" width="16" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="none">
@@ -325,7 +369,7 @@ export const DishDetailSingle = () => {
                                         </div>
                                     </div>
                                     <div className='md:col-span-7 col-span-6'>
-                                        <button disabled={quantity===0} className='text-lg font-bold bg-primary w-full h-full uppercase text-white rounded-[6px] disabled:opacity-60'>Add to Cart</button>
+                                        <button onClick={handleAddToCart} disabled={quantity===0} className='text-lg font-bold bg-primary w-full h-full uppercase text-white rounded-[6px] disabled:opacity-60'>Add to Cart</button>
                                     </div>
 
                                 </div>
