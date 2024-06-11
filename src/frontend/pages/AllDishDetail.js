@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import { Link } from 'react-router-dom';
 import DateFilter from '../components/AllDishesDetail/DateFilter';
 import AllCuisinesFilter from '../components/AllDishesDetail/AllCuisinesFilter';
 import DietaryFilter from '../components/AllDishesDetail/DietaryFilter';
 import Footer from '../components/Footer';
+import { handleGetAllDishes } from '../../services/shef';
+import { useSelector } from 'react-redux';
 
 export const DishDetail = () => {
     const [filterActiveTab, setFilterActiveTab] = useState(null);
@@ -12,6 +14,25 @@ export const DishDetail = () => {
     const filterTabClick = (tabNumber) => {
         setFilterActiveTab(tabNumber);
     };
+
+    //Auth token from Redux
+    const {authToken} = useSelector((state) => state.user)
+
+    // Dishes 
+    const [ dishes, setDihes ] = useState([]);
+    useEffect(() => {
+        const fetchAllDishes = async () => {
+            try {
+                const response = await handleGetAllDishes(authToken);
+                setDihes(response);
+                console.log("reponse of dishes ", response)
+            } catch (error) {
+                console.error("Error while fetching dishes \n", error)
+            }
+        }
+
+        fetchAllDishes();
+    }, [authToken])
     return (
         <>
             <Header />
@@ -52,7 +73,7 @@ export const DishDetail = () => {
                     <h2 className='text-secondary font-bold text-2xl mb-0 border-b pb-2'>All Foods Plan</h2>
                     <div className='grid grid-cols-12 gap-4 mt-6'>
                         {/* Dish Column #1 */}
-                        <div className='lg:col-span-3 sm:col-span-6 col-span-12'>
+                        {dishes.map((item) =>( <div key={item.id} className='lg:col-span-3 sm:col-span-6 col-span-12'>
                             <div className="product-box">
                                 <div className="relative">
                                     <div className='absolute right-2 top-2 cursor-pointer'>
@@ -85,7 +106,7 @@ export const DishDetail = () => {
                                 </div>
                                 <div className="p-3 mt-12">
                                     <h6 className="text-lg leading-tight text-secondary font-semibold mb-2">
-                                        <Link to='/dish-detail-single'> Chilli Chicken Pizza</Link>
+                                        <Link to='/dish-detail-single'> {item.name} </Link>
                                     </h6>
                                     <div className='flex justify-between items-center gap-x-2'>
                                         <div className='inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]'>
@@ -96,7 +117,14 @@ export const DishDetail = () => {
                                                 100% <span className='text-[12px] font-normal'>(230)</span>
                                             </h4>
                                         </div>
-                                        <h4 className='text-xl text-secondary font-semibold mb-0'>$ 12.99 </h4>
+                                        {/* <h4 className='text-xl text-secondary font-semibold mb-0'>$ 12.99 </h4> */}
+                                        <h4 className='text-xl text-secondary font-semibold mb-0'> 
+                                            {( item.chef_earning_fee + 
+                                                item.platform_price + 
+                                                item.delivery_price
+                                            ).toLocaleString('en-US',{ style: "currency", currency: "USD" }) 
+                                            } 
+                                        </h4>
                                     </div>
                                     <div className='border-t pt-3 mt-2'>
                                         <div className='grid grid-cols-12 gap-x-2'>
@@ -105,15 +133,15 @@ export const DishDetail = () => {
                                                 <h5 className='text-[12px] text-secondary leading-tight mb-0'>Tomorrow at 1:00 PM </h5>
                                             </div>
                                             <div className='col-span-4 text-right my-auto'>
-                                                <Link to='/dish-detail-single' className='bg-primary px-3 py-1 rounded-[4px] font-medium text-xs !text-white tracking-wide'> Detail</Link>
+                                                <Link to={`/dish-detail-single/${item.id}`} className='bg-primary px-3 py-1 rounded-[4px] font-medium text-xs !text-white tracking-wide'> Detail</Link>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>))}
                         {/* Dish Column #2 */}
-                        <div className='lg:col-span-3 sm:col-span-6 col-span-12'>
+                        {/* <div className='lg:col-span-3 sm:col-span-6 col-span-12'>
                             <div className="product-box">
                                 <div className="relative">
                                     <div className='absolute right-2 top-2 cursor-pointer'>
@@ -124,7 +152,7 @@ export const DishDetail = () => {
                                         {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#ec2044">
                                             <path d="M16.5 3C19.5376 3 22 5.5 22 9C22 16 14.5 20 12 21.5C9.5 20 2 16 2 9C2 5.5 4.5 3 7.5 3C9.35997 3 11 4 12 5C13 4 14.64 3 16.5 3Z"></path>
                                         </svg> */}
-                                    </div>
+                                    {/*</div>
                                     <img src="./media/frontend/img/restaurants/255x104/order-2.jpg" className="img-fluid object-cover h-[200px] full-width" alt="product-img" />
                                     <Link to="/shef-detail">
                                         <div className='flex items-center gap-x-3 bg-white absolute bottom-[-40px] p-2 w-[90%] left-[50%] translate-x-[-50%] rounded-lg shadow-lg'>
@@ -172,20 +200,20 @@ export const DishDetail = () => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                         {/* Dish Column #3 */}
-                        <div className='lg:col-span-3 sm:col-span-6 col-span-12'>
+                        {/* <div className='lg:col-span-3 sm:col-span-6 col-span-12'>
                             <div className="product-box">
                                 <div className="relative">
                                     <div className='absolute right-2 top-2 cursor-pointer'>
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#ec2044">
                                             <path d="M16.5 3C19.5376 3 22 5.5 22 9C22 16 14.5 20 12 21.5C9.5 20 2 16 2 9C2 5.5 4.5 3 7.5 3C9.35997 3 11 4 12 5C13 4 14.64 3 16.5 3ZM12.9339 18.6038C13.8155 18.0485 14.61 17.4955 15.3549 16.9029C18.3337 14.533 20 11.9435 20 9C20 6.64076 18.463 5 16.5 5C15.4241 5 14.2593 5.56911 13.4142 6.41421L12 7.82843L10.5858 6.41421C9.74068 5.56911 8.5759 5 7.5 5C5.55906 5 4 6.6565 4 9C4 11.9435 5.66627 14.533 8.64514 16.9029C9.39 17.4955 10.1845 18.0485 11.0661 18.6038C11.3646 18.7919 11.6611 18.9729 12 19.1752C12.3389 18.9729 12.6354 18.7919 12.9339 18.6038Z"></path>
-                                        </svg>
+                                        </svg> */}
                                         {/******* When User Add To Wishlish Show This Icon  ******/}
                                         {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#ec2044">
                                             <path d="M16.5 3C19.5376 3 22 5.5 22 9C22 16 14.5 20 12 21.5C9.5 20 2 16 2 9C2 5.5 4.5 3 7.5 3C9.35997 3 11 4 12 5C13 4 14.64 3 16.5 3Z"></path>
                                         </svg> */}
-                                    </div>
+                                    {/* </div>
                                     <img src="./media/frontend/img/restaurants/255x104/order-3.jpg" className="img-fluid object-cover h-[200px] full-width" alt="product-img" />
                                     <Link to="/shef-detail">
                                         <div className='flex items-center gap-x-3 bg-white absolute bottom-[-40px] p-2 w-[90%] left-[50%] translate-x-[-50%] rounded-lg shadow-lg'>
@@ -233,7 +261,7 @@ export const DishDetail = () => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 
