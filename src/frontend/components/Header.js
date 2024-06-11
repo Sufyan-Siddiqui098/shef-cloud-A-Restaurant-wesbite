@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import { NavLink, useNavigate } from "react-router-dom"
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Helmet } from 'react-helmet';
 import '../assets/css/theme.css'
 import '../assets/css/main-style.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { signOutUser } from '../../store/slice/user';
 import { toast } from 'react-toastify';
+import { removeFromCart } from '../../store/slice/cart';
 
 const Header = () => {
     const [isBoxVisible, setBoxVisible] = useState(false);
@@ -25,6 +26,12 @@ const Header = () => {
         toast.success("Logout Successfully ")
         navigate('/')
     }
+    // Cart from -- Redux store
+    const { cartItem } = useSelector((state) => state.cart);
+    const subTotal = cartItem.reduce((acc, item) => acc + (item.unit_price || 0) * item.quantity, 0);
+    console.log("Subt total ", subTotal)
+    // console.log(cartItem.reduce((acc, item) => acc + (item.unit_price || 0), 0))
+
     return (
         <>
             <div>
@@ -287,30 +294,39 @@ const Header = () => {
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="rgba(255,255,255,1)">
                                                             <path d="M7.00488 7.99966V5.99966C7.00488 3.23824 9.24346 0.999664 12.0049 0.999664C14.7663 0.999664 17.0049 3.23824 17.0049 5.99966V7.99966H20.0049C20.5572 7.99966 21.0049 8.44738 21.0049 8.99966V20.9997C21.0049 21.5519 20.5572 21.9997 20.0049 21.9997H4.00488C3.4526 21.9997 3.00488 21.5519 3.00488 20.9997V8.99966C3.00488 8.44738 3.4526 7.99966 4.00488 7.99966H7.00488ZM7.00488 9.99966H5.00488V19.9997H19.0049V9.99966H17.0049V11.9997H15.0049V9.99966H9.00488V11.9997H7.00488V9.99966ZM9.00488 7.99966H15.0049V5.99966C15.0049 4.34281 13.6617 2.99966 12.0049 2.99966C10.348 2.99966 9.00488 4.34281 9.00488 5.99966V7.99966Z"></path>
                                                         </svg>
-                                                        <span className="userCartCount">3</span>
+                                                        {/* <span className="userCartCount">3</span> */}
+                                                        <span className="userCartCount">{cartItem.length}</span>
                                                     </div>
 
                                                 </NavLink>
-                                                <div className="cart-detail-box">
+                                                <div className="cart-detail-box overflow-y-auto max-h-[85vh]">
                                                     <div className="card">
                                                         <div className="card-header padding-15">Your Order</div>
                                                         <div className="card-body no-padding">
-                                                            <div className="cat-product-box">
+                                                            {/* Products from Cart */}
+                                                            { cartItem.map((product, index) => ( <div key={index} className="cat-product-box">
                                                                 <div className="cat-product">
                                                                     <div className="cat-name">
                                                                         <NavLink>
-                                                                            <p className="text-light-green"><span className="text-dark-white">1</span> Chilli Chicken</p> <span className="text-light-white">small, chilli chicken</span>
+                                                                            <p className="text-light-green"><span className="text-dark-white">{product.quantity}</span> {product.name}</p> <span className="text-light-white">small, chilli chicken</span>
                                                                         </NavLink>
                                                                     </div>
                                                                     <div className="delete-btn">
-                                                                        <NavLink className="text-dark-white"> <i className="far fa-trash-alt"></i>
+                                                                        {/* <NavLink className="text-dark-white"> <i className="far fa-trash-alt"></i>
+                                                                        </NavLink> */}
+                                                                        <button onClick={() => dispatch(removeFromCart(index)) } className="text-dark-white"> 
+                                                                            <FontAwesomeIcon icon={faTrashAlt} />
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className="price"> 
+                                                                        <NavLink className="text-dark-white fw-500">
+                                                                        { (product.quantity * (product.unit_price)).toLocaleString('en-US',{ style: "currency", currency: "USD" }) 
+                                                                        } 
                                                                         </NavLink>
                                                                     </div>
-                                                                    <div className="price"> <NavLink className="text-dark-white fw-500">$2.25 </NavLink>
-                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                            <div className="cat-product-box">
+                                                            </div>))}
+                                                            {/* <div className="cat-product-box">
                                                                 <div className="cat-product">
                                                                     <div className="cat-name">
                                                                         <NavLink>
@@ -339,16 +355,25 @@ const Header = () => {
                                                                     <div className="price"> <NavLink className="text-dark-white fw-500"> $2.25</NavLink>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            </div> */}
                                                             <div className="item-total">
                                                                 <div className="total-price border-0"> <span className="text-dark-white fw-700">Items subtotal:</span>
-                                                                    <span className="text-dark-white fw-700">$9.99</span>
+                                                                    {/* <span className="text-dark-white fw-700">$9.99</span> */}
+                                                                    <span className="text-dark-white fw-700">
+                                                                        {
+                                                                        subTotal.toLocaleString('en-US',{ style: "currency", currency: "USD" })
+                                                                        } 
+                                                                    </span>
                                                                 </div>
-                                                                <div className="empty-bag padding-15"> <NavLink>Empty bag</NavLink>
+                                                                <div className="empty-bag padding-15"> 
+                                                                    <NavLink>Empty bag</NavLink>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className="card-footer padding-15"> <NavLink to="/checkout" className="btn-first green-btn text-custom-white full-width fw-500">Proceed to Checkout</NavLink>
+                                                        <div className="card-footer padding-15"> 
+                                                            <NavLink to="/checkout" className="btn-first green-btn text-custom-white full-width fw-500">
+                                                                Proceed to Checkout
+                                                            </NavLink>
                                                         </div>
                                                     </div>
                                                 </div>
