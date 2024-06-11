@@ -106,7 +106,7 @@ export const DishDetail = () => {
                                 </div>
                                 <div className="p-3 mt-12">
                                     <h6 className="text-lg leading-tight text-secondary font-semibold mb-2">
-                                        <Link to='/dish-detail-single'> {item.name} </Link>
+                                        <Link to={`/dish-detail-single/${item.id}`}> {item.name} </Link>
                                     </h6>
                                     <div className='flex justify-between items-center gap-x-2'>
                                         <div className='inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]'>
