@@ -284,6 +284,28 @@ const onSubmit = async(e) => {
                                         onChange={(e)=> updateOrderDeliveryAddress({ state: e.target.value })}
                                         placeholder="State" 
                                     />
+                                    <h4 className='text-base font-semibold mb-1 mt-3'>Longitude <span className='text-primary'>*</span></h4>
+                                    <input 
+                                        className='border rounded-md w-full' 
+                                        name='' 
+                                        type='number'
+                                        min={0} 
+                                        step={0.01}
+                                        value={orderDeliveryAddress.longitude}
+                                        onChange={(e)=> updateOrderDeliveryAddress({ longitude: parseFloat(e.target.value) })}
+                                        placeholder="Longitude" 
+                                    />
+                                    <h4 className='text-base font-semibold mb-1 mt-3'>Latitude <span className='text-primary'>*</span></h4>
+                                    <input 
+                                        className='border rounded-md w-full' 
+                                        name='' 
+                                        type='number'
+                                        min={0} 
+                                        step={0.01}
+                                        value={orderDeliveryAddress.latitude}
+                                        onChange={(e)=> updateOrderDeliveryAddress({ latitude: parseFloat(e.target.value) })}
+                                        placeholder="Latitude" 
+                                    />
                                 </div>
                                 <div className='border-b border-primary border-dashed pb-5 mb-4'>
                                     <h4 className='text-base font-semibold mb-1'>Delivery Instruction <span className='text-primary'>*</span></h4>
