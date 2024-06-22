@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
-import { NavLink } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import { Helmet } from 'react-helmet';
 import '../assets/css/dash-style.css';
+import { useDispatch } from 'react-redux';
+import { signOutUser } from '../../store/slice/user';
+import { toast } from 'react-toastify';
 export const Header = () => {
     const [isSubMenuVisible, setSubMenuVisible] = useState(false);
     const toggleBox = () => {
@@ -11,6 +14,15 @@ export const Header = () => {
     const toggleMobBox = () => {
         setMobMenuVisible(!isMobMenuVisible);
     };
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const handleSignOut = ()=>{
+        dispatch(signOutUser()); 
+        toast.success("Logout Successfully ")
+        navigate('/login')
+    }
+
     return (
         <>
             <Helmet>
@@ -21,7 +33,7 @@ export const Header = () => {
                 <div className='px-5'>
                     <header className='py-3 '>
                         <div className='grid grid-cols-12'>
-                            <div className='lg:col-span-10 col-span-8 my-auto'>
+                            <div className='lg:col-span-9 col-span-8 my-auto'>
                                 {/* Desktop View  */}
                                 <ul className='lg:flex items-center hidden my-auto'>
                                     <li className='lg:inline-block shefD_nav mr-8 h-full'>
@@ -99,6 +111,14 @@ export const Header = () => {
                                                 <li className='block'>
                                                     <NavLink to="/shef/order-review" className="text-lg font-semibold !text-secondary hover:!text-primary">Order Reviews  </NavLink>
                                                 </li>
+                                                <li className='block'>
+                                                    <button 
+                                                        onClick={handleSignOut}
+                                                        className='hover:opacity-80 my-1 bg-primary  transition rounded font-semibold !text-white text-lg font-sans px-2'
+                                                    >
+                                                        Sign Out
+                                                    </button>
+                                                </li>
                                             </ul>
                                         )}
                                     </div>
@@ -107,13 +127,18 @@ export const Header = () => {
                                     </NavLink>
                                 </div>
                             </div>
-                            <div className="lg:col-span-2 col-span-4">
+                            <div className="lg:col-span-3 col-span-4 flex justify-center items-center gap-2">
                                 <NavLink to="/shef/profile">
                                     <div className='flex items-center justify-end gap-2'>
                                         <img src="/media/frontend/img/banner/chef-5.webp" width='' className="img-fluid border h-[40px]" alt="Logo" />
                                         <span className='font-semibold text-lg md:block hidden'>Hi, Asad Ali</span>
                                     </div>
                                 </NavLink>
+                                <button 
+                                    onClick={handleSignOut}
+                                    className='hidden lg:block hover:opacity-80 my-1 bg-primary  transition rounded font-semibold !text-white sm:text-lg font-sans px-2 '>
+                                        Sign Out
+                                </button>
                             </div>
                         </div>
                     </header>
