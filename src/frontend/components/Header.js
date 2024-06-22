@@ -29,7 +29,6 @@ const Header = () => {
     // Cart from -- Redux store
     const { cartItem } = useSelector((state) => state.cart);
     const subTotal = cartItem.reduce((acc, item) => acc + (item.unit_price || 0) * item.quantity, 0);
-    console.log("Subt total ", subTotal)
 
     return (
         <>
