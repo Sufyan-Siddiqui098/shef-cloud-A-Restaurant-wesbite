@@ -23,6 +23,8 @@ import PrivacyPolicy from './frontend/pages/PrivacyPolicy';
 import HomeFoodDelivery from './frontend/pages/HomeFoodDelivery';
 import Faqs from './frontend/pages/Faqs';
 import { useEffect } from "react";
+import AuthProtected from "./protected_route/AuthProtected";
+import ShefProtected from "./protected_route/ShefProtected";
 
 function App() {
   useEffect(() => {
@@ -55,23 +57,28 @@ function App() {
       <Route path="/register" element={<SignUp />} />
       <Route path="/become-a-chef" element={<BecomeChef />} />
       <Route path="/shef-detail" element={<ShefDetailPage />} />
-      <Route path="/cart" element={<CartPage />} />
-      <Route path="/checkout" element={<Checkout />} />
-      <Route path="/order-summary" element={<OrderSummary />} />
       <Route path="/all-dish-detail" element={<AllDishDetail />} />
       <Route path="/dish-detail-single/:dishId?" element={<DishDetailSingle />} />
       <Route path="/terms-of-servies" element={<TermsOfServices />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/homemade-food-delivery" element={<HomeFoodDelivery />} />
       <Route path="/faqs" element={<Faqs />} />
+      {/* Protected Route */}
+      <Route element={<AuthProtected/>}>
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-summary" element={<OrderSummary />} />
+      </Route>
 
       {/* SHEF DASHBOARD ROUTES */}
-      <Route path="/shef/dashboard" element={<Dashboard />} />
-      <Route path="/shef/profile" element={<Profile />} />
-      <Route path="/shef/my-menu" element={<MyMenu />} />
-      <Route path="/shef/order" element={<Order />} />
-      <Route path="/shef/sales-statment" element={<SalesStament />} />
-      <Route path="/shef/order-review" element={<OrderReview />} />
+      <Route element={<ShefProtected />}>
+        <Route path="/shef/dashboard" element={<Dashboard />} />
+        <Route path="/shef/profile" element={<Profile />} />
+        <Route path="/shef/my-menu" element={<MyMenu />} />
+        <Route path="/shef/order" element={<Order />} />
+        <Route path="/shef/sales-statment" element={<SalesStament />} />
+        <Route path="/shef/order-review" element={<OrderReview />} />
+      </Route>
 
     </Routes>
   </BrowserRouter>
