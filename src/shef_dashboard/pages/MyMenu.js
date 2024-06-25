@@ -86,6 +86,134 @@ export const MyMenu = () => {
     };
 
     const nextStep = () => {
+        // Screen 1
+        if(currentStep === 0){
+            const requiredFields = {
+                name: "", // Expected data types can be specified for validation
+                food_type_id: "",
+                spice_level_id: "",
+                tags: "",
+                portion_size: "",
+                portion_type_id: "", // Consider making this a required field if applicable
+                chef_earning_fee: "", // Can be 0 if user intends it
+              };
+              
+              // Check required fields for emptiness or non-presence
+              const missingFields = Object.entries(requiredFields)
+                .filter(([key, value]) => chefMenu[key] === "" || typeof chefMenu[key] === "undefined")
+                .map(([key]) => key);
+              console.log("missidng" ,missingFields)
+              if (missingFields.length > 0) {
+                let toastMessage='';
+                if(missingFields[0] === 'name'){
+                    toastMessage = "Name is required";
+                }
+                if(missingFields[0]==="spice_level_id"){
+                    toastMessage = `Spice Option is required`;
+                } else if(missingFields[0] === "food_type_id"){
+                    toastMessage = `Food Type is required`;
+                } else if(missingFields[0] === "tags" ){
+                    toastMessage = `Dish tag is required`;
+                } else if(missingFields[0] === "portion_size" || missingFields[0] === "portion_type_id" || missingFields[0] === "chef_earning_fee") {
+                    toastMessage = `Please fill in all fields from Base Serving`;
+                }
+                // Show toast with details of missing fields
+                toast.dismiss();
+                toast.error(toastMessage); // Replace with your toast implementation
+                return; // Prevent step increment if fields are missing
+              }
+        }
+        // Screen 2
+        else if(currentStep === 1){
+            const requiredFields = {
+                description: chefMenu.description,            
+                item_limit: chefMenu.item_limit,
+                is_monday: chefMenu.is_monday,               
+                is_tuesday: chefMenu.is_tuesday,
+                is_wednesday: chefMenu.is_wednesday,
+                is_thursday : chefMenu.is_thursday,
+                is_friday: chefMenu.is_friday,
+                is_saturday: chefMenu.is_saturday,
+                is_sunday: chefMenu.is_sunday,
+            }
+
+            let toastMessage = '';
+            toast.dismiss();
+            // ---- Validation ----
+            if(requiredFields.description === "" || typeof requiredFields.description === "undefined"){
+                // Description check
+                toastMessage = "Description is required";
+                toast.error(toastMessage);
+                return;
+            }
+            if(requiredFields.item_limit === 0 || requiredFields.item_limit === ""){
+                //item limit check
+                toastMessage = "Dish order limit is required";
+                toast.error(toastMessage);
+                return;
+            }
+            // Check for at least one active day
+            const hasActiveDay = Object.values(requiredFields) // Get all boolean values
+             .some(dayValue => dayValue === 1); // Check if any value is 1     
+            if (!hasActiveDay) {
+                 toast.error("Please select at least one day for availability.");
+                 return;
+            }
+            // Limit item availability
+            if (chefMenu.limit_item_availibility && (
+                chefMenu.limit_start === "" ||
+                chefMenu.limit_end === ""
+              )) {
+                toast.error("If 'Limit Item Availability' is set, 'limit start' and 'limit end' are required.");
+                return; // Prevent step increment if "limit_item_availability" has missing dependencies
+              }
+        }
+        // Screen 3
+        else if(currentStep === 2){
+            const requiredFields = {
+                instruction_template_id: chefMenu.instruction_template_id, //--- Screen 3
+                reheating_instruction: chefMenu.reheating_instruction,
+                expiry_days: chefMenu.expiry_days,
+                packaging: chefMenu.packaging,
+            }
+            let toastMessage = '';
+            toast.dismiss();
+            // ---- Validation ----
+            // instruction_template_id
+            if(requiredFields.instruction_template_id === "" || typeof requiredFields.instruction_template_id ==="undefined"){
+                toastMessage = "Please Select a heating instruction template ";
+                toast.error(toastMessage);
+                return;
+            } 
+            // reheating instruction
+            if(requiredFields.reheating_instruction === ""){
+                toastMessage = "Reheating Description is required ";
+                toast.error(toastMessage);
+                return;
+            } 
+            //Expiry Day
+            if(requiredFields.expiry_days === 0 || requiredFields.expiry_days === "" || typeof requiredFields.expiry_days === 'undefined'){
+                toastMessage = "Expiration field is required";
+                toast.error(toastMessage);
+                return;
+            }
+            // Packaging
+            if(requiredFields.packaging === '' || typeof requiredFields.packaging === 'undefined'){
+                toastMessage = "Please Select Packaging";
+                toast.error(toastMessage);
+                return;
+            }
+
+        }
+        //Screen 4
+        else if(currentStep === 3){
+            if(chefMenu.ingredients.length < 1){
+                toast.dismiss();
+                toast.error("Please Select ingredients");
+                return
+            }
+        }
+        
         setCurrentStep(currentStep + 1);
     };
 
