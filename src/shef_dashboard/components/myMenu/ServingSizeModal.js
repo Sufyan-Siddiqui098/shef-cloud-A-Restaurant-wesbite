@@ -280,7 +280,7 @@ const MenuModal = ({
                                     <div className='flex items-center w-[50%]'>
                                         <input className='text-center border-0 bg-transparent text-base px-1 focus:border-0 w-[60%]'
                                             required
-                                            ref={inputRefPrice}
+                                            ref={inputRefPortionSize}
                                             placeholder='1'
                                             value={numericPortionSize}
                                             onChange={handleNumericPortionSizeChange}
