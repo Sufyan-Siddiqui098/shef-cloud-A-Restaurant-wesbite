@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
-import { NavLink } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import { Helmet } from 'react-helmet';
 import '../assets/css/dash-style.css';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { signOutUser } from '../../store/slice/user';
+import { toast } from 'react-toastify';
 
 export const Header = () => {
     const [isSubMenuVisible, setSubMenuVisible] = useState(false);
@@ -16,6 +18,15 @@ export const Header = () => {
 
     // User from redux
     const { userInfo } = useSelector(state => state.user)
+    //Logout
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const handleSignOut = ()=>{
+        dispatch(signOutUser()); 
+        localStorage.removeItem("cart")
+        toast.success("Logout Successfully ")
+        navigate('/login')
+    }
 
     return (
         <>
@@ -113,16 +124,29 @@ export const Header = () => {
                                     </NavLink>
                                 </div>
                             </div>
-                            <div className="lg:col-span-2 col-span-4 flex justify-between items-center gap-2">
+                            <div className="lg:col-span-2 col-span-4 flex justify-between items-center gap-2 w-max group relative">
                                 <NavLink to="/shef/profile">
-                                    <div className='flex items-center justify-end gap-2'>
+                                    <div className='flex items-center justify-end gap-2 '>
                                         <img src={userInfo.profile_pic ? userInfo.profile_pic : "/media/frontend/img/banner/chef-5.webp"} width='' className="img-fluid border h-[40px]" alt="Logo" />
                                         <span className='font-semibold text-lg md:block hidden'>
                                             Hi, { userInfo.first_name }
                                         </span>
+                                        <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                                        </svg>
                                     </div>
                                 </NavLink>
                                 
+                                <div 
+                                    className='absolute hidden p-1 px-2 right-0 w-max md:w-[150px] shadow-sm rounded border bg-white top-[100%] min-h-16 justify-center items-center group-hover:flex'
+                                >
+                                    <button 
+                                        onClick={handleSignOut} 
+                                        className='rounded p-1 w-full border bg-gray-50  border-black text-primary hover:text-white hover:bg-primary'
+                                    >
+                                        Sign Out
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </header>
