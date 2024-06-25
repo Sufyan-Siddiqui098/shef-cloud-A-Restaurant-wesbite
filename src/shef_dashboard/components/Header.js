@@ -116,7 +116,7 @@ export const Header = () => {
                             <div className="lg:col-span-2 col-span-4 flex justify-between items-center gap-2">
                                 <NavLink to="/shef/profile">
                                     <div className='flex items-center justify-end gap-2'>
-                                        <img src="/media/frontend/img/banner/chef-5.webp" width='' className="img-fluid border h-[40px]" alt="Logo" />
+                                        <img src={userInfo.profile_pic ? userInfo.profile_pic : "/media/frontend/img/banner/chef-5.webp"} width='' className="img-fluid border h-[40px]" alt="Logo" />
                                         <span className='font-semibold text-lg md:block hidden'>
                                             Hi, { userInfo.first_name }
                                         </span>

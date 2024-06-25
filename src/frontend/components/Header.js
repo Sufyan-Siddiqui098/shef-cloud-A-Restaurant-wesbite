@@ -165,7 +165,7 @@ const Header = () => {
                                             {/* <!-- user account -->*/}
                                             <div className="user-details p-relative">
                                                 <NavLink className="text-light-white fw-500">
-                                                    <img src="/media/frontend/img/user-1.png" className="rounded-circle e" alt="userimg" /> <span className=''>{userInfo.first_name}</span>
+                                                    <img src={userInfo.profile_pic ? userInfo.profile_pic : "/media/frontend/img/user-1.png"} className="rounded-circle e" alt="userimg" /> <span className=''>{userInfo.first_name}</span>
                                                 </NavLink>
                                                 <div className="user-dropdown">
                                                     <ul>
