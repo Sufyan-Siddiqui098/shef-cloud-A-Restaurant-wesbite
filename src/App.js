@@ -25,6 +25,7 @@ import Faqs from './frontend/pages/Faqs';
 import { useEffect } from "react";
 import AuthProtected from "./protected_route/AuthProtected";
 import ShefProtected from "./protected_route/ShefProtected";
+import ScrollToTop from "./frontend/components/ScrollToTop";
 
 function App() {
   useEffect(() => {
@@ -49,6 +50,7 @@ function App() {
     })(document, "script", "facebook-jssdk");
   }, []);
   return <BrowserRouter>
+    <ScrollToTop/>
     <Routes>
       {/* FRONTEND ROUTES */}
       <Route path="/" element={<Home />} />
