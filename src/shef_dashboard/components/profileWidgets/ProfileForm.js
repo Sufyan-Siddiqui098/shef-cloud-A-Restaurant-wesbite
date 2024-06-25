@@ -100,6 +100,9 @@ export const ProfileForm = () => {
             const response =await handleShowProfile(authToken);
             //Object.entries - creates array from object && Object.entries - create an object from array
             const filteredData = Object.fromEntries(Object.entries(response).filter(([_, v]) => v != null));
+            // console.log("filetered", filteredData)
+            const {address} = filteredData.user_addresses[filteredData.user_addresses.length-1];
+            setAddress(address);
             setProfileData(filteredData)
             localStorage.setItem("user", JSON.stringify(filteredData)); //update user in local-storage
             dispatch(updateUser(filteredData))                          // to instantly update user in redux-store.
