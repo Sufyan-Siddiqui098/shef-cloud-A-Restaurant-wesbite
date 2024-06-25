@@ -2,6 +2,7 @@ import React from 'react'
 import Header from '../components/Header'
 import { Link } from 'react-router-dom'
 import Footer from '../components/Footer'
+import { useSelector } from 'react-redux'
 
 export const HomeFoodDelivery = () => {
     const pageBnrImg = {
@@ -10,6 +11,7 @@ export const HomeFoodDelivery = () => {
         backgroundPosition: 'center',
         backgroundSize: 'cover',
       };
+      const {userInfo} = useSelector(state => state.user);
     return (
         <>
             <Header />
@@ -29,9 +31,11 @@ export const HomeFoodDelivery = () => {
                                     <input type='search' className='py-2 h-[45px] border border-headGray text-base focus:border-primary' placeholder='Enter your ZIP code' />
                                     <button className='rounded-md py-2 px-4 text-base font-semibold whitespace-nowrap bg-primary text-white hover:text-green-400'>Find Food</button>
                                 </div>
-                                <p className='text-base text-white mb-4 mt-4 lg:px-16'>
-                                    Already have an account? <Link to='/login' className='hover:underline font-semibold'>Log in</Link>
-                                </p>
+                                {!userInfo && 
+                                    (<p className='text-base text-white mb-4 mt-4 lg:px-16'>
+                                        Already have an account? <Link to='/login' className='hover:underline font-semibold'>Log in</Link>
+                                    </p>)
+                                }
                             </div>
                         </div>
                     </div>
