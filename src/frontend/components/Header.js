@@ -41,7 +41,7 @@ const Header = () => {
                 </Helmet>
                 <div className="header lg:px-2 sm:px-4 px-2">
                     <header className="full-width">
-                        <div className="container mx-auto">
+                        <div className="container mx-auto big-screen">
                             <div className="">
                                 <div className="mainNavCol flex justify-between items-center gap-x-6">
                                     <div className='flex justify-start items-center gap-x-4'>
