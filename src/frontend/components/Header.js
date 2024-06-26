@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { signOutUser } from '../../store/slice/user';
 import { toast } from 'react-toastify';
 import { removeFromCart } from '../../store/slice/cart';
+import RegionDropdown from './RegionDropdown';
 
 const Header = () => {
     const [isBoxVisible, setBoxVisible] = useState(false);
@@ -77,13 +78,16 @@ const Header = () => {
                                                                         <ul>
                                                                             <li className='mb-3'>
                                                                                 <NavLink className='!block'>
-                                                                                    <div className='bg-primary rounded-[5px] px-4 text-base text-white font-medium text-center'>Build your Personal Meal Plan</div>
+                                                                                    <div className='bg-primary rounded-[5px] px-4 md:px-2 text-base text-white font-medium text-center'>Build your Personal Meal Plan</div>
                                                                                 </NavLink>
                                                                             </li>
                                                                             <li className='mb-3'>
                                                                                 <NavLink className='!block'>
                                                                                     <div className='bg-primary rounded-[5px] px-4 text-base text-white font-medium text-center'>Explore Local Chef</div>
                                                                                 </NavLink>
+                                                                            </li>
+                                                                            <li className='mb-3 lg:hidden'>
+                                                                                <RegionDropdown/>
                                                                             </li>
                                                                             <li className=''>
                                                                                 <NavLink to='/about' className='!inline-flex !items-center gap-x-2'>
@@ -141,14 +145,15 @@ const Header = () => {
                                                         </div>
                                                     </div>
                                                     <div className="lg:col-span-4 col-span-5 my-auto">
-                                                        <select className='text-lg text-primary font-semibold'>
+                                                        {/* <select className='text-lg text-primary font-semibold'>
                                                             <option>Brooklyn</option>
                                                             <option>London</option>
                                                             <option>Russia</option>
                                                         </select>
                                                         <div className="location-picker">
                                                             <input type="text" className="form-control" placeholder="Enter a new address" />
-                                                        </div>
+                                                        </div> */}
+                                                        <RegionDropdown/>
                                                     </div>
 
                                                 </div>
