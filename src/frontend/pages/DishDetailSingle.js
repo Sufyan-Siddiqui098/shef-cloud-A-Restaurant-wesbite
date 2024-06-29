@@ -38,17 +38,18 @@ export const DishDetailSingle = () => {
     const {authToken} = useSelector((state) => state.user);
     // -- Single Dish
     const [ dish, setDish ] = useState({});
+    
+    // Fetch Single Dish 
     useEffect(() => {
         const fetchSingleDish = async() => {
             try {
                 const response = await handleGetSingleDish(authToken, dishId);
-                console.log("response of single dish ", response)
+                // console.log("response of single dish ", response)
                 setDish(response);
             } catch (error) {
                 console.error("Error while fetching single dish \n", error)
             }
         }
-        console.log("Useffect is runnng ")
         fetchSingleDish();
     }, [authToken, dishId] )
 
@@ -57,8 +58,9 @@ export const DishDetailSingle = () => {
     const handleAddToCart = () => {
         const unit_price = parseFloat((dish.chef_earning_fee + dish.platform_price + dish.delivery_price).toFixed(2));
 
-        console.log("add to cart payload ", {...dish, quantity, unit_price});
+        // console.log("add to cart payload ", {...dish, quantity, unit_price});
         dispatch(addToCart({...dish, quantity, unit_price}));
+        toast.dismiss();
         toast.success("Added to Cart ", { autoClose: 2000 })
         setQuantity(0);
     }
