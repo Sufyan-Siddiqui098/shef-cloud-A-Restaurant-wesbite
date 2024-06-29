@@ -173,7 +173,7 @@ const Header = () => {
                                                     <img src={userInfo.profile_pic ? userInfo.profile_pic : "/media/frontend/img/user-1.png"} className="rounded-circle e" alt="userimg" /> <span className=''>{userInfo.first_name}</span>
                                                 </NavLink>
                                                 <div className="user-dropdown">
-                                                    <ul>
+                                                    <ul className='w-full'>
                                                         {/* Dashboard Link */}
                                                         {
                                                             (userInfo.is_chef ===1 || userInfo.is_admin ===1) 
@@ -354,7 +354,7 @@ const Header = () => {
                                                             </div>
                                                         </div>
                                                         <div className="card-footer padding-15"> 
-                                                            <NavLink to="/checkout" className="btn-first green-btn text-custom-white full-width fw-500">
+                                                            <NavLink to="/checkout" className="btn-first green-btn text-custom-white full-width fw-500 !text-white hover:!text-primary focus:!text-primary">
                                                                 Proceed to Checkout
                                                             </NavLink>
                                                         </div>
