@@ -7,8 +7,25 @@ const cartSlice = createSlice({
     }, 
     reducers: {
         addToCart : (state, action) => {
-            state.cartItem.push(action.payload);
-            localStorage.setItem("cart", JSON.stringify([...state.cartItem]));
+            const existingItem = state.cartItem.find(item => item.id === action.payload.id);
+
+            if (existingItem) {
+                // Item already exists, update quantity
+                const updatedCart = state.cartItem.map(item => {
+                if (item.id === action.payload.id) {
+                    return { ...item, quantity: item.quantity + action.payload.quantity };
+                } else {
+                    return item;
+                }
+                });
+                state.cartItem = updatedCart; // Update state directly (Immer handles immutability)
+            } else {
+                // New item, add to cart
+                state.cartItem.push(action.payload); // Update state directly (Immer handles immutability)
+            }
+
+            // Persist cart data to local storage
+            localStorage.setItem('cart', JSON.stringify(state.cartItem));
         },
         removeFromCart : (state, action) => {
             const updatedCart = state.cartItem.filter(
