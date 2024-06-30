@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { handleGetCitites } from "../../services/region";
 
-const RegionDropdown = () => {
+const RegionDropdown = ({ OnSelectRegion, isHome=false}) => {
   // selected city
   const [selected, setSelected] = useState({
     id: "",
@@ -11,6 +11,9 @@ const RegionDropdown = () => {
     setSelected(city);
     localStorage.setItem("region", JSON.stringify(city));
     setIsActive(false);
+    if(isHome){
+      OnSelectRegion();
+    }
   };
 
   // City fetched from api

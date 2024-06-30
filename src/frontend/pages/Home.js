@@ -42,15 +42,9 @@ export const Home = () => {
           }
         >
           {/* Modal */}
-          <div className="bg-white min-w-[200px] w-[100%] max-w-[350px] p-2 py-4 rounded shadow-sm flex flex-col gap-2 ">
+          <div className="bg-white min-w-[200px] w-[100%] max-w-[350px] p-2 py-6 rounded shadow-sm flex flex-col gap-2 ">
             <h2 className="text-base font-semibold">Select Region</h2>
-            <RegionDropdown />
-            <button
-              onClick={OnSelectRegion}
-              className="bg-primary text-white p-1 px-2 rounded w-max"
-            >
-              Submit
-            </button>
+            <RegionDropdown isHome={true} OnSelectRegion={OnSelectRegion}  />
           </div>
         </div>
         <Header />
