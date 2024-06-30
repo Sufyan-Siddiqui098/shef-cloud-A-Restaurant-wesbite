@@ -96,10 +96,11 @@ export const ProfileForm = () => {
             addressFormData.append("name", profileData.first_name);
             addressFormData.append("phone", profileData.phone);
             addressFormData.append("address", address)
-            if(!coords.latitude){
-                toast.error("Please Allow Location")
-                return;
-            }
+            // not required for now
+            // if(!coords.latitude){
+            //     toast.error("Please Allow Location")
+            //     return;
+            // }
             addressFormData.append("longitude", coords.longitude);
             addressFormData.append("latitude", coords.latitude);
 
@@ -110,7 +111,9 @@ export const ProfileForm = () => {
             //--- Update address resposne handling
             setAddress(addressResponse.address)
             const { latitude, longitude } = addressResponse;        // Destructure the co-ordinates
-            setCoords({ latitude, longitude })
+            if(latitude && longitude){
+                setCoords({ latitude, longitude })
+            }
             
             //--- Update User Profile response handling
             const filteredData = Object.fromEntries(Object.entries(response).filter(([_, v]) => v != null)); // null values are removed
@@ -276,7 +279,7 @@ export const ProfileForm = () => {
                         </div>
 
                         {/* Temporary added */}
-                        <div className='md:col-span-6 col-span-12'>
+                        {/* <div className='md:col-span-6 col-span-12'>
                             <h4 className='text-base font-semibold mb-1 uppercase'>Longitude </h4>
                             <input 
                                 type="number" 
@@ -299,7 +302,7 @@ export const ProfileForm = () => {
                                 onChange={(e) => setCoords({ latitude: parseFloat(e.target.value) })} 
                                 value={coords.latitude}
                             />
-                        </div>
+                        </div> */}
                         {/* Temporary - end */}
 
                         <div className='col-span-12'>
