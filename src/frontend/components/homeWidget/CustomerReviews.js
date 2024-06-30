@@ -36,7 +36,7 @@ const CustomerReviews = () => {
                             pagination={{
                             clickable: true,
                             }}
-                            Mousewheel={true}
+                            mousewheel={true}
                             modules={[Pagination]}
                             className="customerReview_slide"
                             >

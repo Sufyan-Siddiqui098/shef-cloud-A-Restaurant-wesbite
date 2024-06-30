@@ -35,8 +35,8 @@ const MostLoveChef = () => {
                         }}
                         spaceBetween={30}
                         centeredSlides={true}
-                        Mousewheel={true}
-                        Loop={true}
+                        mousewheel={true}
+                        // Loop={true}
                         pagination={{
                             clickable: true,
                         }}
