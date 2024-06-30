@@ -35,46 +35,6 @@ export const ProfileForm = () => {
         googleMapsApiKey: "AIzaSyCKU3ow8iRNEBhi1St_gMdG5Tn7_Vf3Wzo",
         libraries: libraries
     })
-
-    // function getCityCountryZipFromCoords(latitude, longitude) {
-    //     const geocoder = new window.google.maps.Geocoder();
-    //     geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
-    //       if (status === 'OK') {
-    //         if (results[0]) {
-    //           const { address_components } = results[0];
-    //           const local = address_components.reduce((acc, component) => {
-    //             const { types } = component;
-    //             if(types.includes("premise")){
-    //                 acc.address = component.long_name;
-    //             }
-    //             if(types.includes("sublocality")){
-    //                 acc.address += ", " + component.long_name;
-    //             } else if (types.includes('country')) {
-    //               acc.country = component.long_name;
-    //             } else if (types.includes('locality')) {
-    //               acc.locality = component.long_name;
-    //             } else if (types.includes('postal_code')) {
-    //               acc.postal_code = component.long_name;
-    //             }
-    //             return acc;
-    //           }, {});
-    //           // IF address is empty
-    //          if(!address){
-    //              setAddress(local.address)
-    //          }
-    //           setCity(local.locality)
-    //           setCountry(local.country)
-              
-    //           setZipCode(local.postal_code? local.postal_code: "");
-    //           // Update your component state or display the data
-    //         } else {
-    //           console.warn('No results found');
-    //         }
-    //       } else {
-    //         console.error('Geocode was not successful:', status);
-    //       }
-    //     });
-    // }
       
     // geolocation - getting latitude & longitude
     useEffect(()=>{
@@ -110,7 +70,7 @@ export const ProfileForm = () => {
 
     }, [authToken, dispatch])
 
-    // On Change handler
+    // On Change handler - profile data
     const handleProfileDataChange = (e)=>{
         setProfileData({...profileData, [e.target.name]: e.target.value})
     }
@@ -165,7 +125,7 @@ export const ProfileForm = () => {
             setIsPending(false);
         }
     }
-
+    // Image File
     const fileInputRef = useRef(null);
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -314,6 +274,33 @@ export const ProfileForm = () => {
                                 />
                             </Autocomplete>
                         </div>
+
+                        {/* Temporary added */}
+                        <div className='md:col-span-6 col-span-12'>
+                            <h4 className='text-base font-semibold mb-1 uppercase'>Longitude </h4>
+                            <input 
+                                type="number" 
+                                placeholder='Enter Longitude' 
+                                id='' 
+                                name='longitude'
+                                onChange={(e) => setCoords({ longitude: parseFloat(e.target.value) })} 
+                                value={coords.longitude}
+                            />
+                        </div>
+                        <div className='md:col-span-6 col-span-12'>
+                            <h4 className='text-base font-semibold mb-1 uppercase'>Latitude </h4>
+                            <input 
+                                type="number" 
+                                placeholder='Enter Longitude' 
+                                id='' 
+                                min={0} 
+                                step={0.01}
+                                name='latitude'
+                                onChange={(e) => setCoords({ latitude: parseFloat(e.target.value) })} 
+                                value={coords.latitude}
+                            />
+                        </div>
+                        {/* Temporary - end */}
 
                         <div className='col-span-12'>
                             <h4 className='text-base font-semibold mb-1 uppercase'>Bio {/*<span className='text-primary'>*</span>*/} </h4>
