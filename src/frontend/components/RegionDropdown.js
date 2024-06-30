@@ -1,44 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
+import { handleGetCitites } from "../../services/region";
 
 const RegionDropdown = () => {
-    // selected city
+  // selected city
   const [selected, setSelected] = useState({
     id: "",
-    name: ""
+    name: "",
   });
   const onCitySelect = (city) => {
     setSelected(city);
-    localStorage.setItem('region', JSON.stringify(city));
+    localStorage.setItem("region", JSON.stringify(city));
     setIsActive(false);
-  }
+  };
 
   // City fetched from api
-  const [city, setCity] = useState([
-    {
-      id: 1,
-      value: "khi",
-      name: "Karachi",
-    },
-    {
-      id: 2,
-      value: "lhr",
-      name: "Lahore",
-    },
-    {
-      id: 3,
-      value: "hyd",
-      name: "Hyderabad",
-    },
-    {
-      id: 4,
-      value: "isl",
-      name: "Islamabad",
-    },
-  ]);
+  const [city, setCity] = useState([]);
 
   //Modal (active or deactive)
-  const [isActive, setIsActive] = useState(false)
- // Dropdown reference
+  const [isActive, setIsActive] = useState(false);
+  // Dropdown reference
   const dropdownMenuRef = useRef(null);
 
   // searching input
@@ -55,25 +35,56 @@ const RegionDropdown = () => {
     });
   };
 
-  // Get region if alraedy in localstorage
-  useEffect(()=>{
-    if(localStorage.getItem('region')){
-        const parsed = JSON.parse( localStorage.getItem('region') );
-        setSelected(parsed);
+  // Get Cities from backend - API
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await handleGetCitites();
+        setCity(response);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    
+    fetchCities();
+    console.log("useEffect is running ");
+  }, []);
+
+  // City from localStorage
+  useEffect(() => {
+    if (localStorage.getItem("region") && city.length > 0) {
+      const parsed = JSON.parse(localStorage.getItem("region"));
+      let found = false;
+      // console.log("parsed cities ", parsed, "cities ", city)
+      city.forEach((item) => {
+        if (item.name === parsed.name && item.id === parsed.id) {
+          // setCity(parsed)
+          setSelected(parsed);
+          found = true;
+          return;
+        }
+      });
+
+      if (!found) {
+        localStorage.removeItem("region");
+        window.location.reload();
+      }
     }
-  },[])
+  }, [city]);
 
   return (
     <>
-       {/* <!-- component --> */}
+      {/* Select Region  */}
       <div className=" flex items-center justify-center w-full ">
-        <div className="relative group border rounded-md w-full shadow-sm">
+        <div className="relative group border border-[#a0a3a7] rounded-md w-full shadow-sm">
           <button
-            onClick={()=> setIsActive(prev => !prev)}
+            onClick={() => setIsActive((prev) => !prev)}
             type="button"
             className="inline-flex justify-center items-center w-full px-4 py-1 text-sm font-medium text-gray-700 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-primary"
           >
-            <span className="mr-2">{selected.name ? selected.name : "Select City"}</span>
+            <span className="mr-2">
+              {selected.name ? selected.name : "Select City"}
+            </span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="w-5 h-5 ml-2 -mr-1"
@@ -91,9 +102,11 @@ const RegionDropdown = () => {
           <div
             ref={dropdownMenuRef}
             id="dropdown-menu"
-            className={`${isActive ? "" : "hidden"} absolute right-0 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-1 space-y-1 z-30 max-h-[200px] lg:max-h-[240px] overflow-y-auto`}
+            className={`${
+              isActive ? "" : "hidden"
+            } absolute right-0 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-1 space-y-1 z-30 max-h-[200px] lg:max-h-[240px] overflow-y-auto`}
           >
-            {/* <!-- Search input --> */}
+            {/* Search input */}
             <input
               onChange={hanldeOnChange}
               id="search-input"
@@ -102,10 +115,10 @@ const RegionDropdown = () => {
               placeholder="Search City"
               autoComplete="off"
             />
-            {/* <!-- Dropdown content goes here --> */}
+            {/* Dropdown content goes here  */}
             {city.map((item, index) => (
               <option
-                onClick={()=>onCitySelect(item)}
+                onClick={() => onCitySelect(item)}
                 key={index}
                 className="block px-4 py-1 border-b text-gray-700 hover:bg-gray-100 active:bg-blue-100 cursor-pointer font-semibold"
               >
