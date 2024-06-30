@@ -46,6 +46,7 @@ export const MyMenu = () => {
         instruction_template_id: "", //--- Screen 3
         reheating_instruction: "",
         expiry_days: 0,
+        cities: [],
         packaging: 1,
         ingredients: [],            //--- Screen 4
         //Screen 5 - will be added soon
@@ -174,6 +175,7 @@ export const MyMenu = () => {
                 instruction_template_id: chefMenu.instruction_template_id, //--- Screen 3
                 reheating_instruction: chefMenu.reheating_instruction,
                 expiry_days: chefMenu.expiry_days,
+                cities: chefMenu.cities,
                 packaging: chefMenu.packaging,
             }
             let toastMessage = '';
@@ -196,6 +198,11 @@ export const MyMenu = () => {
                 toastMessage = "Expiration field is required";
                 toast.error(toastMessage);
                 return;
+            }
+            //Cities
+            if( !requiredFields.cities || requiredFields.cities.length < 1 ){
+                toast.error("Please Select at least one city");
+                return
             }
             // Packaging
             if(requiredFields.packaging === '' || typeof requiredFields.packaging === 'undefined'){
@@ -238,7 +245,7 @@ export const MyMenu = () => {
         } ) ()
     },[authToken])
 
-    // Handle Update -- TODO 
+    // Handle Update 
     const [isUpdateDish, setIsUpdateDish] = useState(false);
     const openStepFormModalToUpdate = (dish) => {
         setIsUpdateDish(true)
