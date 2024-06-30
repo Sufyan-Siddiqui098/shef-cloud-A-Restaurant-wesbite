@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { handleGetHeatingInstruction } from '../../../services/shef';
-const   MoreInformationScreen = ({  instruction_template_id, reheating_instruction, expiry_days, packaging, updateFields}) => {
+import { handleGetCitites } from '../../../services/region';
+import Select from 'react-select';
+
+const   MoreInformationScreen = ({  instruction_template_id, reheating_instruction, expiry_days, cities, packaging, updateFields}) => {
     // Plus Minus Quantity Start
     // const [minutes, setMinutes] = useState(0);
 
@@ -24,9 +27,19 @@ const   MoreInformationScreen = ({  instruction_template_id, reheating_instructi
     // Plus Minus Quantity End
     
     const { authToken } = useSelector((state)=>state.user)
-    const [heatInstruction, setHeatInstruction] = useState([])
+    const [heatInstruction, setHeatInstruction] = useState([]) 
+    const [ citiesOption, setCitiesOption ] = useState([])    // cities from api
+    const [ selectedCities, setSelectedCities ] = useState([]);
 
-
+    //handle cities selection - hold id
+    const handleCitiesChange = (selectedValue) => {
+        console.log("selected", selectedValue)
+        setSelectedCities(selectedValue)
+        const selectedCitiesID = selectedValue.map((item) => item.id);
+        updateFields({ cities: selectedCitiesID }) // Update in Chef Menu
+    }
+    
+    // Get Heating-Instruction & Cities API
     useEffect(()=>{
         (async()=>{
             try {
@@ -35,9 +48,29 @@ const   MoreInformationScreen = ({  instruction_template_id, reheating_instructi
             } catch (error) {
                 console.log("Error While fetching instructions \n", error)
             }
+            try{
+                const response = await handleGetCitites();
+                const formatedCities = response.map((obj) => 
+                    {return{id: obj.id, value: obj.name, label: obj.name, country_id: obj.country_id}}
+                )
+                setCitiesOption(formatedCities);
+                console.log("cities response ", response)
+            } catch(error){
+                console.error("Error while fetching ciites\n", error)
+            }
         })()
     }, [authToken])
 
+    // Selected Cities if available in Chef Menu
+    useEffect(() => {
+        if ((cities && cities.length > 0) && citiesOption.length > 0) {
+          const citiesArray = citiesOption.filter((item) =>
+            cities.some((id) => id === item.id)
+          );
+          setSelectedCities(citiesArray)
+        }
+        //eslint-disable-next-line
+      }, [citiesOption]);
 
     const instructionTemplateOnChange = (e)=> {
         const value = parseInt(e.target.value, 10);
@@ -94,7 +127,28 @@ const   MoreInformationScreen = ({  instruction_template_id, reheating_instructi
                         />
                         <p className='text-headGray'>0 / 400</p>
                     </div>
-                    <div className='mt-7 mb-5 border-b'></div>
+                    {/* Region */}
+                    <div className='my-6 border-b'></div>
+                    <div className='mt-7 mb-5 rounded-lg bg-grayBg p-4'>
+                        {/* <h1>Hi</h1> */}
+                        <h3 className='text-lg font-semibold mb-1 leading-tight'>Cities </h3>
+                        <p className='text-[12px]'>
+                             Choose the cities where you'd like to offer your delicious dishe.
+                        </p>
+                        <Select
+                            isMulti
+                            options={citiesOption}
+                            value={selectedCities}
+                            onChange={handleCitiesChange}
+                            placeholder="+ Add Cities"
+                        />
+                        <ul className='mt-2'>
+                            {selectedCities.map((option) => (
+                                <li className='bg-secondary text-white inline-block rounded-[4px] px-2 mr-2' key={option.value}>{option.label}</li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div className='my-6 border-b'></div>
                     <div className='flex md:flex-row flex-col md:items-center items-start justify-between gap-2 mt-6'>
                         <div>
                             <h3 className='text-lg font-semibold mb-1 leading-tight'>Expiration</h3>
