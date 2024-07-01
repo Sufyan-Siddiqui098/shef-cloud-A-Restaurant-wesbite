@@ -17,7 +17,7 @@ import { toast } from 'react-toastify'
 export const Home = () => {
     const [ regionAvailable, setRegionAvailable ] = useState(localStorage.getItem("region") ? true : false);
   
-    //Modal Region Selection
+    // Region Modal 
     const OnSelectRegion = () =>{
       if(localStorage.getItem('region')){
         setRegionAvailable(true);
@@ -34,6 +34,7 @@ export const Home = () => {
 
     return (
       <>
+        {/* Modal to select Region */}
         <div
           className={
             !regionAvailable
@@ -41,12 +42,12 @@ export const Home = () => {
               : "hidden"
           }
         >
-          {/* Modal */}
           <div className="bg-white min-w-[200px] w-[100%] max-w-[350px] p-2 py-6 rounded shadow-sm flex flex-col gap-2 ">
             <h2 className="text-base font-semibold">Select Region</h2>
             <RegionDropdown isHome={true} OnSelectRegion={OnSelectRegion}  />
           </div>
         </div>
+        {/* Modal End */}
         <Header />
         {!userInfo && <HeroBanner />}
         <BrowsByCategories />
