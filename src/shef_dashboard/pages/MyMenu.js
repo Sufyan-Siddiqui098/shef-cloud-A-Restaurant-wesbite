@@ -253,7 +253,8 @@ export const MyMenu = () => {
         setChefMenu(dish)
         // To get just ID of ingredients in array
         const ingredientsId = dish.ingredients.map((obj) => obj.ingredient_id);
-        updateFields({ ingredients: ingredientsId })
+        const citiesId =  dish.cities.map((city) => city.id);
+        updateFields({ ingredients: ingredientsId, cities: citiesId })
     }
 
     // Create Menu API Handle start

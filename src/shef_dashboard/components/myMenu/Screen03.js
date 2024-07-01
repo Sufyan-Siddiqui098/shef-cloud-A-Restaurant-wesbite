@@ -54,7 +54,6 @@ const   MoreInformationScreen = ({  instruction_template_id, reheating_instructi
                     {return{id: obj.id, value: obj.name, label: obj.name, country_id: obj.country_id}}
                 )
                 setCitiesOption(formatedCities);
-                console.log("cities response ", response)
             } catch(error){
                 console.error("Error while fetching ciites\n", error)
             }
