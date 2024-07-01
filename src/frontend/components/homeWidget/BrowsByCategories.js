@@ -67,7 +67,7 @@ const BrowsByCategories = () => {
                             {foodCategory.map((category)=> (
                                 <SwiperSlide>
                                     <div className='rounded-lg bg-white shadow'>
-                                        <Link className="">
+                                        <Link to={`/categorize-dishes/${category.id}`} className="">
                                             <div className="pt-4 px-4">
                                                 {/* <img src="./media/frontend/img/restaurants/160x160/bcuisine-1.jpg" className="img-fluid w-full h-[160px] object-cover rounded-lg" alt="categories"/> */}
                                                 <img 
