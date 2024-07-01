@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
+import { handleGetFoodCategory } from '../../../services/get_without_auth';
 
 const BrowsByCategories = () => {
+    const [ foodCategory, setFoodCategory ] = useState([]);
+
+    // GET Food category - API 
+    useEffect(()=> {
+        (async()=>{
+            try {
+                const response = await handleGetFoodCategory();
+                console.log('response ', response);
+                setFoodCategory(response);
+                
+            } catch (error) {
+                console.error("Error while fetching food category",error)
+            }
+
+        })()
+    }, [])
+
+
     return (
         <>
             <div className='point_3Banner'>
@@ -37,25 +56,32 @@ const BrowsByCategories = () => {
                                 },
                             }}
                             centeredSlides={false}
-                            Mousewheel={true}
-                            Loop={true}
+                            mousewheel={true}
+                            // loop={true}
                             pagination={{
                                 clickable: true,
                             }}
                             modules={[Pagination]}
                             className="loveChef"
                         >
-                            <SwiperSlide>
-                                <div className='rounded-lg bg-white shadow'>
-                                    <Link className="">
-                                        <div className="pt-4 px-4">
-                                            <img src="./media/frontend/img/restaurants/160x160/bcuisine-1.jpg" className="img-fluid w-full h-[160px] object-cover rounded-lg" alt="categories"/>
-                                        </div> 
-                                        <h4 className="py-2 md:text-lg text-base font-semibold mb-0">Italian</h4>
-                                    </Link>
-                                </div>
-                            </SwiperSlide>
-                            <SwiperSlide>
+                            {foodCategory.map((category)=> (
+                                <SwiperSlide>
+                                    <div className='rounded-lg bg-white shadow'>
+                                        <Link className="">
+                                            <div className="pt-4 px-4">
+                                                {/* <img src="./media/frontend/img/restaurants/160x160/bcuisine-1.jpg" className="img-fluid w-full h-[160px] object-cover rounded-lg" alt="categories"/> */}
+                                                <img 
+                                                    src={category.image ? category.image : "./media/frontend/img/restaurants/160x160/bcuisine-1.jpg"} 
+                                                    className="img-fluid w-full h-[160px] object-cover rounded-lg" alt="categories"
+                                                />
+                                            </div> 
+                                            <h4 className="py-2 md:text-lg text-base font-semibold mb-0">{category.name}</h4>
+                                        </Link>
+                                    </div>
+                                </SwiperSlide>
+                            ))
+                            }
+                            {/* <SwiperSlide>
                                 <div className='rounded-lg bg-white shadow'>
                                     <Link className="">
                                         <div className="pt-4 px-4">
@@ -104,7 +130,7 @@ const BrowsByCategories = () => {
                                         <h4 className="py-2 md:text-lg text-base font-semibold mb-0">Labanese</h4>
                                     </Link>
                                 </div>
-                            </SwiperSlide>
+                            </SwiperSlide> */}
                         </Swiper>
                     </div>
                 </div>
