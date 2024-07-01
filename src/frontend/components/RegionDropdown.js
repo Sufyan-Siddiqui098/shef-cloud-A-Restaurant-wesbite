@@ -55,13 +55,12 @@ const RegionDropdown = ({ OnSelectRegion, isHome=false}) => {
 
   // City from localStorage
   useEffect(() => {
-    if (localStorage.getItem("region") && city.length > 0) {
+    if (localStorage.getItem("region") && city?.length > 0) {
       const parsed = JSON.parse(localStorage.getItem("region"));
       let found = false;
       // console.log("parsed cities ", parsed, "cities ", city)
       city.forEach((item) => {
         if (item.name === parsed.name && item.id === parsed.id) {
-          // setCity(parsed)
           setSelected(parsed);
           found = true;
           return;
@@ -119,7 +118,7 @@ const RegionDropdown = ({ OnSelectRegion, isHome=false}) => {
               autoComplete="off"
             />
             {/* Dropdown content goes here  */}
-            {city.map((item, index) => (
+            {city?.map((item, index) => (
               <option
                 onClick={() => onCitySelect(item)}
                 key={index}
