@@ -15,14 +15,14 @@ const PopularCollection = () => {
                                 Delicious Food
                             </h3>
                         </div>
-                        <div className='text-start'>
+                        {/* <div className='text-start'>
                             <h2 className="font-semibold inline-block text-xl border-b pb-1 mb-4 uppercase tracking-widest">
                                 Top Rated Dishes
                             </h2>
                         </div>
                         <div className='grid md:grid-cols-2 grid-cols-1 gap-4'>
                             {/* Column #1 */}
-                            <div className="ex-collection-box mb-xl-20 relative rounded-lg overflow-hidden">
+                           {/* <div className="ex-collection-box mb-xl-20 relative rounded-lg overflow-hidden">
                                 <Link>
                                     <img src="./media/frontend/img/restaurants/604x336/collection-1.jpg" className="img-fluid full-width" alt="Dish"/>
                                     <div className="absolute bottom-4 right-4 z-1"> 
@@ -31,7 +31,7 @@ const PopularCollection = () => {
                                 </Link>
                             </div>
                             {/* Column #2 */}
-                            <div className="ex-collection-box mb-xl-20 relative rounded-lg overflow-hidden">
+                            {/*<div className="ex-collection-box mb-xl-20 relative rounded-lg overflow-hidden">
                                 <Link>
                                     <img src="./media/frontend/img/restaurants/604x336/collection-2.jpg" className="img-fluid full-width" alt="Dish"/>
                                     <div className="absolute bottom-4 right-4 z-1"> 
@@ -39,7 +39,7 @@ const PopularCollection = () => {
                                     </div>
                                 </Link>
                             </div>
-                        </div>
+                        </div> */}
                         <div className='mt-8'>
                             <div className='text-start'>
                                 <h2 className="font-semibold inline-block text-xl border-b pb-1 mb-4 uppercase tracking-widest">
