@@ -26,7 +26,7 @@ import { useEffect } from "react";
 import AuthProtected from "./protected_route/AuthProtected";
 import ShefProtected from "./protected_route/ShefProtected";
 import ScrollToTop from "./frontend/components/ScrollToTop";
-import CategoryAllDishes from "./frontend/pages/CategoryAllDishes";
+import CategorizeDishes from "./frontend/pages/CategorizeDishes";
 
 function App() {
   useEffect(() => {
@@ -66,7 +66,7 @@ function App() {
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/homemade-food-delivery" element={<HomeFoodDelivery />} />
       <Route path="/faqs" element={<Faqs />} />
-      <Route path="/category-dishes/:foodCategoryId?" element={<CategoryAllDishes />} />
+      <Route path="/categorize-dishes/:foodCategoryId?" element={<CategorizeDishes />} />
       {/* Protected Route */}
       <Route element={<AuthProtected/>}>
         <Route path="/cart" element={<CartPage />} />

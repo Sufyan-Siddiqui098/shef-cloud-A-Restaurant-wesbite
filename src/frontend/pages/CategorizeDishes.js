@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Link, useParams } from "react-router-dom";
 
-const CategoryAllDishes = () => {
+const CategorizeDishes = () => {
     // eslint-disable-next-line
     const [ categoryDishes, setCategoryDishes ] = useState([]);
     // eslint-disable-next-line
@@ -135,4 +135,4 @@ const CategoryAllDishes = () => {
   );
 };
 
-export default CategoryAllDishes;
+export default CategorizeDishes;
