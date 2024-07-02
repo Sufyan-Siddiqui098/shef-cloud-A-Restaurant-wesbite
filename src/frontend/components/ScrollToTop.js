@@ -13,6 +13,7 @@ const scrollToTopRoutes = [
   "/privacy-policy",
   "/terms-of-servies",
   "/homemade-food-delivery",
+  '/all-chef',
 ]; // Routes to scroll to top
 
 const ScrollToTop = () => {
