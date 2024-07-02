@@ -9,28 +9,28 @@ const Footer = () => {
                 <div className="u-line instagram-slider swiper-container px-4 py-12 relative" id='footerImgSide'>
                     <ul className="grid lg:grid-cols-8 md:grid-cols-4 grid-cols-2 gap-4">
                         <li className="bgImg">
-                            <img src="./media/frontend/img/restaurants/250x200/insta-3.jpg" alt="instagram" />
+                            <img src="/media/frontend/img/restaurants/250x200/insta-3.jpg" alt="instagram" />
                         </li>
                         <li className="bgImg">
-                            <img src="./media/frontend/img/restaurants/250x200/insta-1.jpg" alt="instagram" />
+                            <img src="/media/frontend/img/restaurants/250x200/insta-1.jpg" alt="instagram" />
                         </li>
                         <li className="bgImg">
-                            <img src="./media/frontend/img/restaurants/250x200/insta-2.jpg" alt="instagram" />
+                            <img src="/media/frontend/img/restaurants/250x200/insta-2.jpg" alt="instagram" />
                         </li>
                         <li className="bgImg">
-                            <img src="./media/frontend/img/restaurants/250x200/insta-4.jpg" alt="instagram" />
+                            <img src="/media/frontend/img/restaurants/250x200/insta-4.jpg" alt="instagram" />
                         </li>
                         <li className="bgImg">
-                            <img src="./media/frontend/img/restaurants/250x200/insta-5.jpg" alt="instagram" />
+                            <img src="/media/frontend/img/restaurants/250x200/insta-5.jpg" alt="instagram" />
                         </li>
                         <li className="bgImg">
-                            <img src="./media/frontend/img/restaurants/250x200/insta-6.jpg" alt="instagram" />
+                            <img src="/media/frontend/img/restaurants/250x200/insta-6.jpg" alt="instagram" />
                         </li>
                         <li className="bgImg">
-                            <img src="./media/frontend/img/restaurants/250x200/insta-7.jpg" alt="instagram" />
+                            <img src="/media/frontend/img/restaurants/250x200/insta-7.jpg" alt="instagram" />
                         </li>
                         <li className="bgImg">
-                            <img src="./media/frontend/img/restaurants/250x200/insta-8.jpg" alt="instagram" />
+                            <img src="/media/frontend/img/restaurants/250x200/insta-8.jpg" alt="instagram" />
                         </li>
                     </ul>
                     <div className="footerChefBx">
@@ -42,7 +42,7 @@ const Footer = () => {
                         </div>
                         <div className="flex md:flex-row flex-col md:gap-x-4 gap-x-0 md:gap-y-0 gap-y-4 justify-center">
                             <NavLink to="/become-a-chef" className="footerChefBxBtn !text-[#323232]">
-                                <img src="./media/frontend/img/chef-icon.svg" alt="Become A Chef" />
+                                <img src="/media/frontend/img/chef-icon.svg" alt="Become A Chef" />
                                 <button type='submit'>Become A Chef</button>
                             </NavLink>
                             <div className="footerChefBxBtn">
@@ -202,12 +202,12 @@ const Footer = () => {
                                 <div className='flex gap-x-4 lg:justify-start justify-center md:mt-0 mt-3'>
                                     <div className="appimg">
                                         <Link>
-                                            <img src="./media/frontend/img/appstore.jpg" className="img-fluid" alt="app logo" />
+                                            <img src="/media/frontend/img/appstore.jpg" className="img-fluid" alt="app logo" />
                                         </Link>
                                     </div>
                                     <div className="appimg">
                                         <Link>
-                                            <img src="./media/frontend/img/playstore.jpg" className="img-fluid" alt="app logo" />
+                                            <img src="/media/frontend/img/playstore.jpg" className="img-fluid" alt="app logo" />
                                         </Link>
                                     </div>
                                 </div>
