@@ -14,6 +14,7 @@ const RegionDropdown = ({ OnSelectRegion, isHome=false}) => {
     if(isHome){
       OnSelectRegion();
     }
+    window.location.reload();
   };
 
   // City fetched from api
