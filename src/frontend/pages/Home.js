@@ -55,8 +55,8 @@ export const Home = () => {
         {/* <LocalChef/> */}
         <MostLoveChef />
         <MeetChef />
-        <CustomerReviews />
-        <CommunityStories />
+        {/* <CustomerReviews /> */}
+        {/* <CommunityStories /> */}
         <Subscriber />
 
         <Footer />
