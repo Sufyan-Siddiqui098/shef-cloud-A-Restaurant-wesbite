@@ -26,10 +26,11 @@ const MeetChef = () => {
                                             </p>
                                         </div>
                                     </div>
-                                    <Link className='rounded-md py-2 px-6 text-base tracking-wider uppercase font-semibold whitespace-nowrap bg-primary py-3 !text-white border border-transparent hover:border-primaryGreen hover:!text-green-400 '>Read More</Link>
+                                    <Link to='/all-chef' className='rounded-md py-2 px-6 text-base tracking-wider uppercase font-semibold whitespace-nowrap bg-primary py-3 !text-white border border-transparent hover:border-primaryGreen hover:!text-green-400 '>All Chefs</Link>
+                                    {/* <Link to='/all-chef' className='rounded-md py-2 px-6 text-base tracking-wider uppercase font-semibold whitespace-nowrap bg-primary py-3 !text-white border border-transparent hover:border-primaryGreen hover:!text-green-400 '>Read More</Link> */}
                                 </div>
                             </div>
-                            <div className='lg:col-span-6 col-span-12'>
+                            {/* <div className='lg:col-span-6 col-span-12'>
                                 <div className='grid lg:grid-cols-3 md:grid-cols-4 grid-cols-2 gap-5 lg:mt-0 mt-8'>
                                     <div className='border border-primary border-dashed p-2 rounded-lg'>
                                         <img src='./media/frontend/img/banner/chef-1.webp' className='rounded-lg w-full h-[140px] object-top object-cover shadow-xl' alt='Chef' />
@@ -60,7 +61,7 @@ const MeetChef = () => {
                                     </div>
                                     
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>    
