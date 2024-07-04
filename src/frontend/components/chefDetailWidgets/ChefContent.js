@@ -1,14 +1,17 @@
 import React from 'react';
+import isValidURL from '../../../ValidateUrl';
 const ChefContent = ({chefAndDishes}) => {
    
     return (
         <>
             <div className='pb-16 pt-8 lg:px-2 px-4'>
                 <div className='container mx-auto'>
-                    <img src={chefAndDishes.cover_pic ? chefAndDishes.cover_pic :'/media/frontend/img/shef-detail/defaultImage.png'} className='object-top rounded-[16px] w-full object-cover h-[250px]' alt='Chef Cover' />
+                    {/* <img src={(chefAndDishes.cover_pic && isValidURL(chefAndDishes.cover_pic)) ? chefAndDishes.cover_pic :'/media/frontend/img/shef-detail/defaultImage.png'} className='object-top rounded-[16px] w-full object-cover h-[250px]' alt='Chef Cover' /> */}
+                    <img src={(chefAndDishes.cover_pic && isValidURL(chefAndDishes.cover_pic)) ? chefAndDishes.cover_pic :'https://t3.ftcdn.net/jpg/04/84/88/76/360_F_484887682_Mx57wpHG4lKrPAG0y7Q8Q7bJ952J3TTO.jpg'} className='object-top rounded-[16px] w-full object-cover h-[250px]' alt='Chef Cover' />
                     <div className='flex lg:flex-row flex-col gap-4 lg:mt-[-80px] mt-[-200px] px-3'>
                         <div className='lg:w-[270px] md:w-[35%] w-full'>
-                            <img src={chefAndDishes.profile_pic ? chefAndDishes.profile_pic : '/media/frontend/img/banner/female-chef.png'} className='object-top rounded-[16px] w-full object-cover lg:h-full h-[260px] border-[5px] border-white' alt='Love Local Chef' />
+                            {/* <img src={chefAndDishes.profile_pic && isValidURL(chefAndDishes.profile_pic) ? chefAndDishes.profile_pic : '/media/frontend/img/banner/female-chef.png'} className='object-top rounded-[16px] w-full object-cover lg:h-full h-[260px] border-[5px] border-white' alt='Love Local Chef' /> */}
+                            <img src={chefAndDishes.profile_pic && isValidURL(chefAndDishes.profile_pic) ? chefAndDishes.profile_pic : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'} className='object-top rounded-[16px] w-full object-cover lg:h-full h-[260px] border-[5px] border-white' alt='Love Local Chef' />
                         </div>
                         <div className='w-full'>
                             <div className='flex lg:flex-row flex-col lg:items-center lg;justify-between lg:pt-[100px] md:pt-4 pt-2'>
