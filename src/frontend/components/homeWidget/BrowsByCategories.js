@@ -64,8 +64,8 @@ const BrowsByCategories = () => {
                             modules={[Pagination]}
                             className="loveChef"
                         >
-                            {foodCategory.map((category)=> (
-                                <SwiperSlide>
+                            {foodCategory.map((category, index)=> (
+                                <SwiperSlide key={index}>
                                     <div className='rounded-lg bg-white shadow'>
                                         <Link to={`/categorize-dishes/${category.id}`} className="">
                                             <div className="pt-4 px-4">
