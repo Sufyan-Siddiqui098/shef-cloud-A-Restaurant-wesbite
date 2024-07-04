@@ -8,8 +8,9 @@ import '../assets/css/main-style.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { signOutUser } from '../../store/slice/user';
 import { toast } from 'react-toastify';
-import { removeFromCart } from '../../store/slice/cart';
+import { emptyCart, removeFromCart } from '../../store/slice/cart';
 import RegionDropdown from './RegionDropdown';
+import isValidURL from '../../ValidateUrl';
 
 const Header = () => {
     const [isBoxVisible, setBoxVisible] = useState(false);
@@ -24,13 +25,20 @@ const Header = () => {
 
     const handleSignOut = ()=>{
         dispatch(signOutUser()); 
-        localStorage.removeItem("cart")
+        dispatch(emptyCart())
         toast.success("Logout Successfully ")
         navigate('/')
     }
     // Cart from -- Redux store
     const { cartItem } = useSelector((state) => state.cart);
-    const subTotal = cartItem.reduce((acc, item) => acc + (item.unit_price || 0) * item.quantity, 0);
+    // const subTotal = cartItem.reduce((acc, item) => acc + (item.unit_price || 0) * item.quantity, 0);
+    const subTotal = cartItem.reduce((accChef, chef) => {
+        const chefTotal = chef.menu.reduce((accMenu, menu) => {
+            return accMenu + (menu.unit_price || 0) * menu.quantity;
+        }, 0);
+        return accChef + chefTotal;
+    }, 0);
+    
 
     return (
         <>
@@ -76,16 +84,16 @@ const Header = () => {
                                                                 <div className="">
                                                                     <div className="menu-style">
                                                                         <ul>
-                                                                            <li className='mb-3'>
+                                                                            {/* <li className='mb-3'>
                                                                                 <NavLink className='!block'>
                                                                                     <div className='bg-primary rounded-[5px] px-4 md:px-2 text-base text-white font-medium text-center'>Build your Personal Meal Plan</div>
                                                                                 </NavLink>
-                                                                            </li>
-                                                                            <li className='mb-3'>
+                                                                            </li> */}
+                                                                            {/* <li className='mb-3'>
                                                                                 <NavLink className='!block'>
                                                                                     <div className='bg-primary rounded-[5px] px-4 text-base text-white font-medium text-center'>Explore Local Chef</div>
                                                                                 </NavLink>
-                                                                            </li>
+                                                                            </li> */}
                                                                             <li className='mb-3 lg:hidden'>
                                                                                 <RegionDropdown/>
                                                                             </li>
@@ -103,24 +111,24 @@ const Header = () => {
                                                                                     <div className='text-[16px] text-secondary hover:text-primary font-medium'>Become a Chef</div>
                                                                                 </NavLink>
                                                                             </li>
-                                                                            <li className=''>
+                                                                            {/* <li className=''>
                                                                                 <NavLink className='!inline-flex !items-center gap-x-2'>
                                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="rgba(0,0,0,1)"><path d="M14.5049 2.00281C16.4379 2.00281 18.0049 3.56981 18.0049 5.50281C18.0049 6.04001 17.8839 6.54895 17.6676 7.00385L21.0049 7.00281C21.5572 7.00281 22.0049 7.45052 22.0049 8.00281V12.0028C22.0049 12.5551 21.5572 13.0028 21.0049 13.0028H20.0049V21.0028C20.0049 21.5551 19.5572 22.0028 19.0049 22.0028H5.00488C4.4526 22.0028 4.00488 21.5551 4.00488 21.0028V13.0028H3.00488C2.4526 13.0028 2.00488 12.5551 2.00488 12.0028V8.00281C2.00488 7.45052 2.4526 7.00281 3.00488 7.00281L6.34219 7.00385C6.12591 6.54895 6.00488 6.04001 6.00488 5.50281C6.00488 3.56981 7.57189 2.00281 9.50488 2.00281C10.4849 2.00281 11.3708 2.40557 12.0061 3.05459C12.639 2.40557 13.5249 2.00281 14.5049 2.00281ZM18.0049 13.0028H6.00488V20.0028H18.0049V13.0028ZM20.0049 9.00281H4.00488V11.0028H20.0049V9.00281ZM9.50488 4.00281C8.67646 4.00281 8.00488 4.67438 8.00488 5.50281C8.00488 6.2825 8.59977 6.92326 9.36042 6.99594L9.50488 7.00281H11.0049V5.50281C11.0049 4.72311 10.41 4.08236 9.64934 4.00967L9.50488 4.00281ZM14.5049 4.00281L14.3604 4.00967C13.6473 4.07782 13.0799 4.64524 13.0117 5.35835L13.0049 5.50281V7.00281H14.5049L14.6493 6.99594C15.41 6.92326 16.0049 6.2825 16.0049 5.50281C16.0049 4.72311 15.41 4.08236 14.6493 4.00967L14.5049 4.00281Z"></path></svg>
                                                                                     <div className='text-[16px] text-secondary hover:text-primary font-medium'>Gift Cards</div>
                                                                                 </NavLink>
-                                                                            </li>
-                                                                            <li className=''>
+                                                                            </li> */}
+                                                                            {/* <li className=''>
                                                                                 <NavLink className='!inline-flex !items-center gap-x-2'>
                                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="rgba(0,0,0,1)"><path d="M12 20.8995L16.9497 15.9497C19.6834 13.2161 19.6834 8.78392 16.9497 6.05025C14.2161 3.31658 9.78392 3.31658 7.05025 6.05025C4.31658 8.78392 4.31658 13.2161 7.05025 15.9497L12 20.8995ZM12 23.7279L5.63604 17.364C2.12132 13.8492 2.12132 8.15076 5.63604 4.63604C9.15076 1.12132 14.8492 1.12132 18.364 4.63604C21.8787 8.15076 21.8787 13.8492 18.364 17.364L12 23.7279ZM12 13C13.1046 13 14 12.1046 14 11C14 9.89543 13.1046 9 12 9C10.8954 9 10 9.89543 10 11C10 12.1046 10.8954 13 12 13ZM12 15C9.79086 15 8 13.2091 8 11C8 8.79086 9.79086 7 12 7C14.2091 7 16 8.79086 16 11C16 13.2091 14.2091 15 12 15Z"></path></svg>
                                                                                     <div className='text-[16px] text-secondary hover:text-primary font-medium'>Update zip code:123456</div>
                                                                                 </NavLink>
-                                                                            </li>
-                                                                            <li className=''>
+                                                                            </li> */}
+                                                                            {/* <li className=''>
                                                                                 <NavLink className='!inline-flex !items-center gap-x-2'>
                                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="rgba(0,0,0,1)"><path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 15H13V17H11V15ZM13 13.3551V14H11V12.5C11 11.9477 11.4477 11.5 12 11.5C12.8284 11.5 13.5 10.8284 13.5 10C13.5 9.17157 12.8284 8.5 12 8.5C11.2723 8.5 10.6656 9.01823 10.5288 9.70577L8.56731 9.31346C8.88637 7.70919 10.302 6.5 12 6.5C13.933 6.5 15.5 8.067 15.5 10C15.5 11.5855 14.4457 12.9248 13 13.3551Z"></path></svg>
                                                                                     <div className='text-[16px] text-secondary hover:text-primary font-medium'>Help Center</div>
                                                                                 </NavLink>
-                                                                            </li>
+                                                                            </li> */}
                                                                         </ul>
                                                                     </div>
                                                                 </div>
@@ -170,7 +178,8 @@ const Header = () => {
                                             {/* <!-- user account -->*/}
                                             <div className="user-details p-relative">
                                                 <NavLink className="text-light-white fw-500">
-                                                    <img src={userInfo.profile_pic ? userInfo.profile_pic : "/media/frontend/img/user-1.png"} className="rounded-circle e" alt="userimg" /> <span className=''>{userInfo.first_name}</span>
+                                                    {/* <img src={userInfo.profile_pic ? userInfo.profile_pic : "/media/frontend/img/user-1.png"} className="rounded-circle e" alt="userimg" /> <span className=''>{userInfo.first_name}</span> */}
+                                                    <img src={(userInfo.profile_pic && isValidURL(userInfo.profile_pic)) ? userInfo.profile_pic : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} className="rounded-full w-8 h-8 object-cover" alt="userimg" /> <span className=''>{userInfo.first_name}</span>
                                                 </NavLink>
                                                 <div className="user-dropdown">
                                                     <ul className='w-full'>
@@ -192,7 +201,7 @@ const Header = () => {
                                                             )
                                                         }
 
-                                                        <li>
+                                                        {/* <li>
                                                             <NavLink>
                                                                 <div className="userIner">
                                                                     <div className="icon">
@@ -251,14 +260,14 @@ const Header = () => {
                                                                     <span className="details">Help</span>
                                                                 </div>
                                                             </NavLink>
-                                                        </li>
+                                                        </li> */}
                                                     </ul>
                                                     <div onClick={handleSignOut} className="user-footer"> <NavLink>Sign Out</NavLink>
                                                     </div>
                                                 </div>
                                             </div>
                                             {/* <!-- user notification -->*/}
-                                            <div className="cart-btn notification-btn mr-2">
+                                            {/* <div className="cart-btn notification-btn mr-2">
                                                 <NavLink className="text-light-green fw-700">
                                                     <div className="notifyBx">
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="rgba(255,255,255,1)">
@@ -294,7 +303,7 @@ const Header = () => {
 
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             {/*
                                         <!-- user notification -->*/}
                                             {/* <!-- user cart -->*/}
@@ -305,7 +314,9 @@ const Header = () => {
                                                             <path d="M7.00488 7.99966V5.99966C7.00488 3.23824 9.24346 0.999664 12.0049 0.999664C14.7663 0.999664 17.0049 3.23824 17.0049 5.99966V7.99966H20.0049C20.5572 7.99966 21.0049 8.44738 21.0049 8.99966V20.9997C21.0049 21.5519 20.5572 21.9997 20.0049 21.9997H4.00488C3.4526 21.9997 3.00488 21.5519 3.00488 20.9997V8.99966C3.00488 8.44738 3.4526 7.99966 4.00488 7.99966H7.00488ZM7.00488 9.99966H5.00488V19.9997H19.0049V9.99966H17.0049V11.9997H15.0049V9.99966H9.00488V11.9997H7.00488V9.99966ZM9.00488 7.99966H15.0049V5.99966C15.0049 4.34281 13.6617 2.99966 12.0049 2.99966C10.348 2.99966 9.00488 4.34281 9.00488 5.99966V7.99966Z"></path>
                                                         </svg>
                                                         {/* <span className="userCartCount">3</span> */}
-                                                        <span className="userCartCount">{cartItem.length}</span>
+                                                        <span className="userCartCount">
+                                                            {cartItem.reduce((total, chef) => total + chef.menu.length, 0)}
+                                                        </span>
                                                     </div>
 
                                                 </NavLink>
@@ -314,30 +325,36 @@ const Header = () => {
                                                         <div className="card-header padding-15">Your Order</div>
                                                         <div className="card-body no-padding">
                                                             {/* Products from Cart */}
-                                                            { cartItem.map((product, index) => ( <div key={index} className="cat-product-box">
-                                                                <div className="cat-product">
-                                                                    <div className="cat-name">
-                                                                        <NavLink>
-                                                                            <p className="text-light-green"><span className="text-dark-white">{product.quantity}</span> {product.name}</p> <span className="text-light-white">small, chilli chicken</span>
-                                                                        </NavLink>
+                                                            { cartItem.map((chef, chefIndex) => ( 
+                                                                chef.menu.map((product, menuIndex)=>(
+                                                                    <div key={menuIndex} className="cat-product-box">
+                                                                        <div className="cat-product">
+                                                                            <div className="cat-name">
+                                                                                <NavLink>
+                                                                                    <p className="text-light-green"><span className="text-dark-white">{product.quantity}</span> {product.name}</p> 
+                                                                                    {/* <span className="text-light-white">small, chilli chicken</span> */}
+                                                                                </NavLink>
+                                                                            </div>
+                                                                            <div className="delete-btn">
+                                                                                {/* <NavLink className="text-dark-white"> <i className="far fa-trash-alt"></i>
+                                                                                </NavLink> */}
+                                                                                <button 
+                                                                                    onClick={() => dispatch(removeFromCart({chefIndex,menuIndex})) } className="text-dark-white"
+                                                                                > 
+                                                                                    <FontAwesomeIcon icon={faTrashAlt} />
+                                                                                </button>
+                                                                            </div>
+                                                                            <div className="price"> 
+                                                                                {/* <NavLink className="text-dark-white fw-500">
+                                                                                { (product.unit_price).toLocaleString('en-US',{ style: "currency", currency: "USD" }) 
+                                                                                } 
+                                                                                </NavLink> */}
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
-                                                                    <div className="delete-btn">
-                                                                        {/* <NavLink className="text-dark-white"> <i className="far fa-trash-alt"></i>
-                                                                        </NavLink> */}
-                                                                        <button 
-                                                                            onClick={() => dispatch(removeFromCart(index)) } className="text-dark-white"
-                                                                        > 
-                                                                            <FontAwesomeIcon icon={faTrashAlt} />
-                                                                        </button>
-                                                                    </div>
-                                                                    <div className="price"> 
-                                                                        <NavLink className="text-dark-white fw-500">
-                                                                        { (product.unit_price).toLocaleString('en-US',{ style: "currency", currency: "USD" }) 
-                                                                        } 
-                                                                        </NavLink>
-                                                                    </div>
-                                                                </div>
-                                                            </div>))}
+
+                                                                )) 
+                                                        ))}
                                                             
                                                             <div className="item-total">
                                                                 <div className="total-price border-0"> <span className="text-dark-white fw-700">Items subtotal:</span>
@@ -354,7 +371,7 @@ const Header = () => {
                                                             </div>
                                                         </div>
                                                         <div className="card-footer padding-15"> 
-                                                            <NavLink to="/checkout" className="btn-first green-btn text-custom-white full-width fw-500 !text-white hover:!text-primary focus:!text-primary">
+                                                            <NavLink to="/cart" className="btn-first green-btn text-custom-white full-width fw-500 !text-white hover:!text-primary focus:!text-primary">
                                                                 Proceed to Checkout
                                                             </NavLink>
                                                         </div>
