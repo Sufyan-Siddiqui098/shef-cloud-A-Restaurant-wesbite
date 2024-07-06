@@ -119,6 +119,7 @@ export const MyMenu = () => {
         food_type_id: "",
         spice_level_id: "",
         tags: "",
+        base_type_id: "",
         portion_size: "",
         portion_type_id: "", // Consider making this a required field if applicable
         chef_earning_fee: "", // Can be 0 if user intends it
@@ -128,7 +129,7 @@ export const MyMenu = () => {
       const missingFields = Object.entries(requiredFields)
         .filter(
           ([key, value]) =>
-            chefMenu[key] === "" || typeof chefMenu[key] === "undefined"
+           !chefMenu[key] || chefMenu[key] === "" || typeof chefMenu[key] === "undefined"
         )
         .map(([key]) => key);
       console.log("missidng", missingFields);
@@ -144,11 +145,12 @@ export const MyMenu = () => {
         } else if (missingFields[0] === "tags") {
           toastMessage = `Dish tag is required`;
         } else if (
+          missingFields[0] === "base_type_id" ||
           missingFields[0] === "portion_size" ||
           missingFields[0] === "portion_type_id" ||
           missingFields[0] === "chef_earning_fee"
         ) {
-          toastMessage = `Please fill in all fields from Base Serving`;
+          toastMessage = `Please fill in all fields from Base Serving and Submit`;
         }
         // Show toast with details of missing fields
         toast.dismiss();
@@ -249,7 +251,7 @@ export const MyMenu = () => {
         return;
       }
       // Packaging
-      if (
+      if ( !requiredFields.packaging ||
         requiredFields.packaging === "" ||
         typeof requiredFields.packaging === "undefined"
       ) {
@@ -352,6 +354,7 @@ export const MyMenu = () => {
     setIsUpdateDish(true);
     setStepFormModalOpen(true);
     setChefMenu(dish);
+    console.log("updating " ,dish)
     // To get just ID of ingredients in array
     const ingredientsId = dish.ingredients.map((obj) => obj.ingredient_id);
     const citiesId = dish.cities.map((city) => city.id);
