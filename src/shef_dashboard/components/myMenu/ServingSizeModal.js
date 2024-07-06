@@ -126,6 +126,9 @@ const MenuModal = ({
                 // Set Active tab
             if(base_type_id) {
                 setActiveTab(base_type_id)
+            } else {
+                // console.log("base type id isn't present ",activeTab)
+                updateFields({base_type_id: activeTab})
             }
           
         }
