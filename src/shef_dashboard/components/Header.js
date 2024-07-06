@@ -77,6 +77,9 @@ export const Header = () => {
                                                 <li className='block border-b border-borderClr mb-2 pb-2'>
                                                     <NavLink to="/shef/sales-statment" className="text-lg font-semibold !text-secondary hover:!text-primary">Sales Statement </NavLink>
                                                 </li>
+                                                <li className='block border-b border-borderClr mb-2 pb-2'>
+                                                    <NavLink to="/shef/coupon" className="text-lg font-semibold !text-secondary hover:!text-primary">Coupon </NavLink>
+                                                </li>
                                                 <li className='block'>
                                                     <NavLink to="/shef/order-review" className="text-lg font-semibold !text-secondary hover:!text-primary">Order Reviews  </NavLink>
                                                 </li>
