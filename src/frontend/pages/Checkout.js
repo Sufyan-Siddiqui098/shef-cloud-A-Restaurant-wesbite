@@ -661,119 +661,7 @@ export const Checkout = () => {
                 Your order for delivery on Monday, February 12
               </h3> */}
               <div>
-                {/* Order Box */}
-                {/* {cartItem.map((chef, chefIndex) =>
-                    
-                    (<div className="flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg">
-                    <img
-                        src="./media/frontend/img/banner/female-chef.png"
-                        className="object-top rounded-full w-[30px] object-cover h-[30px]"
-                        alt="ef"
-                    />
-                    <Link
-                        to="/shef-detail"
-                        className="!underline !text-secondary text-base font-semibold"
-                    >
-                        {" "}
-                        Shef Swarnamali
-                    </Link>
-                    </div>)
-                  chef.menu.map((menu, menuIndex) => (
-                    <div
-                      key={menuIndex}
-                      className="flex items-center justify-between border border-primary border-dashed rounded-lg p-2 gap-x-2 mt-4"
-                    >
-                      <div className="flex items-center gap-x-2 w-[65%]">
-                        <img
-                          src="./media/frontend/img/restaurants/255x104/order-2.jpg"
-                          className="object-top rounded-lg w-[60px] object-cover h-[60px]"
-                          alt="ef"
-                        />
-                        <div>
-                          <h3 className="mb-1 text-base font-semibold leading-tight">
-                            {menu.name}{" "}
-                          </h3>
-                          <div className="flex items-center gap-x-3">
-                            <div className="flex items-center justify-between w-[55%] bg-primaryLight rounded-lg">
-                              <button
-                                onClick={() =>
-                                  updateQuantityInStore(
-                                    chefIndex,
-                                    menuIndex,
-                                    menu.quantity,
-                                    "decrement"
-                                  )
-                                }
-                                className="w-[25%]"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="mx-auto"
-                                  viewBox="0 0 24 24"
-                                  width="15"
-                                  height="15"
-                                  fill="rgba(0,0,0,1)"
-                                >
-                                  <path d="M5 11V13H19V11H5Z"></path>
-                                </svg>
-                              </button>
-                              <input
-                                value={menu.quantity}
-                                className="w-[50%] text-center border-0 bg-transparent text-xs px-1 h-[30px]"
-                                readOnly
-                                placeholder="1"
-                              />
-                              <button
-                                onClick={() =>
-                                  updateQuantityInStore(
-                                    chefIndex,
-                                    menuIndex,
-                                    menu.quantity,
-                                    "increment"
-                                  )
-                                }
-                                className="w-[25%]"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="mx-auto"
-                                  viewBox="0 0 24 24"
-                                  width="15"
-                                  height="15"
-                                  fill="rgba(0,0,0,1)"
-                                >
-                                  <path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path>
-                                </svg>
-                              </button>
-                            </div>
-                            <h4 className="text-lg fontsemibold mb-0">
-                              x
-                              {menu.unit_price.toLocaleString("en-US", {
-                                style: "currency",
-                                currency: "USD",
-                              })}
-                            </h4>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        onClick={() => dispatch(removeFromCart(chefIndex, menuIndex))}
-                        className="cursor-pointer"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="24"
-                          height="24"
-                          fill="rgba(0,0,0,1)"
-                        >
-                          <path d="M17 6H22V8H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V8H2V6H7V3C7 2.44772 7.44772 2 8 2H16C16.5523 2 17 2.44772 17 3V6ZM18 8H6V20H18V8ZM9 11H11V17H9V11ZM13 11H15V17H13V11ZM9 4V6H15V4H9Z"></path>
-                        </svg>
-                      </div>
-                    </div>
-                  ))
-                )} */}
-
+                
                 {/* Order Box */}
                 {cartItem.map(
                   (chef, chefIndex) =>
@@ -782,13 +670,22 @@ export const Checkout = () => {
                         <div className="flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg">
                           <img
                             src={
+                              (chef.profile_pic && isValidURL(chef.profile_pic))
+                                ? chef.profile_pic
+                                : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                            }
+                            className="object-top rounded-full w-[30px] object-cover h-[30px]"
+                            alt="ef"
+                          />
+                          {/* <img
+                            src={
                               chef.profile_pic
                                 ? chef.profile_pic
                                 : "/media/frontend/img/banner/female-chef.png"
                             }
                             className="object-top rounded-full w-[30px] object-cover h-[30px]"
                             alt="ef"
-                          />
+                          /> */}
                           <Link
                             to={`/shef-detail/${chef.id}`}
                             className="!underline !text-secondary text-base font-semibold"
