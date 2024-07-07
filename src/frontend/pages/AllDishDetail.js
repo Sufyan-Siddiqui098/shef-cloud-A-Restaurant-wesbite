@@ -6,7 +6,7 @@ import AllCuisinesFilter from "../components/AllDishesDetail/AllCuisinesFilter";
 import DietaryFilter from "../components/AllDishesDetail/DietaryFilter";
 import Footer from "../components/Footer";
 import {
-  handleGetAllChefs,
+  // handleGetAllChefs,
   handleGetAllDishesOfCity,
 } from "../../services/get_without_auth";
 import isValidURL from "../../ValidateUrl";
@@ -26,18 +26,7 @@ export const DishDetail = () => {
       try {
         // const response = await handleGetAllDishes(authToken);
         const dishResponse = await handleGetAllDishesOfCity(city.id);
-        // setDishes(dishResponse);
-        console.log("reponse of dishes ", dishResponse);
-        const chefReponse = await handleGetAllChefs(city.id);
-        // console.log("chef response ", chefReponse)
-        dishResponse.forEach((dish, index) => {
-          chefReponse.forEach((chef) => {
-            if (chef.id === dish.user_id) {
-              console.log("matched ", chef);
-              dishResponse[index].chef = chef;
-            }
-          });
-        });
+        console.log("reponse of dishes ", dishResponse);  
         setDishes(dishResponse);
       } catch (error) {
         console.error("Error while fetching dishes \n", error);

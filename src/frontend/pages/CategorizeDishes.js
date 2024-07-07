@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Link, useParams } from "react-router-dom";
 import {
-  handleGetAllChefs,
+  // handleGetAllChefs,
   handleGetAllDishesOfCity,
 } from "../../services/get_without_auth";
 import isValidURL from "../../ValidateUrl";
@@ -23,24 +23,12 @@ const CategorizeDishes = () => {
           const categorize = response.filter(
             (dish) => dish.food_type_id === parseInt(foodCategoryId)
           );
-          // console.log("categorize ", categorize);
-          const chefReponse = await handleGetAllChefs(city.id);
-          // Matching chef id and appending the chef into dish-response
-          chefReponse.forEach((chef) => {
-            response.forEach((dish, index) => {
-              if (chef.id === dish.user_id) {
-                response[index].chef = chef;
-              }
-            });
-          });
           // console.log("cef", categoryDishes);
           setCategoryDishes(categorize);
         } catch (error) {
           console.error(error);
         }
       })();
-      // api call
-      console.log("hi food type");
     }
   }, [foodCategoryId]);
   return (
