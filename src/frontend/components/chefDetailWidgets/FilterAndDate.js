@@ -1,34 +1,61 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import CartModal from '../cartWidget/CartModal'
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import { Pagination } from 'swiper/modules';
-const FilterAndDate = () => {
-    const [isBoxVisible, setBoxVisible] = useState(false);
-    const toggleBox = () => {
-        setBoxVisible(!isBoxVisible);
-    };
-    const [activeButton, setActiveButton] = useState(null);
-    const handleButtonClick = (buttonId) => {
-        setActiveButton(buttonId);
-    };
-    const [isModalOpen, setModalOpen] = useState(false);
-    const openModal = () => {
-        setModalOpen(true);
-    };
-    const closeModal = () => {
-        setModalOpen(false);
-    };
-    return (
-        <>
-            <div className='realtive'>
-                <div> 
-                    <CartModal isOpen={isModalOpen} onRequestClose={closeModal} />
-                </div>
-                <div className='container mx-auto lg:px-2 px-2'>
-                    <div className='flex justify-between items-center mb-4 relative'>
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import CartModal from "../cartWidget/CartModal";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import { Pagination } from "swiper/modules";
+import { useDispatch, useSelector } from "react-redux";
+import { updateCartItem } from "../../../store/slice/cart";
+import isValidURL from "../../../ValidateUrl";
+const FilterAndDate = ({ chefAndDishes }) => {
+  const [isBoxVisible, setBoxVisible] = useState(false);
+  const toggleBox = () => {
+    setBoxVisible(!isBoxVisible);
+  };
+  const [activeButton, setActiveButton] = useState(null);
+  const handleButtonClick = (buttonId) => {
+    setActiveButton(buttonId);
+  };
+  const [isModalOpen, setModalOpen] = useState(false);
+  const openModal = () => {
+    setModalOpen(true);
+  };
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+  // Cart item from Redux
+  const { cartItem } = useSelector((state) => state.cart);
+
+  const dispatch = useDispatch();
+  // increment/decrement Quantity - Update directly in redux-store
+  const updateQuantityInStore = (chefIndex, menuIndex, quantity, operation) => {
+    let updatedQuantity;
+    if (operation === "increment") {
+      updatedQuantity = quantity + 1;
+    } else {
+      updatedQuantity = quantity - 1 > 0 ? quantity - 1 : 1;
+    }
+    // console.log("Update quantity ", updatedQuantity)
+    dispatch(
+      updateCartItem({
+        chefIndex,
+        menuIndex,
+        key: "quantity",
+        value: updatedQuantity,
+      })
+    );
+  };
+
+  return (
+    <>
+      <div className="realtive">
+        <div>
+          <CartModal isOpen={isModalOpen} onRequestClose={closeModal} />
+        </div>
+        <div className="container mx-auto lg:px-2 px-2">
+          {/* <div className='flex justify-between items-center mb-4 relative'>
                         <h2 className='md:text-2xl text-xl font-semibold mb-0'>Pick a delivery date</h2>
                         <div onClick={toggleBox} className='flex justify-between items-center bg-primaryLight rounded-md cursor-pointer pr-2 pl-4 py-1'>
                             <h3 className='text-base pr-3 mb-1'>Dietary</h3>
@@ -82,8 +109,8 @@ const FilterAndDate = () => {
                                 </form>
                             </div>
                         )}
-                    </div>
-                    <div>
+                    </div> */}
+          {/* <div>
                         <div className='grid lg:grid-cols-12 md:grid-cols-8 grid-cols-4 gap-3 mb-4'>
                             <div className={`chefDateBtn ${activeButton === 'btn1' ? 'active' : ''}`}
                                 onClick={() => handleButtonClick('btn1')}
@@ -212,25 +239,38 @@ const FilterAndDate = () => {
                                 <h4 className='text-[14px] font-bold mb-0 leading-tight'>Feb 21</h4>
                             </div>
                         </div>
-                    </div>
-                    <div className='grid grid-cols-12 md:gap-x-4 gap-x-0 md:gap-y-0 gap-y-4 my-12'>
-                        <div className='lg:col-span-8 col-span-12'>
-                            <h2 className='md:text-3xl text-2xl uppercase font-bold -tracking-wider mb-6'>MONDAY'S MAIN ITEMS</h2>
-                            <div className='grid grid-cols-12 md:gap-x-4 gap-x-0 md:gap-y-0 gap-y-4'>
-                                <div className='lg:col-span-4 sm:col-span-6 col-span-12'>
-                                    <div className="product-box mb-md-20">
-                                        <div className="product-img relative">
-                                            <img src="./media/frontend/img/restaurants/255x104/order-1.jpg" className="img-fluid full-width" alt="product-img" />
-                                            <div className='absolute bottom-[12px] right-0 px-4'>
+                    </div> */}
+          <div className="grid grid-cols-12 md:gap-x-4 gap-x-0 md:gap-y-0 gap-y-4 my-12">
+            <div className="lg:col-span-8 col-span-12">
+              {/* <h2 className='md:text-3xl text-2xl uppercase font-bold -tracking-wider mb-6'>MONDAY'S MAIN ITEMS</h2> */}
+              <h2 className="md:text-3xl text-2xl uppercase font-bold -tracking-wider mb-6">
+                MAIN ITEMS
+              </h2>
+              <div className="grid grid-cols-12 md:gap-x-4 gap-x-3 md:gap-y-3 gap-y-4">
+                {chefAndDishes?.menus?.map((dish) => (
+                  <div className="lg:col-span-4 sm:col-span-6 col-span-12">
+                    <div className="product-box mb-md-20">
+                      <div className="product-img relative">
+                        {/* <img src={(dish.logo && isValidURL(dish.logo)) ? dish.logo : "/media/frontend/img/restaurants/255x104/order-1.jpg"} className="img-fluid  full-width h-24 max-h-24 object-cover" alt="product-img" /> */}
+                        <img
+                          src={
+                            dish.logo && isValidURL(dish.logo)
+                              ? dish.logo
+                              : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
+                          }
+                          className="img-fluid  full-width h-24 max-h-24 object-cover"
+                          alt="product-img"
+                        />
+                        {/* <div className='absolute bottom-[12px] right-0 px-4'>
                                                 <div className='bg-primary p-[5px] rounded-[5px] cursor-pointer' onClick={openModal}>
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="#fff">
                                                         <path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path>
                                                     </svg>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div className="p-4">
-                                            <div className='flex items-center justify-between'>
+                                            </div> */}
+                      </div>
+                      <div className="p-4">
+                        {/* <div className='flex items-center justify-between'>
                                                 <div className='flex items-center'>
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="rgba(236,32,68,1)">
                                                         <path d="M17 3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7V1H9V3H15V1H17V3ZM4 9V19H20V9H4ZM6 11H8V13H6V11ZM6 15H8V17H6V15ZM10 11H18V13H10V11ZM10 15H15V17H10V15Z"></path>
@@ -238,12 +278,16 @@ const FilterAndDate = () => {
                                                     <h2 className='text-secondary font-medium text-[12px] ml-2 mb-0'>Monday</h2>
                                                 </div>
                                                 <h2 className='bg-greenLight py-1 px-3 rounded-[5px] text-secondary font-medium text-[12px] mb-0 inline-block leading-tight'>Mexican</h2>
-                                            </div>
+                                            </div> */}
 
-                                            <h6 className="text-lg text-secondary font-bold mb-1">
-                                                <Link> Chilli Chicken Pizza</Link>
-                                            </h6>
-                                            <div className='flex items-center gap-3'>
+                        <h6 className="text-lg text-secondary font-bold mb-1">
+                          {/* <Link> Chilli Chicken Pizza</Link> */}
+                          <Link to={`/dish-detail-single/${dish.id}`}>
+                            {" "}
+                            {dish.name}{" "}
+                          </Link>
+                        </h6>
+                        {/* <div className='flex items-center gap-3'>
                                                 <div className='inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]'>
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="rgba(0,0,0,1)">
                                                         <path d="M14.5998 8.00033H21C22.1046 8.00033 23 8.89576 23 10.0003V12.1047C23 12.3659 22.9488 12.6246 22.8494 12.8662L19.755 20.3811C19.6007 20.7558 19.2355 21.0003 18.8303 21.0003H2C1.44772 21.0003 1 20.5526 1 20.0003V10.0003C1 9.44804 1.44772 9.00033 2 9.00033H5.48184C5.80677 9.00033 6.11143 8.84246 6.29881 8.57701L11.7522 0.851355C11.8947 0.649486 12.1633 0.581978 12.3843 0.692483L14.1984 1.59951C15.25 2.12534 15.7931 3.31292 15.5031 4.45235L14.5998 8.00033ZM7 10.5878V19.0003H18.1606L21 12.1047V10.0003H14.5998C13.2951 10.0003 12.3398 8.77128 12.6616 7.50691L13.5649 3.95894C13.6229 3.73105 13.5143 3.49353 13.3039 3.38837L12.6428 3.0578L7.93275 9.73038C7.68285 10.0844 7.36341 10.3746 7 10.5878ZM5 11.0003H3V19.0003H5V11.0003Z"></path>
@@ -253,16 +297,28 @@ const FilterAndDate = () => {
                                                     </h4>
                                                 </div>
                                                 <h4 className='bg-primaryLight px-3 py-1 text-sm rounded-[4px] inline-block mb-0'>1 serving</h4>
-                                            </div>
-                                            <div className='border-t border-primary mt-4 mb-4'></div>
-                                            <div className='flex items-center justify-between'>
-                                                <h2 className='bg-primaryGreen py-1 px-3 rounded-[5px] text-white font-medium text-base mb-0 inline-block leading-tight'>15%</h2>
-                                                <h2 className='text-secondary font-semibold text-lg mb-0'>$15.99</h2>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='lg:col-span-4 sm:col-span-6 col-span-12'>
+                                            </div> */}
+                        <div className="border-t border-primary mt-4 mb-4"></div>
+                        <div className="flex items-center justify-between">
+                          {/* <h2 className='bg-primaryGreen py-1 px-3 rounded-[5px] text-white font-medium text-base mb-0 inline-block leading-tight'>15%</h2>
+                                                <h2 className='text-secondary font-semibold text-lg mb-0'>$15.99</h2> */}
+                          {/* <h2 className='bg-primaryGreen py-1 px-3 rounded-[5px] text-white font-medium text-base mb-0 inline-block leading-tight'>15%</h2> */}
+                          <h2 className="text-secondary font-semibold text-lg mb-0">
+                            {(
+                              dish.chef_earning_fee +
+                              dish.platform_price +
+                              dish.delivery_price
+                            ).toLocaleString("en-US", {
+                              style: "currency",
+                              currency: "USD",
+                            })}
+                          </h2>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {/* <div className='lg:col-span-4 sm:col-span-6 col-span-12'>
                                     <div className="product-box mb-md-20">
                                         <div className="product-img relative">
                                             <img src="./media/frontend/img/restaurants/255x104/order-2.jpg" className="img-fluid full-width" alt="product-img" />
@@ -351,9 +407,9 @@ const FilterAndDate = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <h2 className='md:text-3xl text-2xl uppercase font-bold -tracking-wider mb-6 mt-8'>MONDAY'S SIDE ITEMS</h2>
+                                </div> */}
+              </div>
+              {/* <h2 className='md:text-3xl text-2xl uppercase font-bold -tracking-wider mb-6 mt-8'>MONDAY'S SIDE ITEMS</h2>
                             <div className='grid grid-cols-12 md:gap-x-4 gap-x-0 md:gap-y-0 gap-y-4'>
                                 <div className='lg:col-span-4 sm:col-span-6 col-span-12'>
                                     <div className="product-box mb-md-20">
@@ -445,58 +501,177 @@ const FilterAndDate = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div className='lg:col-span-4 col-span-12 bg-[#f7f7f7]'>
-                            {/*********  When Data is Empty Un Comment  *************/}
-                            {/* <div className='pt-12'>
-                                <svg xmlns="http://www.w3.org/2000/svg" className='mx-auto mb-3' viewBox="0 0 24 24" width="96" height="96" fill="#dcdcdc"><path d="M6.50488 2H17.5049C17.8196 2 18.116 2.14819 18.3049 2.4L21.0049 6V21C21.0049 21.5523 20.5572 22 20.0049 22H4.00488C3.4526 22 3.00488 21.5523 3.00488 21V6L5.70488 2.4C5.89374 2.14819 6.19013 2 6.50488 2ZM19.0049 8H5.00488V20H19.0049V8ZM18.5049 6L17.0049 4H7.00488L5.50488 6H18.5049ZM9.00488 10V12C9.00488 13.6569 10.348 15 12.0049 15C13.6617 15 15.0049 13.6569 15.0049 12V10H17.0049V12C17.0049 14.7614 14.7663 17 12.0049 17C9.24346 17 7.00488 14.7614 7.00488 12V10H9.00488Z"></path></svg>
-                                <h2 className='text-lg text-center text-secondary'>
-                                    Your cart is empty <br /> Add items to get started
-                                </h2>
                             </div> */}
+            </div>
+            <div className="lg:col-span-4 col-span-12 bg-[#f7f7f7]">
+              {/*********  When Data is Empty Un Comment  *************/}
+              {(!cartItem || cartItem.length < 1) && (
+                <div className="pt-12">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="mx-auto mb-3"
+                    viewBox="0 0 24 24"
+                    width="96"
+                    height="96"
+                    fill="#dcdcdc"
+                  >
+                    <path d="M6.50488 2H17.5049C17.8196 2 18.116 2.14819 18.3049 2.4L21.0049 6V21C21.0049 21.5523 20.5572 22 20.0049 22H4.00488C3.4526 22 3.00488 21.5523 3.00488 21V6L5.70488 2.4C5.89374 2.14819 6.19013 2 6.50488 2ZM19.0049 8H5.00488V20H19.0049V8ZM18.5049 6L17.0049 4H7.00488L5.50488 6H18.5049ZM9.00488 10V12C9.00488 13.6569 10.348 15 12.0049 15C13.6617 15 15.0049 13.6569 15.0049 12V10H17.0049V12C17.0049 14.7614 14.7663 17 12.0049 17C9.24346 17 7.00488 14.7614 7.00488 12V10H9.00488Z"></path>
+                  </svg>
+                  <h2 className="text-lg text-center text-secondary">
+                    Your cart is empty <br /> Add items to get started
+                  </h2>
+                </div>
+              )}
 
-                            {/*********  When Data is Filled  *************/}
-                            <div className='md:p-4 p-3'>
-                                <h3 className='md:text-xl text-lg font-bold mb-6'>Your order for delivery on Monday, February 12</h3>
-                                <div>
-                                    <div className='flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg'>
-                                        <img src='./media/frontend/img/banner/female-chef.png' className='object-top rounded-full w-[30px] object-cover h-[30px]' alt='ef' />
-                                        <Link className='!underline !text-secondary text-base font-semibold'> Shef Swarnamali</Link>
-                                    </div>
-                                    {/* Order Box */}
-                                    <div className='flex items-center justify-between border border-primary border-dashed rounded-lg p-2 gap-x-2 mt-4'>
-                                        <div className='flex items-center gap-x-2 w-[65%]'>
-                                            <img src='./media/frontend/img/restaurants/255x104/order-2.jpg' className='object-top rounded-lg w-[60px] object-cover h-[60px]' alt='ef' />
-                                            <div>
-                                                <h3 className='mb-1 text-base font-semibold leading-tight'>Guajillo Grilled Shrimps </h3>
-                                                <h4 className='text-sm fontsemibold mb-0'>$13.99</h4>
-                                            </div>
-                                        </div>
-                                        <div className='flex items-center justify-between w-[35%] bg-primaryLight rounded-lg'>
-                                            <button className='w-[25%]'>
-                                                <svg xmlns="http://www.w3.org/2000/svg" className='mx-auto' viewBox="0 0 24 24" width="18" height="18" fill="rgba(0,0,0,1)"><path d="M5 11V13H19V11H5Z"></path></svg>
-                                            </button>
-                                            <input className='w-[50%] text-center border-0 bg-transparent text-xs px-1' placeholder='1' />
-                                            <button className='w-[25%]'>
-                                                <svg xmlns="http://www.w3.org/2000/svg" className='mx-auto' viewBox="0 0 24 24" width="18" height="18" fill="rgba(0,0,0,1)"><path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path></svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <h4 className='py-1 text-base text-center mt-6 mb-4 bg-greenLight'>Order amount must be at least <span className='font-bold'>$25.</span></h4>
-                                    <Link to="/cart" className='flex justify-center items-center gap-x-3 bg-primary rounded-lg py-3 px-3 '>
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="rgba(255,255,255,1)"><path d="M4.00488 16V4H2.00488V2H5.00488C5.55717 2 6.00488 2.44772 6.00488 3V15H18.4433L20.4433 7H8.00488V5H21.7241C22.2764 5 22.7241 5.44772 22.7241 6C22.7241 6.08176 22.7141 6.16322 22.6942 6.24254L20.1942 16.2425C20.083 16.6877 19.683 17 19.2241 17H5.00488C4.4526 17 4.00488 16.5523 4.00488 16ZM6.00488 23C4.90031 23 4.00488 22.1046 4.00488 21C4.00488 19.8954 4.90031 19 6.00488 19C7.10945 19 8.00488 19.8954 8.00488 21C8.00488 22.1046 7.10945 23 6.00488 23ZM18.0049 23C16.9003 23 16.0049 22.1046 16.0049 21C16.0049 19.8954 16.9003 19 18.0049 19C19.1095 19 20.0049 19.8954 20.0049 21C20.0049 22.1046 19.1095 23 18.0049 23Z"></path></svg>
-                                        <span className='text-white text-lg'>View Cart</span>
-                                        <span className='text-white font-semibold text-lg'>(1)</span>
-                                    </Link>
-                                </div>
+              {/*********  When Data is Filled  *************/}
+
+              {cartItem && cartItem.length > 0 && (
+                <div className="md:p-4 p-3">
+                  {/* <h3 className='md:text-xl text-lg font-bold mb-6'>Your order for delivery on Monday, February 12</h3> */}
+                  <h3 className="md:text-xl text-lg font-bold mb-6">
+                    Your order for delivery{" "}
+                  </h3>
+                  {cartItem.map((chef, chefIndex, chefArr) =>
+                    chef.id ===chefAndDishes.id &&  chef.menu.map((menu, menuIndex) => (
+                      <div>
+                          <div className="flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg">
+                            <img
+                              src={
+                                chef?.profile_pic &&
+                                isValidURL(chef?.profile_pic)
+                                  ? chef.profile_pic
+                                  : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                              }
+                              className="object-top rounded-full w-[30px] object-cover h-[30px]"
+                              alt="ef"
+                            />
+                            {/* <img src={(chef?.profile_pic && isValidURL(chef?.profile_pic))?  chef.profile_pic: './media/frontend/img/banner/female-chef.png'} className='object-top rounded-full w-[30px] object-cover h-[30px]' alt='ef' /> */}
+                            {/* <Link className='!underline !text-secondary text-base font-semibold'> Shef Swarnamali</Link> */}
+                            <Link className="!underline !text-secondary text-base font-semibold">
+                              {`${chef.first_name} ${chef.last_name}`}
+                            </Link>
+                          </div>
+                          
+                        {/* Order Box */}
+                        <div className="flex items-center justify-between border border-primary border-dashed rounded-lg p-2 gap-x-2 mt-4">
+                          <div className="flex items-center gap-x-2 w-[65%]">
+                            {/* <img
+                              src="./media/frontend/img/restaurants/255x104/order-2.jpg"
+                              className="object-top rounded-lg w-[60px] object-cover h-[60px]"
+                              alt="ef"
+                            /> */}
+                            <img
+                              src={
+                                menu.logo && isValidURL(menu.logo)
+                                  ? menu.logo
+                                  : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
+                              }
+                              className="object-top rounded-lg w-[60px] object-cover h-[60px]"
+                              alt="ef"
+                            />
+                            <div>
+                              {/* <h3 className='mb-1 text-base font-semibold leading-tight'>Guajillo Grilled Shrimps </h3> */}
+                              <h3 className="mb-1 text-base font-semibold leading-tight">
+                                {menu.name}
+                              </h3>
+                              {/* <h4 className='text-sm fontsemibold mb-0'>$13.99</h4> */}
+                              <h4 className="text-sm fontsemibold mb-0">
+                                {(
+                                  (menu.chef_earning_fee +
+                                  menu.platform_price +
+                                  menu.delivery_price) * menu.quantity
+                                ).toLocaleString("en-US", {
+                                  style: "currency",
+                                  currency: "USD",
+                                })}
+                              </h4>
                             </div>
+                          </div>
+                          <div className="flex items-center justify-between w-[35%] bg-primaryLight rounded-lg">
+                            <button
+                              onClick={() =>
+                                updateQuantityInStore(
+                                  chefIndex,
+                                  menuIndex,
+                                  menu.quantity,
+                                  "decrement"
+                                )
+                              }
+                              className="w-[25%] border"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="mx-auto"
+                                viewBox="0 0 24 24"
+                                width="18"
+                                height="18"
+                                fill="rgba(0,0,0,1)"
+                              >
+                                <path d="M5 11V13H19V11H5Z"></path>
+                              </svg>
+                            </button>
+                            <input
+                              value={menu.quantity}
+                              className="w-[50%] text-center border-0 bg-transparent text-xs px-1"
+                              readOnly
+                              placeholder="1"
+                            />
+                            <button
+                              onClick={() =>
+                                updateQuantityInStore(
+                                  chefIndex,
+                                  menuIndex,
+                                  menu.quantity,
+                                  "increment"
+                                )
+                              }
+                              className="w-[25%]"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="mx-auto"
+                                viewBox="0 0 24 24"
+                                width="18"
+                                height="18"
+                                fill="rgba(0,0,0,1)"
+                              >
+                                <path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path>
+                              </svg>
+                            </button>
+                          </div>
                         </div>
-                        <div className='mt-8 text-center lg:col-span-8 col-span-12 mx-auto'>
+                        {/* <h4 className='py-1 text-base text-center mt-6 mb-4 bg-greenLight'>Order amount must be at least <span className='font-bold'>$25.</span></h4> */}
+                        <Link
+                          to="/cart"
+                          className="flex justify-center items-center gap-x-3 my-2 bg-primary rounded-lg py-3 px-3 "
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            width="18"
+                            height="18"
+                            fill="rgba(255,255,255,1)"
+                          >
+                            <path d="M4.00488 16V4H2.00488V2H5.00488C5.55717 2 6.00488 2.44772 6.00488 3V15H18.4433L20.4433 7H8.00488V5H21.7241C22.2764 5 22.7241 5.44772 22.7241 6C22.7241 6.08176 22.7141 6.16322 22.6942 6.24254L20.1942 16.2425C20.083 16.6877 19.683 17 19.2241 17H5.00488C4.4526 17 4.00488 16.5523 4.00488 16ZM6.00488 23C4.90031 23 4.00488 22.1046 4.00488 21C4.00488 19.8954 4.90031 19 6.00488 19C7.10945 19 8.00488 19.8954 8.00488 21C8.00488 22.1046 7.10945 23 6.00488 23ZM18.0049 23C16.9003 23 16.0049 22.1046 16.0049 21C16.0049 19.8954 16.9003 19 18.0049 19C19.1095 19 20.0049 19.8954 20.0049 21C20.0049 22.1046 19.1095 23 18.0049 23Z"></path>
+                          </svg>
+                          <span className="text-white text-lg">View Cart</span>
+                          <span className="text-white font-semibold text-lg">
+                            {/* (1) */}
+                            {cartItem.reduce((total, chef) => total + chef.menu.length, 0)}
+                          </span>
+                        </Link>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+            {/* <div className='mt-8 text-center lg:col-span-8 col-span-12 mx-auto'>
                             <Link className='px-6 py-3 font-medium uppercase text-base rounded-lg bg-primaryLight border border-borderClr'>Show All Items</Link>
-                        </div>
-                    </div>
-                    <div>
+                        </div> */}
+          </div>
+          {/* ---- Customer Reviews ---- */}
+          {/* <div>
                     <h2 className="text-3xl uppercase font-bold -tracking-wider my-6 md:text-start text-center">REVIEWS</h2>
                     <div className=''>
                             <Swiper
@@ -606,11 +781,11 @@ const FilterAndDate = () => {
                                 </SwiperSlide>
                             </Swiper>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
+                    </div> */}
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default FilterAndDate;
