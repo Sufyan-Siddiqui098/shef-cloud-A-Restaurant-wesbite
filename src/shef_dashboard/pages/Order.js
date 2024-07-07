@@ -1,5 +1,6 @@
 import React from 'react'
 import Header from '../../shef_dashboard/components/Header'
+import { Link } from 'react-router-dom'
 export const Order = () => {
     return (
         <>
@@ -47,7 +48,10 @@ export const Order = () => {
                                                 <p className='text-primaryGreen text-[14px]'>#ID03456</p>
                                             </td>
                                             <td>
-                                                <h4 className='text-[14px] mb-0 leading-tight font-semibold'>Fish Cutlus</h4>
+                                                {/* <h4 className='text-[14px] mb-0 leading-tight font-semibold'>Fish Cutlus</h4> */}
+                                                <Link to='/shef/order-summary' className='text-[14px] mb-0 leading-tight font-semibold'>
+                                                Fish Cutlus
+                                                </Link>
                                             </td>
                                             <td>
                                                 <h4 className='text-[14px] mb-0 leading-tight'>x2</h4>
