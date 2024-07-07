@@ -137,7 +137,7 @@ const PopularCollection = () => {
                             className="img-fluid object-cover h-[200px] full-width"
                             alt="product-img"
                           />
-                          <Link to={`/shef-detail/${dish.chef.id}`}>
+                          <Link to={`/shef-detail/${dish.chef?.id}`}>
                             <div className="flex items-center gap-x-3 bg-white absolute bottom-[-40px] p-2 w-[90%] left-[50%] translate-x-[-50%] rounded-lg shadow-lg">
                               {/* <img
                                 src={
@@ -150,7 +150,7 @@ const PopularCollection = () => {
                               /> */}
                               <img
                                 src={
-                                  (dish.chef.profile_pic && isValidURL(dish.chef.profile_pic))
+                                  (dish.chef?.profile_pic && isValidURL(dish.chef.profile_pic))
                                     ? dish.chef.profile_pic
                                     : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                                 }
