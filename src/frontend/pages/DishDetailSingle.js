@@ -56,7 +56,7 @@ export const DishDetailSingle = () => {
             dishResponse.chef = chef;
           }
         });
-
+        console.log("hi ", dishResponse)
         setDish(dishResponse);
       } catch (error) {
         console.error("Error while fetching single dish \n", error);
@@ -231,7 +231,7 @@ export const DishDetailSingle = () => {
           <div className="mt-8">
             {/*****  PORTION SIZE BOX *****/}
             <div className="mt-2">
-              {/* <h4 className='text-lg font-bold uppercase mb-2'>Portion size</h4> */}
+              <h4 className='text-lg font-bold uppercase mb-2'>Portion size</h4> 
               <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3 mt-2">
                 {/* 1 Serving Box */}
                 <label
