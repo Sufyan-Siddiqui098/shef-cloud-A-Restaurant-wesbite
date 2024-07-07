@@ -1,14 +1,19 @@
 import React, { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { handleChefSignUp } from "../../auth/Auth";
+import { useDispatch, useSelector } from "react-redux";
+import { signOutUser } from "../../../store/slice/user";
 const TopBanner = () => {
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
     password: "",
-    zip_code: "",
+    // zip_code: "",
     phone: "",
-    profile: "",
+    profile_pic: "",
+    is_chef: 1,
   });
 
   const handleChange = (e) => {
@@ -17,6 +22,7 @@ const TopBanner = () => {
 
   // image handling
   const fileInputRef = useRef(null);
+  const profileDiv = useRef(null);
   const [isProfile, setIsProfile] = useState(""); // hold image as a url to review
   const handleBoxClick = () => {
     // Trigger click on the hidden file input
@@ -28,7 +34,7 @@ const TopBanner = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData((prev) => ({ ...prev, profile: file }));
+      setFormData((prev) => ({ ...prev, profile_pic: file }));
       const reader = new FileReader();
       reader.onload = () => {
         // Set the selected image in state
@@ -38,19 +44,45 @@ const TopBanner = () => {
     }
   };
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { authToken } = useSelector((state) => state.user);
+
+  const onSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      if(!formData.profile_pic){
+        profileDiv.current.focus();
+        toast.error("Profile is required")
+        return;
+      }
+      const response = await handleChefSignUp(formData);
+      if (authToken) {
+        dispatch(signOutUser());
+      }
+      toast.success("Register Successfully ")
+      navigate("/login");
+    } catch (error) {
+      toast.error(error.message);
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <div className="become_aChef">
         <div className="py-16 lg:px-2 px-4">
           <div className="container mx-auto">
-            <form>
+            <form onSubmit={onSubmit}>
               <div className="grid grid-cols-12 md:gap-x-10 gap-x-0">
                 <div className="lg:col-span-7 col-span-12 lg:order-1 order-2">
                   <div className="grid md:grid-cols-2 grid-cols-1 gap-2 ">
                     <div className="form-group md:col-span-2">
                       <div className="">
                         <div
-                          className="w-[140px] h-[140px] border border-borderClr rounded-lg overflow-hidden relative cursor-pointer"
+                          tabIndex='-1'
+                          ref={profileDiv}
+                          className={`w-[140px] h-[140px] border border-borderClr rounded-lg overflow-hidden relative cursor-pointer ${!formData.profile_pic && "focus:border-primary"  } focus:border-2`}
                           onClick={handleBoxClick}
                         >
                           {/* selectedImage */}
@@ -69,7 +101,9 @@ const TopBanner = () => {
                         {/* Hidden file input */}
                         <input
                           type="file"
-                          accept="image/*"
+                          name = "profile_pic"
+                          // required
+                          // accept="image/*"
                           onChange={handleImageChange}
                           ref={fileInputRef}
                           style={{ display: "none" }}
@@ -79,6 +113,7 @@ const TopBanner = () => {
                         </h3>
                       </div>
                     </div>
+                    
                     <div className="form-group">
                       <input
                         value={formData.first_name}
@@ -112,6 +147,7 @@ const TopBanner = () => {
                         placeholder="Email"
                       />
                     </div>
+
                     <div className="form-group">
                       <input
                         value={formData.password}
@@ -123,7 +159,7 @@ const TopBanner = () => {
                         placeholder="Password"
                       />
                     </div>
-                    <div className="form-group">
+                    {/* <div className="form-group">
                       <input
                         value={formData.zip_code}
                         onChange={handleChange}
@@ -133,7 +169,7 @@ const TopBanner = () => {
                         className=""
                         placeholder="Zip Code"
                       />
-                    </div>
+                    </div> */}
                     <div className="form-group">
                       <input
                         value={formData.phone}
@@ -145,6 +181,7 @@ const TopBanner = () => {
                         placeholder="Mobile Number"
                       />
                     </div>
+                   
                   </div>
                   <div className="flex mt-3 gap-1">
                     <div className="">
