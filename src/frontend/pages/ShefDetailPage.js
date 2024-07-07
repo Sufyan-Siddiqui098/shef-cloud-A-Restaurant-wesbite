@@ -5,6 +5,7 @@ import ChefContent from '../components/chefDetailWidgets/ChefContent'
 import FilterAndDate from '../components/chefDetailWidgets/FilterAndDate'
 import { handleGetChefWithDishes } from '../../services/get_without_auth'
 import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 export const ShefDetailPage = () => {
 
@@ -21,6 +22,13 @@ export const ShefDetailPage = () => {
 
             } catch(error) {
                 console.error(error)
+                console.error("message", error.message)
+                const message = error.message;
+                if(message === "Request failed with status code 404") {
+                    toast.error("chef isn't found in this city")
+                    
+                }
+                    
             }
         }) ()
     }, [chefId])
