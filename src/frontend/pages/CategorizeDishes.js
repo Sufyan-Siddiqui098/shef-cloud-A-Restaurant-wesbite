@@ -19,11 +19,11 @@ const CategorizeDishes = () => {
         try {
           const city = JSON.parse(localStorage.getItem("region"));
           const response = await handleGetAllDishesOfCity(city.id);
-          console.log("resone ", response);
+          // console.log("resone ", response);
           const categorize = response.filter(
             (dish) => dish.food_type_id === parseInt(foodCategoryId)
           );
-          console.log("categorize ", categorize);
+          // console.log("categorize ", categorize);
           const chefReponse = await handleGetAllChefs(city.id);
           // Matching chef id and appending the chef into dish-response
           chefReponse.forEach((chef) => {
@@ -114,7 +114,8 @@ const CategorizeDishes = () => {
                         <div>
                           <h3 className="font-bold text-base leading-tight mb-1">
                             {/* Shef Kevin L. */}
-                            {`${dish?.chef.first_name} ${dish?.chef.last_name}`}
+
+                            {`${dish?.chef?.first_name} ${dish?.chef?.last_name}`}
                           </h3>
                           {/* <h4 className="font-medium text-[12px] leading-tight text-headGray mb-1">
                             New York . USA
