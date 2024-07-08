@@ -14,6 +14,7 @@ import isValidURL from '../../ValidateUrl';
 
 const Header = () => {
     const [isBoxVisible, setBoxVisible] = useState(false);
+    const [isEmptyModalVisible, setEmptyModalVisible] = useState(false);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -29,6 +30,24 @@ const Header = () => {
         toast.success("Logout Successfully ")
         navigate('/')
     }
+    const Modal = ({ isVisible, onClose, onConfirm }) => {
+        if (!isVisible) return null;
+      
+        return (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h2>Are you sure?</h2>
+              <p>Do you really want to empty your bag?</p>
+              <button onClick={onClose}  style={{ backgroundColor: '#ccc' }}>Cancel</button>
+              <button onClick={onConfirm} style={{ backgroundColor: '#f00', color: '#fff' }}>Confirm</button>
+            </div>
+          </div>
+        );
+      };
+    const handleEmptyCart = () => {
+        dispatch(emptyCart());
+        setEmptyModalVisible(false); // Close the modal after emptying the cart
+    };
     // Cart from -- Redux store
     const { cartItem } = useSelector((state) => state.cart);
     // const subTotal = cartItem.reduce((acc, item) => acc + (item.unit_price || 0) * item.quantity, 0);
@@ -375,7 +394,7 @@ const Header = () => {
                                                                     </span>
                                                                 </div>
                                                                 <div className="empty-bag padding-15"> 
-                                                                    <NavLink>Empty bag</NavLink>
+                                                                    <NavLink  onClick={() => setEmptyModalVisible(true)}>Empty bag</NavLink>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -396,6 +415,13 @@ const Header = () => {
                     </header>
                 </div>
                 <div className='h-[60px]'></div>
+                <div className='popup-modal'>
+                <Modal 
+                    isVisible={isEmptyModalVisible}
+                    onClose={() => setEmptyModalVisible(false)}
+                    onConfirm={handleEmptyCart}
+                />
+                </div>
             </div>
         </>
     )
