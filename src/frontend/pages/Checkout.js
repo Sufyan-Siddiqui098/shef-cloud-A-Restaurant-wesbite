@@ -11,6 +11,8 @@ import {
 import isValidURL from "../../ValidateUrl";
 
 export const Checkout = () => {
+  const lastOrderAddress = useSelector((state) => state.user.userInfo.last_order_address.order_delivery_address);
+  console.log(lastOrderAddress)
   const [activeButton, setActiveButton] = useState(null);
   const handleButtonClick = (buttonId, percent) => {
     setActiveButton(buttonId);
@@ -72,7 +74,19 @@ export const Checkout = () => {
   const [orderDeliveryAddress, setOrderDeliveryAddress] = useState(
     orderDeliveryAddressInitial
   );
-
+  // Use effect to set the initial delivery address from the last order address
+  useEffect(() => {
+    if (lastOrderAddress) {
+      setOrderDeliveryAddress(prevAddress => ({
+        ...prevAddress,
+        address: lastOrderAddress?.address,
+        line2: lastOrderAddress?.line2,
+        city: lastOrderAddress?.city,
+        postal_code: lastOrderAddress?.postal_code,
+        state: lastOrderAddress?.state,
+      }));
+    }
+  }, [lastOrderAddress]);
   // Calculate and update tip_price
   const calculateTip = (percent) => {
     const tip_amount = parseFloat(
@@ -390,7 +404,7 @@ export const Checkout = () => {
                     }
                     placeholder="State"
                   />
-                  <h4 className="text-base font-semibold mb-1 mt-3">
+                  {/* <h4 className="text-base font-semibold mb-1 mt-3">
                     Longitude <span className="text-primary">*</span>
                   </h4>
                   <input
@@ -423,7 +437,7 @@ export const Checkout = () => {
                       })
                     }
                     placeholder="Latitude"
-                  />
+                  /> */}
                 </div>
                 <div className="border-b border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
