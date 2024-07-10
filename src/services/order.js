@@ -26,3 +26,14 @@ export const handleCreateOrder = async (token, payload) => {
 
     }
   };
+  export const handleGetOrders = async (token) => {
+    try {
+      const { data } = await api.get("/api/order", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    } catch (error) {
+      console.error("Error While fetching orders\n", error);
+    }
+  };
+  

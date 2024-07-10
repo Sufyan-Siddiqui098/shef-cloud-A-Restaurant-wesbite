@@ -1,11 +1,52 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import { Link } from 'react-router-dom'
+import { handleGetOrders } from '../../services/order'
+import { useSelector } from 'react-redux'
 
 const UserOrder = () => {
-  return (
-    <>
-        <div className=''>
+
+    const { authToken } = useSelector((state) => state.user)
+    const orderDetailInitial = {
+        order_id: 1,
+        dish_name: '',
+        quantity: '',
+        spice_level: '',
+        portion_size: '',
+        serving_size: '',
+    };
+    const [orderDetails, setOrderDetails] = useState([]);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const ordersRetrieved = await handleGetOrders(authToken)
+                console.log(ordersRetrieved)
+                // Flatten the nested order details into a single array of order details
+                const mappedOrderDetails = ordersRetrieved.reduce((acc, order) => {
+                    const orderDetails = order.order_details.map(detail => ({
+                        order_id: order.order_code,
+                        dish_name: detail.name,
+                        quantity: detail.quantity,
+                        spice_level: detail.user_menu.spice_level_id,//name is not available at this time
+                        portion_size: detail.user_menu.portion_size,
+                        // serving_size: detail.user_menu.portion_type_id,//name is not available at this time  - removed
+                    }));
+                    return acc.concat(orderDetails);
+                }, []);
+
+                setOrderDetails(mappedOrderDetails);
+            } catch (error) {
+                console.log("Error While Fetching Orders \n", error)
+            }
+        };
+
+        fetchOrders();
+        console.log("useEffect is running ");
+    }, []);
+    return (
+        <>
+            <div className=''>
                 <Header />
                 <div className='container mx-auto p-5'>
                     <div className='mt-6 p-5 bg-white rounded-xl border border-borderClr'>
@@ -40,18 +81,17 @@ const UserOrder = () => {
                                             <th className='w-[15%]'>Quantity</th>
                                             <th className='w-[15%]'>Spice Level</th>
                                             <th className='w-[15%]'>Portion Size</th>
-                                            <th className='w-[15%]'>Serving Size</th>
+                                            {/* <th className='w-[15%]'>Serving Size</th> */}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr className='border-b'>
+                                        {/* <tr className='border-b'>
                                             <td>
                                                 <p className='text-primaryGreen text-[14px]'>#ID03456</p>
                                             </td>
                                             <td>
-                                                {/* <h4 className='text-[14px] mb-0 leading-tight font-semibold'>Fish Cutlus</h4> */}
                                                 <Link to='/order-summary' className='text-[14px] mb-0 leading-tight font-semibold'>
-                                                Fish Cutlus
+                                                    Fish Cutlus
                                                 </Link>
                                             </td>
                                             <td>
@@ -66,7 +106,31 @@ const UserOrder = () => {
                                             <td>
                                                 <h4 className='text-[14px] mb-0 leading-tight'>3 Serving</h4>
                                             </td>
-                                        </tr>
+                                        </tr> */}
+                                        {orderDetails.map((detail, index) => (
+                                            <tr key={index} className='border-b'>
+                                                <td>
+                                                    <p className='text-primaryGreen text-[14px]'>#{detail.order_id}</p>
+                                                </td>
+                                                <td>
+                                                    <Link to='/order-summary' className='text-[14px] mb-0 leading-tight font-semibold'>
+                                                        {detail.dish_name}
+                                                    </Link>
+                                                </td>
+                                                <td>
+                                                    <h4 className='text-[14px] mb-0 leading-tight'>x{detail.quantity}</h4>
+                                                </td>
+                                                <td>
+                                                    <h4 className='text-[14px] mb-0 leading-tight'>{detail.spice_level}</h4>
+                                                </td>
+                                                <td>
+                                                    <h4 className='text-[14px] mb-0 leading-tight'>{detail.portion_size}</h4>
+                                                </td>
+                                                {/* <td>
+                                                    <h4 className='text-[14px] mb-0 leading-tight'>{detail.serving_size}</h4>
+                                                </td> */}
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
@@ -175,9 +239,8 @@ const UserOrder = () => {
                     </div > */}
                 </div >
             </div >
-    
-    </>
-  )
+        </>
+    )
 }
 
 export default UserOrder
