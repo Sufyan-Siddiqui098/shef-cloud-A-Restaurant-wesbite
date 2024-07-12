@@ -9,10 +9,12 @@ import {
   updateCartItem,
 } from "../../store/slice/cart";
 import isValidURL from "../../ValidateUrl";
+import { updateUser } from "../../store/slice/user";
 
 export const Checkout = () => {
-  const lastOrderAddress = useSelector((state) => state.user.userInfo.last_order_address.order_delivery_address);
-  console.log(lastOrderAddress)
+
+  const { userInfo } = useSelector(state => state.user);
+
   const [activeButton, setActiveButton] = useState(null);
   const handleButtonClick = (buttonId, percent) => {
     setActiveButton(buttonId);
@@ -74,9 +76,12 @@ export const Checkout = () => {
   const [orderDeliveryAddress, setOrderDeliveryAddress] = useState(
     orderDeliveryAddressInitial
   );
+
   // Use effect to set the initial delivery address from the last order address
   useEffect(() => {
-    if (lastOrderAddress) {
+    
+    if (userInfo.last_order_address?.order_delivery_address) {
+      const lastOrderAddress = userInfo.last_order_address.order_delivery_address;
       setOrderDeliveryAddress(prevAddress => ({
         ...prevAddress,
         address: lastOrderAddress?.address,
@@ -86,7 +91,7 @@ export const Checkout = () => {
         state: lastOrderAddress?.state,
       }));
     }
-  }, [lastOrderAddress]);
+  }, []);
   // Calculate and update tip_price
   const calculateTip = (percent) => {
     const tip_amount = parseFloat(
@@ -250,7 +255,15 @@ export const Checkout = () => {
       });
 
       dispatch(onOrderSubmit({ chefId: parseInt(chefId) }));
+      const updatedUserInfo = { 
+        ...userInfo, 
+        last_order_address: {  
+          order_delivery_address: orderDeliveryAddress 
+        } 
+      };
 
+      localStorage.setItem("user", JSON.stringify(updatedUserInfo))
+      dispatch(updateUser(updatedUserInfo));
       // Resetting
       setOrder(orderInitial);
       setOrderDetails(orderDetailInitial);
