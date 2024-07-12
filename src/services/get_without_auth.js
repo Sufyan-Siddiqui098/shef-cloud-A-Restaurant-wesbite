@@ -25,6 +25,16 @@ export const handleGetAllDishesOfCity = async (cityId) => {
   }
 };
 
+// Categorize Dishes in a City (categorizeDishes)
+export const handleGetCategorizeDishesOfCity = async (foodTypeId, cityId) => {
+  try {
+    const { data } = await api.get(`/api/category_menus/${foodTypeId}/${cityId}`);
+    return data;
+  } catch(error){
+    console.error("Error While fetching Categorize Dish\n", error)
+  }
+}
+
 // Popular Dishes in a city (Home page)
 export const handleGetPopularDishes = async (cityId) => {
   try {
