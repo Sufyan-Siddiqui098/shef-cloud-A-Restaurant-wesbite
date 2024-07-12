@@ -312,6 +312,13 @@ const FilterAndDate = ({ chefAndDishes }) => {
                               style: "currency",
                               currency: "USD",
                             })}
+                            {dish?.auto_applied_discounts?.length > 0 && (
+                                <span className="block text-[13px] -mt-2 text-green-700">
+                                  [
+                                  {` ${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `}
+                                  <span className="text-[10px]">Off</span> ]
+                                </span>
+                              )}
                           </h2>
                         </div>
                       </div>
