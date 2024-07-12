@@ -3,8 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Link, useParams } from "react-router-dom";
 import {
-  // handleGetAllChefs,
-  handleGetAllDishesOfCity,
+  handleGetCategorizeDishesOfCity,
 } from "../../services/get_without_auth";
 import isValidURL from "../../ValidateUrl";
 
@@ -18,13 +17,14 @@ const CategorizeDishes = () => {
       (async () => {
         try {
           const city = JSON.parse(localStorage.getItem("region"));
-          const response = await handleGetAllDishesOfCity(city.id);
+          const foodTypeId = parseInt(foodCategoryId);
+          const response = await handleGetCategorizeDishesOfCity(foodTypeId,city.id);
           // console.log("resone ", response);
-          const categorize = response.filter(
-            (dish) => dish.food_type_id === parseInt(foodCategoryId)
-          );
-          // console.log("cef", categoryDishes);
-          setCategoryDishes(categorize);
+          // const categorize = response.filter(
+          //   (dish) => dish.food_type_id === parseInt(foodCategoryId)
+          // );
+          // console.log("categorize dish", categoryDishes);
+          setCategoryDishes(response);
         } catch (error) {
           console.error(error);
         }
@@ -43,7 +43,7 @@ const CategorizeDishes = () => {
           <div className="grid grid-cols-12 gap-4 mt-6">
             {/* Dishes  */}
             {categoryDishes.map((dish) => (
-              <div className="lg:col-span-3 sm:col-span-6 col-span-12">
+              <div key={dish.id} className="lg:col-span-3 sm:col-span-6 col-span-12">
                 <div className="product-box">
                   <div className="relative">
                     {/* <div className="absolute right-2 top-2 cursor-pointer">
@@ -81,15 +81,7 @@ const CategorizeDishes = () => {
                     /> */}
                     <Link to={`/shef-detail/${dish.user_id}`}>
                       <div className="flex items-center gap-x-3 bg-white absolute bottom-[-40px] p-2 w-[90%] left-[50%] translate-x-[-50%] rounded-lg shadow-lg">
-                        {/* <img
-                          src={
-                            dish.chef?.profile_pice
-                              ? dish.chef.profile_pice
-                              : "/media/frontend/img/banner/chef-5.webp"
-                          }
-                          className="img-fluid object-cover h-[60px] w-[60px] object-top rounded-lg"
-                          alt="Chef"
-                        /> */}
+                        
                         <img
                           src={
                             dish.chef?.profile_pice
@@ -131,7 +123,6 @@ const CategorizeDishes = () => {
                   </div>
                   <div className="p-3 mt-12">
                     <h6 className="text-lg leading-tight text-secondary font-semibold mb-2">
-                      {/* <Link to="/dish-detail-single"> Mixed Vegetable</Link> */}
                       <Link to={`/dish-detail-single/${dish.id}`}> {dish.name}</Link>
                     </h6>
                     <div className="flex justify-between items-center gap-x-2">
@@ -160,6 +151,13 @@ const CategorizeDishes = () => {
                           style: "currency",
                           currency: "USD",
                         })}
+                        {dish?.auto_applied_discounts?.length > 0 && (
+                          <span className="block text-[13px] -mt-2 text-green-700">
+                            [
+                            {` ${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `}
+                            <span className="text-[10px]">Off</span> ]
+                          </span>
+                        )}
                       </h4>
                     </div>
                     <div className="border-t pt-3 mt-2">
@@ -172,7 +170,7 @@ const CategorizeDishes = () => {
                             21-2-2024 at 2:00 PM{" "}
                           </h5>
                         </div> */}
-                        <div className="col-span-4 text-right my-auto">
+                        <div className="col-span-4 my-auto">
                           <Link
                             to={`/dish-detail-single/${dish.id}`}
                             className="bg-primary px-3 py-1 rounded-[4px] font-medium text-xs !text-white tracking-wide"
