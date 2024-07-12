@@ -13,6 +13,7 @@ const TopBanner = () => {
     // zip_code: "",
     phone: "",
     profile_pic: "",
+    cover_pic: "",
     is_chef: 1,
   });
 
@@ -23,7 +24,9 @@ const TopBanner = () => {
   // image handling
   const fileInputRef = useRef(null);
   const profileDiv = useRef(null);
+  const coverImageRef = useRef(null);
   const [isProfile, setIsProfile] = useState(""); // hold image as a url to review
+  //profile preview box
   const handleBoxClick = () => {
     // Trigger click on the hidden file input
     if (fileInputRef.current) {
@@ -31,7 +34,7 @@ const TopBanner = () => {
     }
   };
   // Handling image upload
-  const handleImageChange = (e) => {
+  const handleProfileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setFormData((prev) => ({ ...prev, profile_pic: file }));
@@ -43,6 +46,12 @@ const TopBanner = () => {
       reader.readAsDataURL(file);
     }
   };
+  const handleCoverChange = (e) => {
+    const file = e.target.files[0];
+    if(file){
+      setFormData((prev) => ({...prev, cover_pic: file}))
+    }
+  }
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -51,16 +60,23 @@ const TopBanner = () => {
   const onSubmit = async (e) => {
     try {
       e.preventDefault();
-      if(!formData.profile_pic){
+      toast.dismiss();
+      if (!formData.profile_pic) {
         profileDiv.current.focus();
-        toast.error("Profile is required")
+        toast.error("Profile is required");
+        return;
+      }
+      if(!formData.cover_pic){
+        coverImageRef.current.focus();
+        toast.error("Cover is required");
         return;
       }
       const response = await handleChefSignUp(formData);
+      // console.log("reponse ", response)
       if (authToken) {
         dispatch(signOutUser());
       }
-      toast.success("Register Successfully ")
+      toast.success("Register Successfully ");
       navigate("/login");
     } catch (error) {
       toast.error(error.message);
@@ -77,12 +93,15 @@ const TopBanner = () => {
               <div className="grid grid-cols-12 md:gap-x-10 gap-x-0">
                 <div className="lg:col-span-7 col-span-12 lg:order-1 order-2">
                   <div className="grid md:grid-cols-2 grid-cols-1 gap-2 ">
+                    {/* Profile */}
                     <div className="form-group md:col-span-2">
                       <div className="">
                         <div
-                          tabIndex='-1'
+                          tabIndex="-1"
                           ref={profileDiv}
-                          className={`w-[140px] h-[140px] border border-borderClr rounded-lg overflow-hidden relative cursor-pointer ${!formData.profile_pic && "focus:border-primary"  } focus:border-2`}
+                          className={`w-[140px] h-[140px] border border-borderClr rounded-lg overflow-hidden relative cursor-pointer ${
+                            !formData.profile_pic && "focus:border-primary"
+                          } focus:border-2`}
                           onClick={handleBoxClick}
                         >
                           {/* selectedImage */}
@@ -94,27 +113,44 @@ const TopBanner = () => {
                             />
                           ) : (
                             <p className="text-center flex items-center justify-center text-sm text-white h-full">
-                              Click to add image
+                              Click to add Profile
                             </p>
                           )}
                         </div>
                         {/* Hidden file input */}
                         <input
                           type="file"
-                          name = "profile_pic"
+                          name="profile_pic"
                           // required
-                          // accept="image/*"
-                          onChange={handleImageChange}
+                          accept="image/*"
+                          onChange={handleProfileChange}
                           ref={fileInputRef}
                           style={{ display: "none" }}
                         />
                         <h3 className="text-base font-semibold mb-1 text-white uppercase mt-2">
-                          Upload Your Photo
+                          Upload Your Profile
                         </h3>
                       </div>
                     </div>
-                    
+                    {/* Cover */}
                     <div className="form-group">
+                      <label
+                        className="block mb-1 font-semibold text-sm font-medium text-white"
+                        htmlFor="file_input"
+                      >
+                        Upload Cover
+                      </label>
+                      <input
+                        ref={coverImageRef}
+                        accept="image/*"
+                        onChange={handleCoverChange}
+                        className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50  focus:outline-none py-2 focus:bg-gray-100 focus:border-2"
+                        id="file_input"
+                        type="file"
+                      />
+                    </div>
+
+                    <div className="form-group self-end">
                       <input
                         value={formData.first_name}
                         onChange={handleChange}
@@ -181,7 +217,6 @@ const TopBanner = () => {
                         placeholder="Mobile Number"
                       />
                     </div>
-                   
                   </div>
                   <div className="flex mt-3 gap-1">
                     <div className="">
