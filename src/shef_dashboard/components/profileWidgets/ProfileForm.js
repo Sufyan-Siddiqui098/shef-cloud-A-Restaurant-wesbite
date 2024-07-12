@@ -68,11 +68,13 @@ export const ProfileForm = () => {
     // eslint-disable-next-line
   }, [isLoaded, coords.latitude, coords.longitude]);
 
+  // Triger show-profile after updating profile
+  const [ shouldReload, setShouldReload ] = useState(false);
   // fetch user - (show-profile)
   useEffect(() => {
     (async () => {
       const response = await handleShowProfile(authToken);
-    //   console.log("show profile data ", response);
+      // console.log("show profile data ", response);
       //Object.entries - creates array from object && Object.entries - create an object from array
       // const filteredData = Object.fromEntries(Object.entries(response).filter(([_, v]) => v != null));
       // console.log("filetered", filteredData)
@@ -80,18 +82,21 @@ export const ProfileForm = () => {
         localStorage.setItem("user", JSON.stringify(response)); //update user in local-storage
         dispatch(updateUser(response));
         setProfileData(response);
-        const { address } =
-          response?.user_addresses[response.user_addresses.length - 1];
-        if (address) {
-          setAddress(address);
+        if(response.user_addresses.length>0){
+          const { address } =
+            response?.user_addresses[response.user_addresses.length - 1];
+            setAddress(address)
+        } else {
+          setAddress("")
         }
+        
       }
       // const {address} = filteredData.user_addresses[filteredData.user_addresses.length-1];
       // setProfileData(filteredData)
       // localStorage.setItem("user", JSON.stringify(filteredData)); //update user in local-storage
       // dispatch(updateUser(filteredData))                          // to instantly update user in redux-store.
     })();
-  }, [authToken, dispatch]);
+  }, [authToken, dispatch, shouldReload]);
 
   // On Change handler - profile data
   const handleProfileDataChange = (e) => {
@@ -151,7 +156,8 @@ export const ProfileForm = () => {
       // localStorage.setItem("user", JSON.stringify(filteredData)); //update user in local-storage
       // dispatch(updateUser(filteredData))
       toast.success("Profile Updated");
-      window.location.reload();
+      setShouldReload(prev => !prev)
+      // window.location.reload();
     } catch (error) {
       toast.error(error.message);
     } finally {
