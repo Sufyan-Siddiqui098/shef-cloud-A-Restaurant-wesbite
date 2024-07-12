@@ -5,6 +5,8 @@ import '../assets/css/dash-style.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { signOutUser } from '../../store/slice/user';
 import { toast } from 'react-toastify';
+import { emptyCart } from '../../store/slice/cart';
+import isValidURL from '../../ValidateUrl';
 
 export const Header = () => {
     const [isSubMenuVisible, setSubMenuVisible] = useState(false);
@@ -23,7 +25,7 @@ export const Header = () => {
     const navigate = useNavigate();
     const handleSignOut = ()=>{
         dispatch(signOutUser()); 
-        localStorage.removeItem("cart")
+        dispatch(emptyCart());
         toast.success("Logout Successfully ")
         navigate('/login')
     }
@@ -116,6 +118,9 @@ export const Header = () => {
                                                 <li className='block border-b border-borderClr mb-2 pb-2'>
                                                     <NavLink to="/shef/sales-statment" className="text-lg font-semibold !text-secondary hover:!text-primary">Sales Statement </NavLink>
                                                 </li>
+                                                <li className='block border-b border-borderClr mb-2 pb-2'>
+                                                    <NavLink to="/shef/coupon" className="text-lg font-semibold !text-secondary hover:!text-primary">Coupon </NavLink>
+                                                </li>
                                                 <li className='block'>
                                                     <NavLink to="/shef/order-review" className="text-lg font-semibold !text-secondary hover:!text-primary">Order Reviews  </NavLink>
                                                 </li>
@@ -130,7 +135,7 @@ export const Header = () => {
                             <div className="lg:col-span-2 col-span-4 flex justify-between items-center gap-2 w-max group relative">
                                 <NavLink to="/shef/profile">
                                     <div className='flex items-center justify-end gap-2 '>
-                                        <img src={userInfo.profile_pic ? userInfo.profile_pic : "/media/frontend/img/banner/chef-5.webp"} width='' className="img-fluid border h-[40px]" alt="Logo" />
+                                        <img src={(userInfo.profile_pic && isValidURL(userInfo.profile_pic)) ? userInfo.profile_pic : "/media/frontend/img/banner/chef-5.webp"} width='' className="img-fluid border h-[40px]" alt="Logo" />
                                         <span className='font-semibold text-lg md:block hidden'>
                                             Hi, { userInfo.first_name }
                                         </span>
