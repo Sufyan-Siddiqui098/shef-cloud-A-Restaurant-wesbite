@@ -48,7 +48,6 @@ export const DishDetailSingle = () => {
     const fetchSingleDish = async () => {
       try {
         const dishResponse = await handleGetSingleDish(dishId);
-        // console.log("response of single dish ", dishResponse);
         const city = JSON.parse(localStorage.getItem("region"));
         const chefReponse = await handleGetAllChefs(city.id);
         chefReponse.forEach((chef) => {
@@ -56,6 +55,19 @@ export const DishDetailSingle = () => {
             dishResponse.chef = chef;
           }
         });
+
+        let discount ;
+        if(dishResponse.auto_applied_discounts && dishResponse.auto_applied_discounts.length>0) {
+          const discountType = dishResponse.auto_applied_discounts[0].discount_type;
+          const discountAmount = parseFloat(dishResponse.auto_applied_discounts[0].discount)
+          if(discountType==="$"){
+            discount = dishResponse.chef_earning_fee - discountAmount;
+          } else if(discountType==="%") {
+            discount = dishResponse.chef_earning_fee - (dishResponse.chef_earning_fee * (discountAmount/100));
+          }
+          dishResponse.chef_earning_fee = discount
+        }
+        console.log("Chef discounted ", discount)
         console.log("response of single dish ", dishResponse);
         setDish(dishResponse);
       } catch (error) {
