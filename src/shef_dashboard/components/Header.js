@@ -135,7 +135,14 @@ export const Header = () => {
                             <div className="lg:col-span-2 col-span-4 flex justify-between items-center gap-2 w-max group relative">
                                 <NavLink to="/shef/profile">
                                     <div className='flex items-center justify-end gap-2 '>
-                                        <img src={(userInfo.profile_pic && isValidURL(userInfo.profile_pic)) ? userInfo.profile_pic : "/media/frontend/img/banner/chef-5.webp"} width='' className="img-fluid border h-[40px]" alt="Logo" />
+                                        <img src={(userInfo.profile_pic && isValidURL(userInfo.profile_pic)) ? 
+                                            userInfo.profile_pic : 
+                                            "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                                            } 
+                                            width='' 
+                                            className="img-fluid border h-[40px]" 
+                                            alt="Logo" 
+                                        />
                                         <span className='font-semibold text-lg md:block hidden'>
                                             Hi, { userInfo.first_name }
                                         </span>
