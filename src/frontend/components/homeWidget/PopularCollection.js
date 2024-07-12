@@ -150,7 +150,8 @@ const PopularCollection = () => {
                               /> */}
                               <img
                                 src={
-                                  (dish.chef?.profile_pic && isValidURL(dish.chef.profile_pic))
+                                  dish.chef?.profile_pic &&
+                                  isValidURL(dish.chef.profile_pic)
                                     ? dish.chef.profile_pic
                                     : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                                 }
@@ -201,6 +202,14 @@ const PopularCollection = () => {
                                 style: "currency",
                                 currency: "USD",
                               })}
+
+                              {dish?.auto_applied_discounts?.length > 0 && (
+                                <span className="block text-[13px] -mt-2 text-green-700">
+                                  [
+                                  {` ${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `}
+                                  <span className="text-[10px]">Off</span> ]
+                                </span>
+                              )}
                             </h4>
                             {/* <h4 className='text-xl text-secondary font-semibold mb-0'>
                                                                 $ 12.99 
@@ -212,7 +221,7 @@ const PopularCollection = () => {
                                                                     <h4 className='text-[10px] text-headGray mb-0'>Earliest Delivery: </h4>
                                                                     <h5 className='text-[12px] text-secondary leading-tight mb-0'>Tomorrow at 1:00 PM </h5>
                                                                 </div> */}
-                              <div className="col-span-4 text-right my-auto">
+                              <div className="col-span-4 my-auto">
                                 <Link
                                   to={`/dish-detail-single/${dish.id}`}
                                   className="bg-primary px-3 py-1 rounded-[4px] font-medium text-xs !text-white tracking-wide"

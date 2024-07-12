@@ -26,7 +26,7 @@ export const DishDetail = () => {
       try {
         // const response = await handleGetAllDishes(authToken);
         const dishResponse = await handleGetAllDishesOfCity(city.id);
-        console.log("reponse of dishes ", dishResponse);  
+        console.log("reponse of dishes ", dishResponse);
         setDishes(dishResponse);
       } catch (error) {
         console.error("Error while fetching dishes \n", error);
@@ -113,7 +113,8 @@ export const DishDetail = () => {
                       <div className="flex items-center gap-x-3 bg-white absolute bottom-[-40px] p-2 w-[90%] left-[50%] translate-x-[-50%] rounded-lg shadow-lg">
                         <img
                           src={
-                            (item.chef?.profile_pic && isValidURL(item.chef?.profile_pic))
+                            item.chef?.profile_pic &&
+                            isValidURL(item.chef?.profile_pic)
                               ? item.chef?.profile_pic
                               : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                           }
@@ -164,6 +165,13 @@ export const DishDetail = () => {
                           style: "currency",
                           currency: "USD",
                         })}
+                        {item?.auto_applied_discounts?.length > 0 && (
+                          <span className="block text-[13px] -mt-2 text-green-700">
+                            [
+                            {` ${item.auto_applied_discounts[0].discount} ${item.auto_applied_discounts[0].discount_type} `}
+                            <span className="text-[10px]">Off</span> ]
+                          </span>
+                        )}
                       </h4>
                     </div>
                     {/* <div className='border-t pt-3 mt-2'>

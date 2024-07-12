@@ -48,7 +48,7 @@ export const DishDetailSingle = () => {
     const fetchSingleDish = async () => {
       try {
         const dishResponse = await handleGetSingleDish(dishId);
-        console.log("response of single dish ", dishResponse);
+        // console.log("response of single dish ", dishResponse);
         const city = JSON.parse(localStorage.getItem("region"));
         const chefReponse = await handleGetAllChefs(city.id);
         chefReponse.forEach((chef) => {
@@ -56,7 +56,7 @@ export const DishDetailSingle = () => {
             dishResponse.chef = chef;
           }
         });
-        console.log("hi ", dishResponse)
+        console.log("response of single dish ", dishResponse);
         setDish(dishResponse);
       } catch (error) {
         console.error("Error while fetching single dish \n", error);
@@ -155,6 +155,14 @@ export const DishDetailSingle = () => {
                       style: "currency",
                       currency: "USD",
                     })}
+
+                    {dish?.auto_applied_discounts?.length > 0 && (
+                      <span className="text-[14px] md:text-[18px] block -mt-1 text-green-700">
+                        {/* [ 20% off ] */}[{" "}
+                        {`${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `}
+                        <span className="text-[11px] md:text-[14px]">Off</span> ]
+                      </span>
+                    )}
                   </h2>
                 </div>
                 <div className="text-lg text-secondary  flex items-center gap-2 mb-3">
@@ -202,20 +210,10 @@ export const DishDetailSingle = () => {
                   </div>
                   <div>
                     {activeDescTab === 1 && (
-                      <p className="text-base">
-                        {/* Juicy, sweet and rich Air Fried Chicken Breast and Steamed Cilantro Rice.
-                                                This dish ties with the General Tso Chicken. Both a dedication to a
-                                                childhood Chinese Carryout that happens to no longer be with us serving
-                                                the Shaw-Howard Community. This dish is garnished with green onions and
-                                                orange slices. */}
-                        {dish.description}
-                      </p>
+                      <p className="text-base">{dish.description}</p>
                     )}
                     {activeDescTab === 2 && (
                       <p className="text-base">
-                        {/* Orange juice, sugar, rice vinegar, soy sauce, ginger, garlic powder,
-                                                red chili flakes, orange zest, corn starch, water, green onion, boneless
-                                                chicken, cilantro, rice, orange slices, extra virgin olive oil */}
                         {dish?.ingredients
                           ?.map((ing) => ing?.ingredient.name)
                           .join(", ")}
@@ -231,7 +229,7 @@ export const DishDetailSingle = () => {
           <div className="mt-8">
             {/*****  PORTION SIZE BOX *****/}
             <div className="mt-2">
-              <h4 className='text-lg font-bold uppercase mb-2'>Portion size</h4> 
+              <h4 className="text-lg font-bold uppercase mb-2">Portion size</h4>
               <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3 mt-2">
                 {/* 1 Serving Box */}
                 <label
