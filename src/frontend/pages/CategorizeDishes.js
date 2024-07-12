@@ -84,8 +84,8 @@ const CategorizeDishes = () => {
                         
                         <img
                           src={
-                            dish.chef?.profile_pice
-                              ? dish.chef.profile_pice
+                            (dish.user?.profile_pice && isValidURL(dish.user?.profile_pice))
+                              ? dish.user.profile_pice
                               : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                           }
                           className="img-fluid object-cover h-[60px] w-[60px] object-top rounded-lg"
@@ -95,7 +95,7 @@ const CategorizeDishes = () => {
                           <h3 className="font-bold text-base leading-tight mb-1">
                             {/* Shef Kevin L. */}
 
-                            {`${dish?.chef?.first_name} ${dish?.chef?.last_name}`}
+                            {`${dish?.user?.first_name} ${dish?.user?.last_name}`}
                           </h3>
                           {/* <h4 className="font-medium text-[12px] leading-tight text-headGray mb-1">
                             New York . USA
