@@ -38,7 +38,7 @@ const ShefCoupon = () => {
     try {
       const discountsWithMenus = await handleGetDiscountWithMenus(authToken,id)
       setDiscountWithMenus(discountsWithMenus.original);
-      setIsModalOpen(true);
+      setIsEditModalOpen(true)
     } catch (error) {
       console.error("Error fetching discounts", error.message);
     }
