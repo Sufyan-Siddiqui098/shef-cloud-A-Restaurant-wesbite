@@ -37,14 +37,13 @@ const ShefCouponForm = ({ isOpen, onClose }) => {
       }
     };
     fetchDishes();
-  }, []);
+  }, [authToken]);
   // On Change
   const handleSelectChange = (selectedValues) => {
     setSelectedOptions(selectedValues);
     // Array containng ids of ingredients
-    const menusId = selectedValues.map((elem) => elem.id);
-    console.log("ids of ", menusId);
-    // updateFields({ingredients: ingredientsIDsArray})        // Set ingredients of ChefMenu
+    // const menusId = selectedValues.map((elem) => elem.id);
+    // console.log("ids of ", menusId);
   };
   // Submit
   const handleOnSubmit = async (e) => {

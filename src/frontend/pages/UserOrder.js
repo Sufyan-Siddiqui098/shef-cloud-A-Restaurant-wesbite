@@ -42,8 +42,8 @@ const UserOrder = () => {
         };
 
         fetchOrders();
-        console.log("useEffect is running ");
-    }, []);
+        console.log("useEffect is running userorder");
+    }, [authToken]);
     return (
         <>
             <div className=''>

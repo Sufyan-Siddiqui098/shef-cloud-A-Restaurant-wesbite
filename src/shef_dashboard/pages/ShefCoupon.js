@@ -11,6 +11,7 @@ const ShefCoupon = () => {
   const closeCouponModal = () => {
     setIsModalOpen(false);
   };
+
   useEffect(() => {
     const fetchDiscount = async () => {
       try {
@@ -21,7 +22,8 @@ const ShefCoupon = () => {
       }
     };
     fetchDiscount();
-  }, []);
+  }, [authToken]);
+
   const handleToggleStatus = async (discount) => {
     const updatedStatus = discount.status === 1 ? 0 : 1;
     const updatedDiscount = { ...discount, status: updatedStatus };
@@ -109,7 +111,7 @@ const ShefCoupon = () => {
                           </h4>
                         </td>
                         <td>
-                          <h4 className="text-[14px] mb-1 leading-tight">{discount.discount_type=='$'?'$ '+discount.discount:discount.discount+' %'}</h4>
+                          <h4 className="text-[14px] mb-1 leading-tight">{discount.discount_type==='$'?'$ '+discount.discount:discount.discount+' %'}</h4>
                         </td>
                         <td>
                           <button
