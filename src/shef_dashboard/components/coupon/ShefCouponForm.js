@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import Modal from "react-modal";
 import { handleCreateDiscount, handleGetAllDishes, handleUpdateDiscount } from "../../../services/shef";
@@ -48,7 +48,6 @@ const ShefCouponForm = ({ isOpen, onClose, discountWithMenus }) => {
   // Submit
   const handleOnSubmit = async (e) => {
     e.preventDefault();
-    console.log(discountWithMenus,'this is being outputted!')
     try {
       setIsPending(true);
       const menuIds = selectedOptions.map(option => option.id);
@@ -129,19 +128,6 @@ const ShefCouponForm = ({ isOpen, onClose, discountWithMenus }) => {
               <div className="grid grid-cols-12 md:gap-x-8 gap-x-0 gap-y-4 mt-8">
                 <div className="md:col-span-6 col-span-12">
                   <h4 className="text-base font-semibold mb-1 uppercase">
-                    {" "}
-                    Max code uses per person<span className="text-primary">*</span>
-                  </h4>
-                  <input
-                    type="text"
-                    placeholder="Enter Number of Uses"
-                    id=""
-                    name="max_user_use"
-                    required
-                  />
-                </div>
-                <div className="md:col-span-6 col-span-12">
-                  <h4 className="text-base font-semibold mb-1 uppercase">
                     Discount Type<span className="text-primary">*</span>{" "}
                   </h4>
                   <select
@@ -156,7 +142,6 @@ const ShefCouponForm = ({ isOpen, onClose, discountWithMenus }) => {
                     <option value="$">Fixed Value</option>
                   </select>
                 </div>
-
                 <div className="md:col-span-6 col-span-12">
                   <h4 className="text-base font-semibold mb-1 uppercase">
                     Discount Value<span className="text-primary">*</span>{" "}
@@ -167,13 +152,13 @@ const ShefCouponForm = ({ isOpen, onClose, discountWithMenus }) => {
                   <h4 className="text-base font-semibold mb-1 uppercase">
                     Minimum Orders<span className="text-primary">*</span>{" "}
                   </h4>
-                  <input type="number" placeholder="1" required id="" name="min_order" />
+                  <input type="number" placeholder="1" id="" name="min_order" />
                 </div>
                 <div className="md:col-span-6 col-span-12">
                   <h4 className="text-base font-semibold mb-1 uppercase">
                     Maximum Orders<span className="text-primary">*</span>{" "}
                   </h4>
-                  <input type="number" placeholder="10" required id="" name="max_order" />
+                  <input type="number" placeholder="10" id="" name="max_order" />
                 </div>
                 {discountType === '%' && <div className="md:col-span-6 col-span-12">
                   <h4 className="text-base font-semibold mb-1 uppercase">
