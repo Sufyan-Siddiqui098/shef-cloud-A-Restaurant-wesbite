@@ -1,42 +1,91 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import ShefCouponForm from "../components/coupon/ShefCouponForm";
-import { handleGetAllDiscount, handleUpdateDiscount } from "../../services/shef";
+import { handleDeleteDiscount, handleGetAllDiscount, handleGetDiscountWithMenus, handleUpdateDiscount } from "../../services/shef";
 import { useSelector } from "react-redux";
 
 const ShefCoupon = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [discounts, setDiscounts] = useState([]);
+  const [discountWithMenus, setDiscountWithMenus] = useState();
+  const [discountIdToDelete, setDiscountIdToDelete] = useState(null);
   const { authToken } = useSelector((state) => state.user)
+
   const closeCouponModal = () => {
     setIsModalOpen(false);
   };
+  const closeEditCouponModal = () => {
+    setIsEditModalOpen(false);
+  };
 
+  //fetch all discounts
+  const fetchDiscount = async () => {
+    try {
+      const discountsArray = await handleGetAllDiscount(authToken);
+      setDiscounts(discountsArray.original);
+    } catch (error) {
+      console.error("Error fetching discounts", error.message);
+    }
+  };
   useEffect(() => {
-    const fetchDiscount = async () => {
-      try {
-        const discountsArray = await handleGetAllDiscount(authToken);
-        setDiscounts(discountsArray.original);
-      } catch (error) {
-        console.error("Error fetching discounts", error.message);
-      }
-    };
     fetchDiscount();
   }, [authToken]);
 
-  const handleToggleStatus = async (discount) => {
-    const updatedStatus = discount.status === 1 ? 0 : 1;
-    const updatedDiscount = { ...discount, status: updatedStatus };
-
+  //handle edit
+  const openEditModal = async (id) => {
     try {
-      await handleUpdateDiscount(authToken, discount.id, updatedDiscount);
-      setDiscounts((prevDiscounts) => 
-        prevDiscounts.map((d) => (d.id === discount.id ? updatedDiscount : d))
-      );
+      const discountsWithMenus = await handleGetDiscountWithMenus(authToken,id)
+      setDiscountWithMenus(discountsWithMenus.original);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching discounts", error.message);
+    }
+  };
+
+  //handle delete
+  const openDeleteConfirmationModal = (id) => {
+    setDiscountIdToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDiscountIdToDelete(null);
+  };
+  const handleDeleteDiscountConfirm = async () => {
+    try {
+      await handleDeleteDiscount(authToken, discountIdToDelete);
+      setDiscounts(discounts.filter(discount => discount.id !== discountIdToDelete));
+      closeDeleteModal();
+    } catch (error) {
+      console.error("Error deleting discount", error.message);
+    }
+  };
+
+  //handle status
+  const handleToggleStatus = async (row) => {
+    try {
+      const discountsWithMenus = await handleGetDiscountWithMenus(authToken,row.id);
+      const discount = discountsWithMenus.original;
+      const updatedStatus = discount.status === 1 ? 0 : 1;
+      const updatedDiscount = { ...discount, status: updatedStatus };
+      console.log('this is my updated array for payload',updatedDiscount)//check this later, it is currently not working in the api
+  
+      try {
+        await handleUpdateDiscount(authToken, discount.id, updatedDiscount);
+        setDiscounts((prevDiscounts) =>
+          prevDiscounts.map((d) => (d.id === discount.id ? { ...d, status: updatedStatus } : d))
+        );
+      } catch (error) {
+        console.error("Error updating discount status", error.message);
+      }
     } catch (error) {
       console.error("Error updating discount status", error.message);
     }
   };
+
+  //handle dates format
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
@@ -93,6 +142,7 @@ const ShefCoupon = () => {
                       <th className="w-[15%]">End Date</th>
                       <th className="w-[15%]">Discount</th>
                       <th className="w-[15%]">Status</th>
+                      <th className="w-[15%]">Actions</th>
                       {/* <th className='w-[15%]'>Portion Size</th>
                                             <th className='w-[15%]'>Serving Size</th> */}
                     </tr>
@@ -121,6 +171,14 @@ const ShefCoupon = () => {
                             }`}
                           >
                             {discount.status === 1 ? 'Active' : 'Inactive'}
+                          </button>
+                        </td>
+                        <td>
+                          <button onClick={() => openEditModal(discount.id)} className="bg-blue-500 text-white px-4 py-2 rounded">
+                            Edit
+                          </button>{' '}
+                          <button onClick={() => openDeleteConfirmationModal(discount.id)} className="bg-red-500 text-white px-4 py-2 rounded">
+                            Delete
                           </button>
                         </td>
                       </tr>
@@ -262,8 +320,32 @@ const ShefCoupon = () => {
                     </div > */}
         </div>
       </div>
-
-      <ShefCouponForm isOpen={isModalOpen} onClose={closeCouponModal} />
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)'}}>
+          <div className="bg-white rounded-lg p-8">
+            <h3 className="text-xl font-semibold mb-4">Delete Confirmation</h3>
+            <p>Are you sure you want to delete this coupon?</p>
+            <div className="mt-6 flex justify-end gap-4">
+              <button
+                onClick={closeDeleteModal}
+                className="bg-gray-300 text-black px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteDiscountConfirm}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* editing coupon form */}
+      {isEditModalOpen && discountWithMenus &&<ShefCouponForm isOpen={isEditModalOpen} onClose={closeEditCouponModal} discountWithMenus={discountWithMenus}/>}
+      {/* creating coupon form */}
+      {isModalOpen && <ShefCouponForm isOpen={isModalOpen} onClose={closeCouponModal} editParameters={null}/>}
     </>
   );
 };

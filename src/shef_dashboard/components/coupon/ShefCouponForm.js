@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import Modal from "react-modal";
-import { handleCreateDiscount, handleGetAllDishes } from "../../../services/shef";
+import { handleCreateDiscount, handleGetAllDishes, handleUpdateDiscount } from "../../../services/shef";
 import { useSelector } from "react-redux";
 
-const ShefCouponForm = ({ isOpen, onClose }) => {
+const ShefCouponForm = ({ isOpen, onClose, discountWithMenus }) => {
   const [isPending, setIsPending] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [discountType, setDiscountType] = useState('');
@@ -37,6 +37,7 @@ const ShefCouponForm = ({ isOpen, onClose }) => {
       }
     };
     fetchDishes();
+    console.log(discountWithMenus,'this is run in useffect')
   }, [authToken]);
   // On Change
   const handleSelectChange = (selectedValues) => {
@@ -48,10 +49,11 @@ const ShefCouponForm = ({ isOpen, onClose }) => {
   // Submit
   const handleOnSubmit = async (e) => {
     e.preventDefault();
+    console.log(discountWithMenus,'this is being outputted!')
     try {
       setIsPending(true);
-
       const menuIds = selectedOptions.map(option => option.id);
+      if(!discountWithMenus){
       const payload = {
         menus: menuIds,
         is_auto_apply: 1, // Frontend will always have this as 1 
@@ -65,12 +67,27 @@ const ShefCouponForm = ({ isOpen, onClose }) => {
         end_date: e.target.end_date.value,
       };
 
-      await handleCreateDiscount(authToken, payload);
-
+      // await handleCreateDiscount(authToken, payload);
+    }else {
+      const updatedDiscountWithMenus = {
+        ...discountWithMenus,
+        menus: menuIds,
+        max_user_use: e.target.max_user_use.value,
+        discount_type: discountType,
+        discount: e.target.discount.value,
+        min_order: e.target.min_order.value,
+        max_order: e.target.max_order.value,
+        max_discount: e.target.max_discount?.value || null,
+        start_date: e.target.start_date.value,
+        end_date: e.target.end_date.value,
+      };
+      await handleUpdateDiscount(authToken, discountWithMenus.id, updatedDiscountWithMenus);
+    }
       // reset form and selected options here
       setSelectedOptions([]); 
       setDiscountType('');
       e.target.reset(); 
+      onClose();
     } catch (error) {
       console.error("Error submitting form:", error.message);
     } finally {

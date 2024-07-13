@@ -202,7 +202,7 @@ export const handleUpdateDiscount = async (token, id, payload) => {
     const { data } = await api.put(`/api/discount/${id}`, payload, {
       headers: { 
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data'
+        // 'Content-Type': 'multipart/form-data'
       },
     });
     return data;
@@ -215,5 +215,29 @@ export const handleUpdateDiscount = async (token, id, payload) => {
     throw new Error(
       err || error.message
     );
+  }
+};
+export const handleGetDiscountWithMenus = async (token, id) => {
+  try {
+    const response = await api.get(`/api/discount/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
+  }
+};
+export const handleDeleteDiscount = async (token, id) => {
+  try {
+    const response = await api.delete(`/api/discount/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response.data.message);
   }
 };
