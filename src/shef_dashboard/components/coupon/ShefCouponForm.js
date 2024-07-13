@@ -37,7 +37,6 @@ const ShefCouponForm = ({ isOpen, onClose, discountWithMenus }) => {
       }
     };
     fetchDishes();
-    console.log(discountWithMenus,'this is run in useffect')
   }, [authToken]);
   // On Change
   const handleSelectChange = (selectedValues) => {
@@ -67,7 +66,7 @@ const ShefCouponForm = ({ isOpen, onClose, discountWithMenus }) => {
         end_date: e.target.end_date.value,
       };
 
-      // await handleCreateDiscount(authToken, payload);
+      await handleCreateDiscount(authToken, payload);
     }else {
       const updatedDiscountWithMenus = {
         ...discountWithMenus,
