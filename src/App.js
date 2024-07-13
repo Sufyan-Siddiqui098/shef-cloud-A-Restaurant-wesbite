@@ -31,6 +31,7 @@ import AllChef from "./frontend/pages/AllChef";
 import ShefCoupon from "./shef_dashboard/pages/ShefCoupon";
 import UserOrder from "./frontend/pages/UserOrder";
 import ShefOrderSummary from "./shef_dashboard/pages/ShefOrderSummary";
+import UserProfile from "./frontend/pages/UserProfile";
 
 function App() {
   useEffect(() => {
@@ -78,6 +79,7 @@ function App() {
         <Route path="/checkout/:chefId" element={<Checkout />} />
         <Route path="/order-summary" element={<OrderSummary />} />
         <Route path="/order" element={<UserOrder />} />
+        <Route path="/profile" element={<UserProfile />} />
       </Route>
 
       {/* SHEF DASHBOARD ROUTES */}
