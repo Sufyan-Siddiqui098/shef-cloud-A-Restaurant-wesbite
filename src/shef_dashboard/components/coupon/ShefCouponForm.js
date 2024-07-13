@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import Modal from "react-modal";
+import { handleCreateDiscount, handleGetAllDishes } from "../../../services/shef";
+import { useSelector } from "react-redux";
 
 const ShefCouponForm = ({ isOpen, onClose }) => {
   const [isPending, setIsPending] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
-
-  const options = [
+  const [discountType, setDiscountType] = useState('');
+  const {authToken} = useSelector((state)=>state.user)
+  const [options, setOptions] = useState([
     {
       id: 1,
       label: "Dish one",
@@ -17,13 +20,24 @@ const ShefCouponForm = ({ isOpen, onClose }) => {
       label: "Dish Two",
       value: "Dish Two",
     },
-    {
-      id: 3,
-      label: "Dish Three",
-      value: "Dish Three",
-    },
-  ];
-
+  ]);
+  
+  useEffect(() => {
+    const fetchDishes = async () => {
+      try {
+        const dishes = await handleGetAllDishes(authToken);
+        const dishOptions = dishes.map(dish => ({
+          id: dish.id,
+          label: dish.name,
+          value: dish.name,
+        }));
+        setOptions(dishOptions);
+      } catch (error) {
+        console.error("Error fetching dishes:", error.message);
+      }
+    };
+    fetchDishes();
+  }, []);
   // On Change
   const handleSelectChange = (selectedValues) => {
     setSelectedOptions(selectedValues);
@@ -32,16 +46,39 @@ const ShefCouponForm = ({ isOpen, onClose }) => {
     console.log("ids of ", menusId);
     // updateFields({ingredients: ingredientsIDsArray})        // Set ingredients of ChefMenu
   };
-
   // Submit
-  const handleOnSubmit = async () => {
+  const handleOnSubmit = async (e) => {
+    e.preventDefault();
     try {
       setIsPending(true);
+
+      const menuIds = selectedOptions.map(option => option.id);
+      const payload = {
+        menus: menuIds,
+        is_auto_apply: 1, // Frontend will always have this as 1 
+        max_user_use: e.target.max_user_use.value,
+        discount_type: discountType,
+        discount: e.target.discount.value,
+        min_order: e.target.min_order.value,
+        max_order: e.target.max_order.value,
+        max_discount: e.target.max_discount?.value || null,
+        start_date: e.target.start_date.value,
+        end_date: e.target.end_date.value,
+      };
+
+      await handleCreateDiscount(authToken, payload);
+
+      // reset form and selected options here
+      setSelectedOptions([]); 
+      setDiscountType('');
+      e.target.reset(); 
     } catch (error) {
+      console.error("Error submitting form:", error.message);
     } finally {
       setIsPending(false);
-    }
-  };
+    }
+  };
+  
   return (
     <>
       <Modal
@@ -78,24 +115,57 @@ const ShefCouponForm = ({ isOpen, onClose }) => {
                 <div className="md:col-span-6 col-span-12">
                   <h4 className="text-base font-semibold mb-1 uppercase">
                     {" "}
-                    Name <span className="text-primary">*</span>
+                    Max code uses per person<span className="text-primary">*</span>
                   </h4>
                   <input
                     type="text"
-                    placeholder="Enter Coupon Name"
+                    placeholder="Enter Number of Uses"
                     id=""
-                    name="name"
+                    name="max_user_use"
                     required
                   />
+                </div>
+                <div className="md:col-span-6 col-span-12">
+                  <h4 className="text-base font-semibold mb-1 uppercase">
+                    Discount Type<span className="text-primary">*</span>{" "}
+                  </h4>
+                  <select
+                    name="discount_type"
+                    value={discountType}
+                    onChange={(e) => setDiscountType(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-lg text-lg"
+                    required
+                  >
+                    <option hidden value="">Select Discount Type</option>
+                    <option value="%">Percentage</option>
+                    <option value="$">Fixed Value</option>
+                  </select>
                 </div>
 
                 <div className="md:col-span-6 col-span-12">
                   <h4 className="text-base font-semibold mb-1 uppercase">
-                    Amount in Percent{" "}
+                    Discount Value<span className="text-primary">*</span>{" "}
                   </h4>
-                  <input type="number" placeholder="10%" id="" name="amount" />
+                  <input type="number" placeholder="Enter Value" required id="" name="discount" />
                 </div>
-
+                <div className="md:col-span-6 col-span-12">
+                  <h4 className="text-base font-semibold mb-1 uppercase">
+                    Minimum Orders<span className="text-primary">*</span>{" "}
+                  </h4>
+                  <input type="number" placeholder="1" required id="" name="min_order" />
+                </div>
+                <div className="md:col-span-6 col-span-12">
+                  <h4 className="text-base font-semibold mb-1 uppercase">
+                    Maximum Orders<span className="text-primary">*</span>{" "}
+                  </h4>
+                  <input type="number" placeholder="10" required id="" name="max_order" />
+                </div>
+                {discountType === '%' && <div className="md:col-span-6 col-span-12">
+                  <h4 className="text-base font-semibold mb-1 uppercase">
+                    Maximum Discount<span className="text-primary">*</span>{" "}
+                  </h4>
+                  <input type="number" placeholder="Type a Fixed Amount Cap" required id="" name="max_discount" />
+                </div>}
                 <div className="md:col-span-6 col-span-12">
                   <h4 className="text-base font-semibold mb-1 uppercase">
                     Start Date <span className="text-primary">*</span>
@@ -133,6 +203,7 @@ const ShefCouponForm = ({ isOpen, onClose }) => {
                       value={selectedOptions}
                       onChange={handleSelectChange}
                       placeholder="Menus..."
+                      required
                     />
                     <ul className="mt-2 flex gap-1 flex-wrap">
                       {selectedOptions.map((option) => (

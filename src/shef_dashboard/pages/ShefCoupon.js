@@ -1,11 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import ShefCouponForm from "../components/coupon/ShefCouponForm";
+import { handleGetAllDiscount, handleUpdateDiscount } from "../../services/shef";
+import { useSelector } from "react-redux";
 
 const ShefCoupon = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [discounts, setDiscounts] = useState([]);
+  const { authToken } = useSelector((state) => state.user)
   const closeCouponModal = () => {
     setIsModalOpen(false);
+  };
+  useEffect(() => {
+    const fetchDiscount = async () => {
+      try {
+        const discountsArray = await handleGetAllDiscount(authToken);
+        setDiscounts(discountsArray.original);
+      } catch (error) {
+        console.error("Error fetching discounts", error.message);
+      }
+    };
+    fetchDiscount();
+  }, []);
+  const handleToggleStatus = async (discount) => {
+    const updatedStatus = discount.status === 1 ? 0 : 1;
+    const updatedDiscount = { ...discount, status: updatedStatus };
+
+    try {
+      await handleUpdateDiscount(authToken, discount.id, updatedDiscount);
+      setDiscounts((prevDiscounts) => 
+        prevDiscounts.map((d) => (d.id === discount.id ? updatedDiscount : d))
+      );
+    } catch (error) {
+      console.error("Error updating discount status", error.message);
+    }
+  };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
   };
   return (
     <>
@@ -44,59 +79,79 @@ const ShefCoupon = () => {
                 >
                   Add Coupon
                 </button>
-                
+
               </div>
               <div className="overflow-x-auto">
                 <table className="text-left w-full menuTable border-0">
                   <thead>
                     <tr className="border-b">
-                      <th className="w-[20%]">Coupon ID</th>
-                      <th className="w-[20%]">Coupon Name</th>
+                      {/* <th className="w-[20%]">Coupon ID</th> */}
+                      {/* <th className="w-[20%]">Coupon Name</th> */}
                       <th className="w-[15%]"> Start Date </th>
                       <th className="w-[15%]">End Date</th>
-                      <th className="w-[15%]">Discout Percentage</th>
+                      <th className="w-[15%]">Discount</th>
+                      <th className="w-[15%]">Status</th>
                       {/* <th className='w-[15%]'>Portion Size</th>
                                             <th className='w-[15%]'>Serving Size</th> */}
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-b">
-                      <td>
-                        <p className="text-primaryGreen text-[14px]">
-                          #ID03456
-                        </p>
-                      </td>
-                      <td>
+                    {discounts.map((discount, index) => (
+                      <tr key={index} className='border-b'>
+                        <td>
+                          <h4 className="text-[14px] mb-1 leading-tight">
+                            {formatDate(discount.start_date)}
+                          </h4>
+                        </td>
+                        <td>
+                          <h4 className="text-[14px] mb-1 leading-tight">
+                            {formatDate(discount.end_date)}
+                          </h4>
+                        </td>
+                        <td>
+                          <h4 className="text-[14px] mb-1 leading-tight">{discount.discount_type=='$'?'$ '+discount.discount:discount.discount+' %'}</h4>
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => handleToggleStatus(discount)}
+                            className={`px-4 py-2 rounded text-white ${
+                              discount.status === 1 ? 'bg-green-500' : 'bg-red-500'
+                            }`}
+                          >
+                            {discount.status === 1 ? 'Active' : 'Inactive'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                      {/* <td>
                         <button onClick={()=>setIsModalOpen(true)} className="text-[14px] font-semibold hover:!text-secondary !text-primary">
-                          {/* <h4 className='text-[14px] mb-0 leading-tight font-semibold'>First Coupon</h4> */}
                           First Coupon
                         </button>
-                      </td>
+                      </td> 
                       <td>
-                        {/* <h4 className='text-[14px] mb-0 leading-tight'>2/07/2024 - 10-07-2024 </h4> */}
+                        <h4 className='text-[14px] mb-0 leading-tight'>2/07/2024 - 10-07-2024 </h4>
 
                         <h4 className="text-[14px] mb-1 leading-tight">
                           - 20/2/2024
                         </h4>
                       </td>
                       <td>
-                        {/* <h4 className='text-[14px] mb-0 leading-tight'>2/07/2024 - 10-07-2024 </h4> */}
+                         <h4 className='text-[14px] mb-0 leading-tight'>2/07/2024 - 10-07-2024 </h4> 
 
                         <h4 className="text-[14px] mb-1 leading-tight">
                           - 10-07-2024
-                      
                         </h4>
                       </td>
                       <td>
                         <h4 className="text-[14px] mb-0 leading-tight">10%</h4>
                       </td>
-                      {/* <td>
+                       <td>
                                                 <h4 className='text-[14px] mb-0 leading-tight'>16 oz</h4>
                                             </td>
                                             <td>
                                                 <h4 className='text-[14px] mb-0 leading-tight'>3 Serving</h4>
-                                            </td> */}
-                    </tr>
+                                            </td> 
+                    </tr>*/}
                   </tbody>
                 </table>
               </div>

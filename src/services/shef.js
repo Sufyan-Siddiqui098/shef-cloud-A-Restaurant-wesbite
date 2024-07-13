@@ -159,3 +159,61 @@ export const handleGetAllDishes = async (token) => {
     );
   }
 }
+
+// Create Discount
+export const handleCreateDiscount = async (token, payload) => {
+  try {
+    const { data } = await api.post("/api/discount", payload, {
+      headers: { 
+        Authorization: `Bearer ${token}` ,
+        'Content-Type': 'multipart/form-data'
+      },
+    });
+    return data;
+  } catch (error) {
+    console.log("Error while creating discount ", error);
+    let err;
+    if(error.response){
+      err = error.response.data.errors[Object.keys(error.response.data.errors)[0]][0]
+    }
+    throw new Error(
+      err || error.message
+    );
+  }
+};
+
+// Get All Discount
+export const handleGetAllDiscount = async (token) => {
+  try {
+    const { data } = await api.get("/api/discount", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw new Error(
+      error.message || "Something is wrong while Fetching Dishes"
+    );
+  }
+}
+// Update Discount
+export const handleUpdateDiscount = async (token, id, payload) => {
+  try {
+    const { data } = await api.put(`/api/discount/${id}`, payload, {
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
+      },
+    });
+    return data;
+  } catch (error) {
+    console.log("Error while updating discount", error);
+    let err;
+    if (error.response) {
+      err = error.response.data.errors[Object.keys(error.response.data.errors)[0]][0];
+    }
+    throw new Error(
+      err || error.message
+    );
+  }
+};

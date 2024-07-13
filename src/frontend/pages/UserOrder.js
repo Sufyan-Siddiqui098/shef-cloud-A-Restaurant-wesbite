@@ -7,14 +7,14 @@ import { useSelector } from 'react-redux'
 const UserOrder = () => {
 
     const { authToken } = useSelector((state) => state.user)
-    const orderDetailInitial = {
-        order_id: 1,
-        dish_name: '',
-        quantity: '',
-        spice_level: '',
-        portion_size: '',
-        serving_size: '',
-    };
+    // const orderDetailInitial = {
+    //     order_id: 1,
+    //     dish_name: '',
+    //     quantity: '',
+    //     spice_level: '',
+    //     portion_size: '',
+    //     serving_size: '',
+    // };
     const [orderDetails, setOrderDetails] = useState([]);
 
     useEffect(() => {
