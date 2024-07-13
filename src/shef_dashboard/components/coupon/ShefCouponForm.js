@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import Modal from "react-modal";
 import { handleCreateDiscount, handleGetAllDishes, handleUpdateDiscount } from "../../../services/shef";
