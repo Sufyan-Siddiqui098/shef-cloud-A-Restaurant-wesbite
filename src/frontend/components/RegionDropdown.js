@@ -1,32 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import { handleGetCitites } from "../../services/region";
 
-const RegionDropdown = ({ OnSelectRegion, isHome=false}) => {
-  // selected city
-  const [selected, setSelected] = useState({
-    id: "",
-    name: "",
-  });
+const RegionDropdown = ({ OnSelectRegion, isHome = false }) => {
+  const [selected, setSelected] = useState({ id: "", name: "" });
+  const [city, setCity] = useState([]);
+  const [isActive, setIsActive] = useState(false);
+  const dropdownMenuRef = useRef(null);
+  const [isFetching, setIsFetching] = useState(false); // Flag to prevent multiple requests
+
   const onCitySelect = (city) => {
     setSelected(city);
     localStorage.setItem("region", JSON.stringify(city));
     setIsActive(false);
-    if(isHome){
+    if (isHome) {
       OnSelectRegion();
     }
     window.location.reload();
   };
 
-  // City fetched from api
-  const [city, setCity] = useState([]);
-
-  //Modal (active or deactive)
-  const [isActive, setIsActive] = useState(false);
-  // Dropdown reference
-  const dropdownMenuRef = useRef(null);
-
-  // searching input
-  const hanldeOnChange = (e) => {
+  const handleOnChange = (e) => {
     const searchTerm = e.target.value.toLowerCase();
     const items = dropdownMenuRef.current.querySelectorAll("option");
     items.forEach((item) => {
@@ -39,27 +31,27 @@ const RegionDropdown = ({ OnSelectRegion, isHome=false}) => {
     });
   };
 
-  // Get Cities from backend - API
+  const fetchCities = async () => {
+    try {
+      if (isFetching) return; // If already fetching, return immediately
+      setIsFetching(true); // Set fetching flag to true before making the request
+      const response = await handleGetCitites();
+      setCity(response);
+      setIsFetching(false); // Reset fetching flag after request completes
+    } catch (error) {
+      console.log(error.message);
+      setIsFetching(false); // Reset fetching flag in case of error
+    }
+  };
+
   useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const response = await handleGetCitites();
-        setCity(response);
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-    
     fetchCities();
-    console.log("useEffect is running ");
   }, []);
 
-  // City from localStorage
   useEffect(() => {
     if (localStorage.getItem("region") && city?.length > 0) {
       const parsed = JSON.parse(localStorage.getItem("region"));
       let found = false;
-      // console.log("parsed cities ", parsed, "cities ", city)
       city.forEach((item) => {
         if (item.name === parsed.name && item.id === parsed.id) {
           setSelected(parsed);
@@ -77,8 +69,8 @@ const RegionDropdown = ({ OnSelectRegion, isHome=false}) => {
 
   return (
     <>
-      {/* Select Region  */}
-      <div className=" flex items-center justify-center w-full ">
+      {/* Select Region */}
+      <div className="flex items-center justify-center w-full">
         <div className="relative group border border-[#a0a3a7] rounded-md w-full shadow-sm">
           <button
             onClick={() => setIsActive((prev) => !prev)}
@@ -111,14 +103,14 @@ const RegionDropdown = ({ OnSelectRegion, isHome=false}) => {
           >
             {/* Search input */}
             <input
-              onChange={hanldeOnChange}
+              onChange={handleOnChange}
               id="search-input"
-              className="block w-full px-4 py-2 text-gray-800 border rounded-md  border-gray-300 focus:outline-none"
+              className="block w-full px-4 py-2 text-gray-800 border rounded-md border-gray-300 focus:outline-none"
               type="text"
               placeholder="Search City"
               autoComplete="off"
             />
-            {/* Dropdown content goes here  */}
+            {/* Dropdown content goes here */}
             {city?.map((item, index) => (
               <option
                 onClick={() => onCitySelect(item)}
