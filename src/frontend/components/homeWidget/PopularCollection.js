@@ -12,7 +12,9 @@ const PopularCollection = () => {
     (async () => {
       try {
         const city = JSON.parse(localStorage.getItem("region"));
+        if(!city?.id) return;
         const popular_dish_response = await handleGetPopularDishes(city.id);
+        // console.log("popular dish response ", popular_dish_response)
         //Chef
         const chefResponse = await handleGetAllChefs(city.id);
         // Matching chef id and appending the chef into dish-response
