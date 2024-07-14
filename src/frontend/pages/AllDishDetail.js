@@ -17,24 +17,42 @@ export const DishDetail = () => {
   const filterTabClick = (tabNumber) => {
     setFilterActiveTab(tabNumber);
   };
-
+  const [isFetching, setIsFetching] = useState(false);
   // Dishes
   const [dishes, setDishes] = useState([]);
   useEffect(() => {
     const city = JSON.parse(localStorage.getItem("region"));
     const fetchAllDishes = async () => {
       try {
+        setIsFetching(true);
         // const response = await handleGetAllDishes(authToken);
         const dishResponse = await handleGetAllDishesOfCity(city.id);
         console.log("reponse of dishes ", dishResponse);
         setDishes(dishResponse);
       } catch (error) {
         console.error("Error while fetching dishes \n", error);
+      } finally{
+        setIsFetching(false)
       }
     };
 
     fetchAllDishes();
   }, []);
+
+  if(!isFetching && dishes?.length<1){
+    return <>
+      <Header />
+        <div className="container mx-auto my-8 px-lg-2 px-4">
+        <h2 className="text-secondary font-bold text-2xl mb-0 border-b pb-2">
+            All Foods Plan
+          </h2>
+
+            <p className="font-semibold text-base sm:text-lg my-2 text-headGray">No dish found</p>
+        </div>
+      <Footer />
+
+    </>
+  }
   return (
     <>
       <Header />
