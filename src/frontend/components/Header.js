@@ -412,7 +412,7 @@ const Header = () => {
                                                         </div>
                                                         <div className="card-footer padding-15"> 
                                                             <NavLink to="/cart" className="btn-first green-btn text-custom-white full-width fw-500 !text-white hover:!text-primary focus:!text-primary">
-                                                                Proceed to Checkout
+                                                                Proceed to Cart
                                                             </NavLink>
                                                         </div>
                                                     </div>
