@@ -12,14 +12,16 @@ const CategorizeDishes = () => {
   const [categoryDishes, setCategoryDishes] = useState([]);
   // eslint-disable-next-line
   const { foodCategoryId } = useParams();
+  const [isFetching, setIsFetching] = useState(false);
   useEffect(() => {
     if (foodCategoryId) {
       (async () => {
         try {
+          setIsFetching(true);
           const city = JSON.parse(localStorage.getItem("region"));
           const foodTypeId = parseInt(foodCategoryId);
           const response = await handleGetCategorizeDishesOfCity(foodTypeId,city.id);
-          // console.log("resone ", response);
+          // console.log("Categorize dish response ", response);
           // const categorize = response.filter(
           //   (dish) => dish.food_type_id === parseInt(foodCategoryId)
           // );
@@ -27,6 +29,8 @@ const CategorizeDishes = () => {
           setCategoryDishes(response);
         } catch (error) {
           console.error(error);
+        }finally {
+          setIsFetching(false);
         }
       })();
     }
@@ -41,6 +45,9 @@ const CategorizeDishes = () => {
             Category Foods Plan
           </h2>
           <div className="grid grid-cols-12 gap-4 mt-6">
+            {!isFetching && categoryDishes.length<1 && (<div className=" col-span-12">
+              <p className="font-semibold text-base sm:text-xl my-2 text-headGray">No Dishes</p>
+            </div>)}
             {/* Dishes  */}
             {categoryDishes.map((dish) => (
               <div key={dish.id} className="lg:col-span-3 sm:col-span-6 col-span-12">
