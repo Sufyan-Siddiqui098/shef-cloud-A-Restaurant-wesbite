@@ -17,6 +17,7 @@ const MostLoveChef = () => {
     (async () => {
       try {
         const city = JSON.parse(localStorage.getItem("region"));
+        if(!city?.id) return;
         const lovedChef = await handleGetPopularChefWithDishes(city.id);
         setMostLovedChef(lovedChef);
         console.log("loved chef response ", lovedChef);
@@ -25,6 +26,8 @@ const MostLoveChef = () => {
       }
     })();
   }, []);
+
+  if (mostLoveChef?.length < 1) return <div></div>;
 
   return (
     <>
@@ -60,7 +63,7 @@ const MostLoveChef = () => {
             className="loveChef"
           >
             {mostLoveChef?.map((chef, index) => (
-              <SwiperSlide key={chef.id}>
+              <SwiperSlide key={index}>
                 <div>
                   <div className="chefSlidInner p-5">
                     <div className="grid grid-cols-12 md:gap-x-4 gap-x-0 md:gap-y-0 gap-y-4">
@@ -114,9 +117,9 @@ const MostLoveChef = () => {
                                                         authentic! You have a regular customer from us.
                         </p> */}
                         <p className="mt-4">
-                          {chef.bio.length > 200
+                          {chef?.bio?.length > 200
                             ? `${chef?.bio?.substring(0, 200)}...`
-                            : chef.bio}
+                            : chef?.bio}
                         </p>
                       </div>
                     </div>
