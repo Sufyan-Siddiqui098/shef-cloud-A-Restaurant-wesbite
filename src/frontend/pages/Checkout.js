@@ -10,10 +10,10 @@ import {
 } from "../../store/slice/cart";
 import isValidURL from "../../ValidateUrl";
 import { updateUser } from "../../store/slice/user";
+import Modal from "react-modal";
 
 export const Checkout = () => {
-
-  const { userInfo } = useSelector(state => state.user);
+  const { userInfo } = useSelector((state) => state.user);
 
   const [activeButton, setActiveButton] = useState(null);
   const handleButtonClick = (buttonId, percent) => {
@@ -79,18 +79,21 @@ export const Checkout = () => {
 
   // Use effect to set the initial delivery address from the last order address
   useEffect(() => {
-    
+    //--- Existing address after first order
     if (userInfo.last_order_address?.order_delivery_address) {
-      const lastOrderAddress = userInfo.last_order_address.order_delivery_address;
-      setOrderDeliveryAddress(prevAddress => ({
+      const lastOrderAddress =
+        userInfo.last_order_address.order_delivery_address;
+      setOrderDeliveryAddress((prevAddress) => ({
         ...prevAddress,
-        address: lastOrderAddress?.address,
-        line2: lastOrderAddress?.line2,
-        city: lastOrderAddress?.city,
-        postal_code: lastOrderAddress?.postal_code,
-        state: lastOrderAddress?.state,
+        address: lastOrderAddress?.address || "",
+        line2: lastOrderAddress?.line2 || "",
+        city: lastOrderAddress?.city || "",
+        postal_code: lastOrderAddress?.postal_code || "",
+        state: lastOrderAddress?.state || "",
       }));
     }
+  
+    // eslint-disable-next-line
   }, []);
   // Calculate and update tip_price
   const calculateTip = (percent) => {
@@ -111,7 +114,6 @@ export const Checkout = () => {
       return { ...prev, ...field };
     });
   };
- 
 
   // Chef id
   const { chefId } = useParams();
@@ -243,6 +245,7 @@ export const Checkout = () => {
   //--- On Submit Function
   const onSubmit = async (e) => {
     try {
+      e.preventDefault();
       setIsPending(true);
       const payload = order;
       payload.orderDeliveryAddress = orderDeliveryAddress;
@@ -255,26 +258,45 @@ export const Checkout = () => {
       });
 
       dispatch(onOrderSubmit({ chefId: parseInt(chefId) }));
-      const updatedUserInfo = { 
-        ...userInfo, 
-        last_order_address: {  
-          order_delivery_address: orderDeliveryAddress 
-        } 
+      const updatedUserInfo = {
+        ...userInfo,
+        last_order_address: {
+          order_delivery_address: orderDeliveryAddress,
+        },
       };
 
-      localStorage.setItem("user", JSON.stringify(updatedUserInfo))
+      localStorage.setItem("user", JSON.stringify(updatedUserInfo));
       dispatch(updateUser(updatedUserInfo));
       // Resetting
       setOrder(orderInitial);
       setOrderDetails(orderDetailInitial);
       setOrderDeliveryAddress(orderDeliveryAddressInitial);
-      navigate("/cart", { replace: true});
+      navigate("/cart", { replace: true });
     } catch (error) {
       console.error("Error on Placing order ", error);
       toast.error(error.message, { theme: "colored" });
     } finally {
       setIsPending(false);
     }
+  };
+
+  const [isOpen, setIsOpen] = useState(false);
+  const onRequestClose = () => {
+    setIsOpen(false);
+  };
+
+  const onSelectExistingAddress = (address) => {
+    console.log("exiting address", address);
+    setOrderDeliveryAddress((prevAddress) => ({
+      ...prevAddress,
+      address: address?.address || "",
+      line2: address?.line2 || "",
+      city: address?.city || "",
+      postal_code: address?.postal_code || "",
+      state: address?.state || "",
+    }));
+    //modal close
+    setIsOpen(false);
   };
 
   return (
@@ -305,7 +327,7 @@ export const Checkout = () => {
         </div>
         <div className="grid grid-cols-12 gap-4">
           <div className="lg:col-span-7 col-span-12">
-            <form>
+            <form onSubmit={onSubmit}>
               <div className="border border-primary border-dashed rounded-lg p-4">
                 <h2 className="font-semibold text-xl uppercase text-secondary tracking-widest">
                   Delivery information
@@ -315,6 +337,7 @@ export const Checkout = () => {
                     Phone <span className="text-primary">*</span>
                   </h4>
                   <input
+                    required
                     className="border rounded-md w-1/2"
                     name=""
                     value={order.phone}
@@ -330,6 +353,7 @@ export const Checkout = () => {
                     Name <span className="text-primary">*</span>
                   </h4>
                   <input
+                    required
                     className="border rounded-md w-full"
                     name=""
                     value={order.name}
@@ -345,6 +369,7 @@ export const Checkout = () => {
                     Email <span className="text-primary">*</span>
                   </h4>
                   <input
+                    required
                     className="border rounded-md w-full"
                     name=""
                     value={order.email}
@@ -354,11 +379,24 @@ export const Checkout = () => {
                     placeholder="Enter Email"
                   />
                 </div>
-                <div className="border-b border-primary border-dashed pb-5 mb-4">
+                {/* Address */}
+                <div className="border- border-primary border-dashed pb- mb-4 rounded bg-slate-50 px-3 pt-2 pb-6">
+                  {userInfo.user_addresses &&
+                    userInfo.user_addresses.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setIsOpen(true)}
+                        className="block ml-auto text-primary"
+                      >
+                        Select Existing Address
+                      </button>
+                    )}
+
                   <h4 className="text-base font-semibold mb-1">
                     Address <span className="text-primary">*</span>
                   </h4>
                   <input
+                    required
                     className="border rounded-md w-full"
                     name=""
                     value={orderDeliveryAddress.address}
@@ -371,7 +409,8 @@ export const Checkout = () => {
                     Address Line 2 <span className="text-primary">*</span>
                   </h4>
                   <input
-                    className="border rounded-md w-full"
+                    required
+                    className="border rounded-md w-full "
                     name=""
                     value={orderDeliveryAddress.line2}
                     onChange={(e) =>
@@ -383,6 +422,7 @@ export const Checkout = () => {
                     City <span className="text-primary">*</span>
                   </h4>
                   <input
+                    required
                     className="border rounded-md w-full"
                     name=""
                     value={orderDeliveryAddress.city}
@@ -395,7 +435,8 @@ export const Checkout = () => {
                     Postal Code <span className="text-primary">*</span>
                   </h4>
                   <input
-                    className="border rounded-md w-full"
+                    required
+                    className="border rounded-md w-full "
                     name=""
                     value={orderDeliveryAddress.postal_code}
                     onChange={(e) =>
@@ -409,7 +450,8 @@ export const Checkout = () => {
                     State <span className="text-primary">*</span>
                   </h4>
                   <input
-                    className="border rounded-md w-full"
+                    required
+                    className="border rounded-md w-full "
                     name=""
                     value={orderDeliveryAddress.state}
                     onChange={(e) =>
@@ -418,45 +460,46 @@ export const Checkout = () => {
                     placeholder="State"
                   />
                   {/* <h4 className="text-base font-semibold mb-1 mt-3">
-                    Longitude <span className="text-primary">*</span>
-                  </h4>
-                  <input
-                    className="border rounded-md w-full"
-                    name=""
-                    type="number"
-                    min={0}
-                    step={0.01}
-                    value={orderDeliveryAddress.longitude}
-                    onChange={(e) =>
-                      updateOrderDeliveryAddress({
-                        longitude: parseFloat(e.target.value),
-                      })
-                    }
-                    placeholder="Longitude"
-                  />
-                  <h4 className="text-base font-semibold mb-1 mt-3">
-                    Latitude <span className="text-primary">*</span>
-                  </h4>
-                  <input
-                    className="border rounded-md w-full"
-                    name=""
-                    type="number"
-                    min={0}
-                    step={0.01}
-                    value={orderDeliveryAddress.latitude}
-                    onChange={(e) =>
-                      updateOrderDeliveryAddress({
-                        latitude: parseFloat(e.target.value),
-                      })
-                    }
-                    placeholder="Latitude"
-                  /> */}
+                      Longitude <span className="text-primary">*</span>
+                    </h4>
+                    <input
+                      className="border rounded-md w-full"
+                      name=""
+                      type="number"
+                      min={0}
+                      step={0.01}
+                      value={orderDeliveryAddress.longitude}
+                      onChange={(e) =>
+                        updateOrderDeliveryAddress({
+                          longitude: parseFloat(e.target.value),
+                        })
+                      }
+                      placeholder="Longitude"
+                    />
+                    <h4 className="text-base font-semibold mb-1 mt-3">
+                      Latitude <span className="text-primary">*</span>
+                    </h4>
+                    <input
+                      className="border rounded-md w-full"
+                      name=""
+                      type="number"
+                      min={0}
+                      step={0.01}
+                      value={orderDeliveryAddress.latitude}
+                      onChange={(e) =>
+                        updateOrderDeliveryAddress({
+                          latitude: parseFloat(e.target.value),
+                        })
+                      }
+                      placeholder="Latitude"
+                    /> */}
                 </div>
-                <div className="border-b border-primary border-dashed pb-5 mb-4">
+                <div className="border-b border-t pt-5 border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
                     Delivery Instruction <span className="text-primary">*</span>
                   </h4>
                   <textarea
+                    required
                     className="border rounded-md w-full h-[100px]"
                     value={orderDeliveryAddress.delivery_instruction}
                     onChange={(e) =>
@@ -472,6 +515,7 @@ export const Checkout = () => {
                     Delivery Notes <span className="text-primary">*</span>
                   </h4>
                   <textarea
+                    required
                     className="border rounded-md w-full h-[100px]"
                     value={order.delivery_notes}
                     onChange={(e) => {
@@ -488,6 +532,7 @@ export const Checkout = () => {
                     Delivery time <span className="text-primary">*</span>
                   </h4>
                   <input
+                    required
                     className="border rounded-md w-full"
                     type="datetime-local"
                     name=""
@@ -646,7 +691,7 @@ export const Checkout = () => {
                       onChange={() => updateOrder({ payment_mode: 1 })}
                     />
                     <label htmlFor="delivery" className="text-lg font-medium">
-                      Delivery
+                      Cash on Delivery
                     </label>
                   </div>
                   <div className="flex items-center">
@@ -670,8 +715,6 @@ export const Checkout = () => {
               <div className="mt-4 text-center">
                 <button
                   disabled={isPending || cartItem.length < 1}
-                  onClick={onSubmit}
-                  type="button"
                   className="bg-primary text-white text-lg w-full uppercase px-6 py-2 font-semibold rounded-lg disabled:opacity-60"
                 >
                   Place Order
@@ -688,7 +731,6 @@ export const Checkout = () => {
                 Your order for delivery on Monday, February 12
               </h3> */}
               <div>
-                
                 {/* Order Box */}
                 {cartItem.map(
                   (chef, chefIndex) =>
@@ -697,7 +739,7 @@ export const Checkout = () => {
                         <div className="flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg">
                           <img
                             src={
-                              (chef.profile_pic && isValidURL(chef.profile_pic))
+                              chef.profile_pic && isValidURL(chef.profile_pic)
                                 ? chef.profile_pic
                                 : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                             }
@@ -736,15 +778,7 @@ export const Checkout = () => {
                                 className="object-top rounded-lg w-[60px] object-cover h-[60px]"
                                 alt="ef"
                               />
-                              {/* <img
-                                src={
-                                  menu.logo && isValidURL(menu.logo)
-                                    ? menu.logo
-                                    : "/media/frontend/img/restaurants/255x104/order-2.jpg"
-                                }
-                                className="object-top rounded-lg w-[60px] object-cover h-[60px]"
-                                alt="ef"
-                              /> */}
+
                               <div>
                                 <h3 className="mb-1 text-base font-semibold leading-tight">
                                   {menu.name}{" "}
@@ -920,6 +954,81 @@ export const Checkout = () => {
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={isOpen}
+        onRequestClose={onRequestClose}
+        contentLabel="Address"
+      >
+        {/* Modal content here */}
+        <div className="flex items-center justify-between border-b pb-3 gap-3">
+          <h2 className="text-lg font-semibold leading-tight mb-0">
+            Existing Address
+          </h2>
+          <button onClick={onRequestClose}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              fill="rgba(0,0,0,1)"
+            >
+              <path d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z"></path>
+            </svg>
+          </button>
+        </div>
+
+        {/* Main Content */}
+        {userInfo.user_addresses && userInfo.user_addresses.length > 0 && (
+          <div>
+            <h3 className="mb-5 text-lg text-gray my-2 font-semibold">
+              Select Address
+            </h3>
+            <ul className="flex flex-wrap gap-2 ">
+              {userInfo.user_addresses.map((address, index) => (
+                <li className="min-w-[200px]" key={index}>
+                  <input
+                    onChange={() => onSelectExistingAddress(address)}
+                    type="radio"
+                    id={index}
+                    name="hosting"
+                    value="hosting-small"
+                    className="hidden peer"
+                    required
+                    checked={
+                      orderDeliveryAddress.address === address?.address &&
+                      (orderDeliveryAddress.city && address?.city
+                        ? orderDeliveryAddress.city === address.city
+                        : !orderDeliveryAddress.city && !address?.city) &&
+                      (orderDeliveryAddress.line2 && address?.line2
+                        ? orderDeliveryAddress.line2 === address.line2
+                        : !orderDeliveryAddress.line2 && !address?.line2)
+                    }
+                  />
+                  <label
+                    htmlFor={index}
+                    className="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 "
+                  >
+                    <div className="block">
+                      {/* <div className="w-full text-lg font-semibold">0-50 MB</div> */}
+                      <div className="w-full">
+                        {`
+                        ${address?.address ? address.address + ", " : ""}
+                        ${address?.line2 ? address.line2 + ", " : ""}
+                        ${address?.city ? address.city + ", " : ""}
+                        ${
+                          address?.postal_code ? address.postal_code + ", " : ""
+                        }
+                        ${address?.state || ""}`}
+                      </div>
+                    </div>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </Modal>
     </>
   );
 };
