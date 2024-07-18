@@ -847,8 +847,11 @@ export const Checkout = () => {
                               </div>
                             </div>
                             <div
-                              onClick={() =>
-                                dispatch(removeFromCart(chefIndex, menuIndex))
+                              onClick={() =>{
+                                dispatch(removeFromCart({chefIndex, menuIndex}))
+                                navigate("/cart" , {replace: true})
+                                toast.success(`${menu?.name} is removed from cart`)
+                              }
                               }
                               className="cursor-pointer"
                             >
