@@ -24,10 +24,10 @@ const HeroBanner = () => {
         try{
             e.preventDefault();
             const res = await handleUserSignUp(credentials);
-            if(res.email) {
-                toast.success("Register Successfully")
+            // if(res.email) {
+                toast.success(res.message ||"Register Successfully")
                 navigate('/login')
-            }
+            // }
         }catch(error){
             toast.error(error.message);
         }
