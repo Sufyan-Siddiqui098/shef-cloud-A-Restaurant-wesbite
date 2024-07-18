@@ -31,27 +31,30 @@ export const DishDetail = () => {
         setDishes(dishResponse);
       } catch (error) {
         console.error("Error while fetching dishes \n", error);
-      } finally{
-        setIsFetching(false)
+      } finally {
+        setIsFetching(false);
       }
     };
 
     fetchAllDishes();
   }, []);
 
-  if(!isFetching && dishes?.length<1){
-    return <>
-      <Header />
+  if (!isFetching && dishes?.length < 1) {
+    return (
+      <>
+        <Header />
         <div className="container mx-auto my-8 px-lg-2 px-4">
-        <h2 className="text-secondary font-bold text-2xl mb-0 border-b pb-2">
+          <h2 className="text-secondary font-bold text-2xl mb-0 border-b pb-2">
             All Foods Plan
           </h2>
 
-            <p className="font-semibold text-base sm:text-lg my-2 text-headGray">No dish found</p>
+          <p className="font-semibold text-base sm:text-lg my-2 text-headGray">
+            No dish found
+          </p>
         </div>
-      <Footer />
-
-    </>
+        <Footer />
+      </>
+    );
   }
   return (
     <>
@@ -192,17 +195,61 @@ export const DishDetail = () => {
                         )}
                       </h4>
                     </div>
-                    {/* <div className='border-t pt-3 mt-2'>
-                                        <div className='grid grid-cols-12 gap-x-2'>
-                                            <div className='col-span-8'>
+                    <div className="border-t pt-3 mt-2">
+                      <div className="">
+                      {/* <div className="grid grid-cols-12 gap-x-2"> */}
+                        {/* <div className="col-span-8"> */}
+                        <div className="flex flex-col gap-1">
+                          <h4 className="text-[10px] text-headGray mb-0">
+                            Availibility:{" "}
+                          </h4>
+                          <ul className="flex gap-1 flex-wrap">
+                            {item?.is_monday === 1 && (
+                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                                Mo
+                              </li>
+                            )}
+                            {item?.is_tuesday === 1 && (
+                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                                Tu
+                              </li>
+                            )}
+                            {item?.is_wednesday === 1 && (
+                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                                We
+                              </li>
+                            )}
+                            {item?.is_thursday === 1 && (
+                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                                Th
+                              </li>
+                            )}
+                            {item?.is_friday === 1 && (
+                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                                Fr
+                              </li>
+                            )}
+                            {item?.is_saturday === 1 && (
+                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                                St
+                              </li>
+                            )}
+                            {item?.is_sunday === 1 && (
+                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                                Su
+                              </li>
+                            )}
+                          </ul>
+                        </div>
+                        {/* <div className='col-span-8'>
                                                 <h4 className='text-[10px] text-headGray mb-0'>Earliest Delivery: </h4>
                                                 <h5 className='text-[12px] text-secondary leading-tight mb-0'>Tomorrow at 1:00 PM </h5>
-                                            </div>
-                                            <div className='col-span-4 text-right my-auto'>
+                                            </div> */}
+                        {/* <div className='col-span-4 text-right my-auto'>
                                                 <Link to={`/dish-detail-single/${item.id}`} className='bg-primary px-3 py-1 rounded-[4px] font-medium text-xs !text-white tracking-wide'> Detail</Link>
-                                            </div>
-                                        </div>
-                                    </div> */}
+                                            </div> */}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

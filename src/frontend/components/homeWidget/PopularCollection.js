@@ -12,7 +12,7 @@ const PopularCollection = () => {
     (async () => {
       try {
         const city = JSON.parse(localStorage.getItem("region"));
-        if(!city?.id) return;
+        if (!city?.id) return;
         const popular_dish_response = await handleGetPopularDishes(city.id);
         // console.log("popular dish response ", popular_dish_response)
         //Chef
@@ -218,12 +218,52 @@ const PopularCollection = () => {
                                                             </h4> */}
                           </div>
                           <div className="border-t pt-3 mt-2">
-                            <div className="grid grid-cols-12 gap-x-2">
-                              {/* <div className='col-span-8'>
-                                                                    <h4 className='text-[10px] text-headGray mb-0'>Earliest Delivery: </h4>
-                                                                    <h5 className='text-[12px] text-secondary leading-tight mb-0'>Tomorrow at 1:00 PM </h5>
-                                                                </div> */}
-                              <div className="col-span-4 my-auto">
+                            <div className="grid grid-cols-12 gap-x-1">
+                              <div className="col-span-9">
+                                {/* <h4 className='text-[10px] text-headGray mb-0'>Earliest Delivery: </h4>
+                                                                    <h5 className='text-[12px] text-secondary leading-tight mb-0'>Tomorrow at 1:00 PM </h5> */}
+                                <h4 className="text-[10px] text-headGray mb-0">
+                                  Availibility:{" "}
+                                </h4>
+                                <ul className="flex gap-[2px] flex-wrap">
+                                  {dish?.is_monday === 1 && (
+                                    <li className="text-[12px] p-1  bg-headGray text-white rounded leading-tight mb-0">
+                                      Mo
+                                    </li>
+                                  )}
+                                  {dish?.is_tuesday === 1 && (
+                                    <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                      Tu
+                                    </li>
+                                  )}
+                                  {dish?.is_wednesday === 1 && (
+                                    <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                      We
+                                    </li>
+                                  )}
+                                  {dish?.is_thursday === 1 && (
+                                    <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                      Th
+                                    </li>
+                                  )}
+                                  {dish?.is_friday === 1 && (
+                                    <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                      Fr
+                                    </li>
+                                  )}
+                                  {dish?.is_saturday === 1 && (
+                                    <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                      St
+                                    </li>
+                                  )}
+                                  {dish?.is_sunday === 1 && (
+                                    <li className="text-[12px] p-1 px-[6px] bg-headGray text-white rounded leading-tight mb-0">
+                                      Su
+                                    </li>
+                                  )}
+                                </ul>
+                              </div>
+                              <div className="col-span-3 my-auto">
                                 <Link
                                   to={`/dish-detail-single/${dish.id}`}
                                   className="bg-primary px-3 py-1 rounded-[4px] font-medium text-xs !text-white tracking-wide"
