@@ -21,13 +21,21 @@ export const DishDetailSingle = () => {
 
   // Plus Minus Quantity Start
   const [quantity, setQuantity] = useState(0);
-
+  // If already in cart then show the count
+  const [alreadyInCartCount, setAlreadyInCartCount] = useState(0);
   const handleIncrement = () => {
     setQuantity((prevQuantity) => prevQuantity + 1);
+    if(alreadyInCartCount !==0){
+      setAlreadyInCartCount((prev)=> prev + 1 )
+    }
+
   };
 
   const handleDecrement = () => {
     setQuantity((prevQuantity) => (prevQuantity > 0 ? prevQuantity - 1 : 0));
+    if(alreadyInCartCount !==0){
+      setAlreadyInCartCount((prevQuantity) => (prevQuantity > 0 ? prevQuantity - 1 : 0))
+    }
   };
 
   const handleInputChange = (e) => {
@@ -42,11 +50,16 @@ export const DishDetailSingle = () => {
   const { authToken } = useSelector((state) => state.user);
   // -- Single Dish
   const [dish, setDish] = useState({});
+  // --- Api is fetching
+  const[isFetching, setIsFetching] = useState(false)
+
+  const { cartItem } = useSelector((state) => state.cart)
 
   // Fetch Single Dish
   useEffect(() => {
     const fetchSingleDish = async () => {
       try {
+        setIsFetching(true);
         const dishResponse = await handleGetSingleDish(dishId);
         const city = JSON.parse(localStorage.getItem("region"));
         const chefReponse = await handleGetAllChefs(city.id);
@@ -70,15 +83,21 @@ export const DishDetailSingle = () => {
         console.log("Chef discounted ", discount)
         console.log("response of single dish ", dishResponse);
         setDish(dishResponse);
+        
+        
       } catch (error) {
         console.error("Error while fetching single dish \n", error);
+      } finally{
+        setIsFetching(false);
       }
     };
     fetchSingleDish();
   }, [authToken, dishId]);
-
+  
+ 
   // add to cart
   const dispatch = useDispatch();
+  const [addedToCart , setAddedToCart] = useState(false);
   const handleAddToCart = () => {
     const unit_price = parseFloat(
       (
@@ -97,7 +116,23 @@ export const DishDetailSingle = () => {
     toast.dismiss();
     toast.success("Added to Cart ", { autoClose: 2000 });
     setQuantity(0);
+    setAddedToCart((prev)=> !prev)
   };
+
+  useEffect(()=>{
+    // Checking if the item alreay exist in cart then show its count
+    cartItem?.forEach((chef, chefIndex) => {
+      if(chef.id === dish?.chef?.id) {
+        chef.menu?.forEach((menu, menuIdex)=> {
+          if(menu.id === dish.id && menu.quantity>0) {
+            console.log("Quantity already exist ", menu.quantity);
+            setAlreadyInCartCount(menu.quantity);
+          }
+        })
+      }
+    })
+    console.log("Count useEffect is running ")
+  }, [dish, addedToCart])
 
   return (
     <div>
@@ -517,7 +552,7 @@ export const DishDetailSingle = () => {
                 <div className="grid grid-cols-12 mt-4 gap-3 ">
                   <div className="md:col-span-5 col-span-6 ">
                     <div className="flex items-center justify-between] bg-grayBg rounded-lg">
-                      <button onClick={handleDecrement} className="w-[25%]">
+                      <button disabled={quantity===0} onClick={handleDecrement} className="w-[25%] disabled:opacity-60">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="mx-auto"
@@ -533,7 +568,7 @@ export const DishDetailSingle = () => {
                         <input
                           className="text-center border-0 bg-transparent text-base px-1 focus:border-0"
                           placeholder="1"
-                          value={quantity}
+                          value={alreadyInCartCount>0 ? alreadyInCartCount : quantity}
                           onChange={handleInputChange}
                         />
                       </div>
@@ -554,7 +589,7 @@ export const DishDetailSingle = () => {
                   <div className="md:col-span-7 col-span-6">
                     <button
                       onClick={handleAddToCart}
-                      disabled={quantity === 0}
+                      disabled={isFetching || quantity === 0  }
                       className="text-lg font-bold bg-primary w-full h-full uppercase text-white rounded-[6px] disabled:opacity-60"
                     >
                       Add to Cart
