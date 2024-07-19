@@ -144,9 +144,9 @@ const RegionDropdown = ({ OnSelectRegion, isHome = false }) => {
   }, [city, isLoaded, loadError]);
 
   // Error handling for Google Maps API load error
-  if (loadError) {
-    return <div>Error loading maps</div>;
-  }
+  // if (loadError) {
+  //   return <div>Error loading maps</div>;
+  // }
 
   return (
     <div className="flex items-center justify-center w-full">
@@ -159,19 +159,19 @@ const RegionDropdown = ({ OnSelectRegion, isHome = false }) => {
           <span className="mr-2">
             {selected.name ? selected.name : "Select City"}
           </span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-5 h-5 ml-2 -mr-1"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fillRule="evenodd"
-              d="M6.293 9.293a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 011.414 1.414l-3 3a1 1 01-1.414 0l-3-3a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
+           <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5 ml-2 -mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M6.293 9.293a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
         </button>
         <div
           ref={dropdownMenuRef}
