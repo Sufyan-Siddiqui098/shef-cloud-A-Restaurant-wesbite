@@ -70,7 +70,7 @@ export const handleGetHeatingInstruction = async (token) => {
   }
 };
 
-export const hanldeGetPlatformRate = async (token) => {
+export const handleGetPlatformRate = async (token) => {
   try {
     const { data } = await api.get("/api/platform_rates", {
       headers: { Authorization: `Bearer ${token}` },
