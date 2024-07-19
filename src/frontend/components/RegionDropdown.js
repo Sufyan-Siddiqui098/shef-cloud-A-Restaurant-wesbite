@@ -127,7 +127,7 @@ const RegionDropdown = ({ OnSelectRegion, isHome = false }) => {
 
   // Set selected city based on local storage or user location
   useEffect(() => {
-    if (city.length > 0) {
+    if (city?.length > 0) {
       if (localStorage.getItem("region")) {
         const parsed = JSON.parse(localStorage.getItem("region"));
         const selectedCity = city.find(c => c.id === parsed.id && c.name.toLowerCase() === parsed.name.toLowerCase());
