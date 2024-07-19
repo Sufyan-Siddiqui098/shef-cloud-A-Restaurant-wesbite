@@ -98,9 +98,9 @@ export const DishDetail = () => {
           </h2>
           <div className="grid grid-cols-12 gap-4 mt-6">
             {/* Dish Column #1 */}
-            {dishes.map((item) => (
+            {dishes.map((dish) => (
               <div
-                key={item.id}
+                key={dish.id}
                 className="lg:col-span-3 sm:col-span-6 col-span-12"
               >
                 <div className="product-box">
@@ -122,21 +122,21 @@ export const DishDetail = () => {
                     </div>
                     <img
                       src={`${
-                        item.logo && isValidURL(item.logo)
-                          ? item.logo
+                        dish.logo && isValidURL(dish.logo)
+                          ? dish.logo
                           : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
                       }`}
                       className="img-fluid object-cover h-[200px] full-width"
                       alt="product-img"
                     />
-                    {/* <img src={`${item.logo? `${process.env.REACT_APP_baseURL}/addded_images/menus/${item.logo}`: "./media/frontend/img/restaurants/255x104/order-1.jpg"}`} className="img-fluid object-cover h-[200px] full-width" alt="product-img" /> */}
-                    <Link to={`/shef-detail/${item.user_id}`}>
+                    {/* <img src={`${dish.logo? `${process.env.REACT_APP_baseURL}/addded_images/menus/${dish.logo}`: "./media/frontend/img/restaurants/255x104/order-1.jpg"}`} className="img-fluid object-cover h-[200px] full-width" alt="product-img" /> */}
+                    <Link to={`/shef-detail/${dish.user_id}`}>
                       <div className="flex items-center gap-x-3 bg-white absolute bottom-[-40px] p-2 w-[90%] left-[50%] translate-x-[-50%] rounded-lg shadow-lg">
                         <img
                           src={
-                            item.chef?.profile_pic &&
-                            isValidURL(item.chef?.profile_pic)
-                              ? item.chef?.profile_pic
+                            dish.chef?.profile_pic &&
+                            isValidURL(dish.chef?.profile_pic)
+                              ? dish.chef?.profile_pic
                               : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                           }
                           className="img-fluid object-cover h-[60px] w-[60px] object-top rounded-lg"
@@ -145,7 +145,7 @@ export const DishDetail = () => {
                         <div>
                           {/* <h3 className='font-bold text-base leading-tight mb-1'>Shef Razia M.</h3> */}
                           <h3 className="font-bold text-base leading-tight mb-1">
-                            {`${item?.chef?.first_name} ${item?.chef?.last_name}`}
+                            {`${dish?.chef?.first_name} ${dish?.chef?.last_name}`}
                           </h3>
                           {/* <h4 className='font-medium text-[12px] leading-tight text-headGray mb-1'>Middle Eastern . Afghan</h4> */}
                           {/* <div className='inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]'>
@@ -162,9 +162,9 @@ export const DishDetail = () => {
                   </div>
                   <div className="p-3 mt-12">
                     <h6 className="text-lg leading-tight text-secondary font-semibold mb-2">
-                      <Link to={`/dish-detail-single/${item.id}`}>
+                      <Link to={`/dish-detail-single/${dish.id}`}>
                         {" "}
-                        {item.name}{" "}
+                        {dish.name}{" "}
                       </Link>
                     </h6>
                     <div className="flex justify-between items-center gap-x-2">
@@ -179,75 +179,77 @@ export const DishDetail = () => {
                       {/* <h4 className='text-xl text-secondary font-semibold mb-0'>$ 12.99 </h4> */}
                       <h4 className="text-xl text-secondary font-semibold mb-0">
                         {(
-                          item.chef_earning_fee +
-                          item.platform_price +
-                          item.delivery_price
+                          dish.chef_earning_fee +
+                          dish.platform_price +
+                          dish.delivery_price
                         ).toLocaleString("en-US", {
                           style: "currency",
                           currency: "USD",
                         })}
-                        {item?.auto_applied_discounts?.length > 0 && (
+                        {dish?.auto_applied_discounts?.length > 0 && (
                           <span className="block text-[13px] -mt-2 text-green-700">
                             [
-                            {` ${item.auto_applied_discounts[0].discount} ${item.auto_applied_discounts[0].discount_type} `}
+                            {` ${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `}
                             <span className="text-[10px]">Off</span> ]
                           </span>
                         )}
                       </h4>
                     </div>
                     <div className="border-t pt-3 mt-2">
-                      <div className="">
-                      {/* <div className="grid grid-cols-12 gap-x-2"> */}
-                        {/* <div className="col-span-8"> */}
-                        <div className="flex flex-col gap-1">
+                      <div className="grid grid-cols-12 gap-x-1">
+                        <div className="col-span-9">
+                          {/* <h4 className='text-[10px] text-headGray mb-0'>Earliest Delivery: </h4>
+                                                                    <h5 className='text-[12px] text-secondary leading-tight mb-0'>Tomorrow at 1:00 PM </h5> */}
                           <h4 className="text-[10px] text-headGray mb-0">
                             Availibility:{" "}
                           </h4>
-                          <ul className="flex gap-1 flex-wrap">
-                            {item?.is_monday === 1 && (
-                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                          <ul className="flex gap-[2px] flex-wrap">
+                            {dish?.is_monday === 1 && (
+                              <li className="text-[12px] p-1  bg-headGray text-white rounded leading-tight mb-0">
                                 Mo
                               </li>
                             )}
-                            {item?.is_tuesday === 1 && (
-                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                            {dish?.is_tuesday === 1 && (
+                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
                                 Tu
                               </li>
                             )}
-                            {item?.is_wednesday === 1 && (
-                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                            {dish?.is_wednesday === 1 && (
+                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
                                 We
                               </li>
                             )}
-                            {item?.is_thursday === 1 && (
-                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                            {dish?.is_thursday === 1 && (
+                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
                                 Th
                               </li>
                             )}
-                            {item?.is_friday === 1 && (
-                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                            {dish?.is_friday === 1 && (
+                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
                                 Fr
                               </li>
                             )}
-                            {item?.is_saturday === 1 && (
-                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                            {dish?.is_saturday === 1 && (
+                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
                                 St
                               </li>
                             )}
-                            {item?.is_sunday === 1 && (
-                              <li className="text-[12px] p-1 px-[6px] bg-primary text-white rounded leading-tight mb-0">
+                            {dish?.is_sunday === 1 && (
+                              <li className="text-[12px] p-1 px-[6px] bg-headGray text-white rounded leading-tight mb-0">
                                 Su
                               </li>
                             )}
                           </ul>
                         </div>
-                        {/* <div className='col-span-8'>
-                                                <h4 className='text-[10px] text-headGray mb-0'>Earliest Delivery: </h4>
-                                                <h5 className='text-[12px] text-secondary leading-tight mb-0'>Tomorrow at 1:00 PM </h5>
-                                            </div> */}
-                        {/* <div className='col-span-4 text-right my-auto'>
-                                                <Link to={`/dish-detail-single/${item.id}`} className='bg-primary px-3 py-1 rounded-[4px] font-medium text-xs !text-white tracking-wide'> Detail</Link>
-                                            </div> */}
+                        <div className="col-span-3 my-auto">
+                          <Link
+                            to={`/dish-detail-single/${dish.id}`}
+                            className="bg-primary px-3 py-1 rounded-[4px] font-medium text-xs !text-white tracking-wide"
+                          >
+                            {" "}
+                            Detail
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>

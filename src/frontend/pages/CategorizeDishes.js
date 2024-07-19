@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Link, useParams } from "react-router-dom";
-import {
-  handleGetCategorizeDishesOfCity,
-} from "../../services/get_without_auth";
+import { handleGetCategorizeDishesOfCity } from "../../services/get_without_auth";
 import isValidURL from "../../ValidateUrl";
 
 const CategorizeDishes = () => {
@@ -20,7 +18,10 @@ const CategorizeDishes = () => {
           setIsFetching(true);
           const city = JSON.parse(localStorage.getItem("region"));
           const foodTypeId = parseInt(foodCategoryId);
-          const response = await handleGetCategorizeDishesOfCity(foodTypeId,city.id);
+          const response = await handleGetCategorizeDishesOfCity(
+            foodTypeId,
+            city.id
+          );
           // console.log("Categorize dish response ", response);
           // const categorize = response.filter(
           //   (dish) => dish.food_type_id === parseInt(foodCategoryId)
@@ -29,7 +30,7 @@ const CategorizeDishes = () => {
           setCategoryDishes(response);
         } catch (error) {
           console.error(error);
-        }finally {
+        } finally {
           setIsFetching(false);
         }
       })();
@@ -45,12 +46,19 @@ const CategorizeDishes = () => {
             Category Foods Plan
           </h2>
           <div className="grid grid-cols-12 gap-4 mt-6">
-            {!isFetching && categoryDishes.length<1 && (<div className=" col-span-12">
-              <p className="font-semibold text-base sm:text-xl my-2 text-headGray">No Dishes</p>
-            </div>)}
+            {!isFetching && categoryDishes.length < 1 && (
+              <div className=" col-span-12">
+                <p className="font-semibold text-base sm:text-xl my-2 text-headGray">
+                  No Dishes
+                </p>
+              </div>
+            )}
             {/* Dishes  */}
             {categoryDishes.map((dish) => (
-              <div key={dish.id} className="lg:col-span-3 sm:col-span-6 col-span-12">
+              <div
+                key={dish.id}
+                className="lg:col-span-3 sm:col-span-6 col-span-12"
+              >
                 <div className="product-box">
                   <div className="relative">
                     {/* <div className="absolute right-2 top-2 cursor-pointer">
@@ -70,7 +78,7 @@ const CategorizeDishes = () => {
                     {/* </div> */}
                     <img
                       src={
-                        (dish.logo && isValidURL(dish.logo))
+                        dish.logo && isValidURL(dish.logo)
                           ? dish.logo
                           : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
                       }
@@ -88,10 +96,10 @@ const CategorizeDishes = () => {
                     /> */}
                     <Link to={`/shef-detail/${dish.user_id}`}>
                       <div className="flex items-center gap-x-3 bg-white absolute bottom-[-40px] p-2 w-[90%] left-[50%] translate-x-[-50%] rounded-lg shadow-lg">
-                        
                         <img
                           src={
-                            (dish.user?.profile_pice && isValidURL(dish.user?.profile_pice))
+                            dish.user?.profile_pice &&
+                            isValidURL(dish.user?.profile_pice)
                               ? dish.user.profile_pice
                               : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                           }
@@ -130,7 +138,10 @@ const CategorizeDishes = () => {
                   </div>
                   <div className="p-3 mt-12">
                     <h6 className="text-lg leading-tight text-secondary font-semibold mb-2">
-                      <Link to={`/dish-detail-single/${dish.id}`}> {dish.name}</Link>
+                      <Link to={`/dish-detail-single/${dish.id}`}>
+                        {" "}
+                        {dish.name}
+                      </Link>
                     </h6>
                     <div className="flex justify-between items-center gap-x-2">
                       {/* <div className="inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]">
@@ -168,16 +179,52 @@ const CategorizeDishes = () => {
                       </h4>
                     </div>
                     <div className="border-t pt-3 mt-2">
-                      <div className="grid grid-cols-12 gap-x-2">
-                        {/* <div className="col-span-8">
+                      <div className="grid grid-cols-12 gap-x-1">
+                        <div className="col-span-9">
+                          {/* <h4 className='text-[10px] text-headGray mb-0'>Earliest Delivery: </h4>
+                                                                    <h5 className='text-[12px] text-secondary leading-tight mb-0'>Tomorrow at 1:00 PM </h5> */}
                           <h4 className="text-[10px] text-headGray mb-0">
-                            Earliest Delivery:{" "}
+                            Availibility:{" "}
                           </h4>
-                          <h5 className="text-[12px] text-secondary leading-tight mb-0">
-                            21-2-2024 at 2:00 PM{" "}
-                          </h5>
-                        </div> */}
-                        <div className="col-span-4 my-auto">
+                          <ul className="flex gap-[2px] flex-wrap">
+                            {dish?.is_monday === 1 && (
+                              <li className="text-[12px] p-1  bg-headGray text-white rounded leading-tight mb-0">
+                                Mo
+                              </li>
+                            )}
+                            {dish?.is_tuesday === 1 && (
+                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                Tu
+                              </li>
+                            )}
+                            {dish?.is_wednesday === 1 && (
+                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                We
+                              </li>
+                            )}
+                            {dish?.is_thursday === 1 && (
+                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                Th
+                              </li>
+                            )}
+                            {dish?.is_friday === 1 && (
+                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                Fr
+                              </li>
+                            )}
+                            {dish?.is_saturday === 1 && (
+                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                St
+                              </li>
+                            )}
+                            {dish?.is_sunday === 1 && (
+                              <li className="text-[12px] p-1 px-[6px] bg-headGray text-white rounded leading-tight mb-0">
+                                Su
+                              </li>
+                            )}
+                          </ul>
+                        </div>
+                        <div className="col-span-3 my-auto">
                           <Link
                             to={`/dish-detail-single/${dish.id}`}
                             className="bg-primary px-3 py-1 rounded-[4px] font-medium text-xs !text-white tracking-wide"
