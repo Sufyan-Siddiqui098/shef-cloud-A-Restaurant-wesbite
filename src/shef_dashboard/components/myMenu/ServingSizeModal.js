@@ -181,8 +181,6 @@ const MenuModal = ({
                 } 
             }
 
-            // Update portion_type_id for - Create Menu
-            updateFields({ portion_type_id: portionTypes[activeTab-1].id })  
             toast.success("Base Portion Added")
             onClose();
 
