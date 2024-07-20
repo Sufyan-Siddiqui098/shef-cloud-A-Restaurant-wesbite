@@ -27,9 +27,10 @@ export const Checkout = () => {
     chef_id: 1,
     chef_availability_id: 1,
     delivery_time: "", //date and Time
-    name: "",
-    email: "",
-    phone: "",
+    // get userInfo from redux-store
+    name: `${userInfo?.first_name} ${userInfo?.last_name}` || "",
+    email: userInfo?.email || "",
+    phone: userInfo?.phone || "",
     status: 1,
     payment_mode: 1,
     delivery_notes: "",
@@ -61,8 +62,9 @@ export const Checkout = () => {
     line2: "",
     latitude: "",
     longitude: "",
-    name: "",
-    phone: "",
+    // get userInfo from redux-store
+    name: `${userInfo?.first_name} ${userInfo?.last_name}` || "",
+    phone: userInfo?.phone || "",
     postal_code: "",
     city: "",
     state: "",
@@ -162,47 +164,54 @@ export const Checkout = () => {
     );
   };
 
-  // Get values from Cart item and update the above states.
+  // Get values from Cart item and update the order & orderDetails
   useEffect(() => {
-    // Sub total = chef-earning * quantity
-    const sub_total = cartItem.reduce((accChef, chef) => {
-      const chefTotal = chef.menu.reduce((accMenu, menu) => {
-        return accMenu + (menu.chef_earning_fee || 0) * menu.quantity;
-      }, 0);
-      return accChef + chefTotal;
-    }, 0);
-    // Delivery
-    const deliverPriceSum = cartItem.reduce((accChef, chef) => {
-      const chefTotal = chef.menu.reduce((accMenu, menu) => {
-        return accMenu + (menu.delivery_price || 0) * menu.quantity;
-      }, 0);
-      return accChef + chefTotal;
-    }, 0);
-    // Platform
-    const platformPriceSum = cartItem.reduce((accChef, chef) => {
-      const chefTotal = chef.menu.reduce((accMenu, menu) => {
-        return accMenu + (menu.platform_price || 0) * menu.quantity;
-      }, 0);
-      return accChef + chefTotal;
-    }, 0);
-
+    // Initialize variables to store calculated sums
+    let sub_total = 0;
+    let deliverPriceSum = 0;
+    let platformPriceSum = 0;
+  
+    // Calculate the sub total, delivery price sum, and platform price sum
+    cartItem.forEach((chef) => {
+      if (chef.id === parseInt(chefId)) {
+        chef.menu.forEach((menu) => {
+          const chef_earning_fee = menu.chef_earning_fee || 0;
+          const quantity = menu.quantity || 0;
+          const delivery_price = menu.delivery_price || 0;
+          const platform_price = menu.platform_price || 0;
+  
+          // Calculate sub total for each item
+          sub_total += chef_earning_fee * quantity;
+  
+          // Calculate delivery price sum for each item
+          deliverPriceSum += delivery_price * quantity;
+  
+          // Calculate platform price sum for each item
+          platformPriceSum += platform_price * quantity;
+        });
+      }
+    });
+  
+    // Fetch the city data from local storage
     const city = JSON.parse(localStorage.getItem("region"));
-    updateOrder({ chef_id: parseInt(chefId), city_id: city.id });
-
-    const total =
-      sub_total + order.tip_price + deliverPriceSum + platformPriceSum;
-    // Update - Order(state)
+  
+    // Calculate the total order price
+    const total = sub_total + order.tip_price + deliverPriceSum + platformPriceSum;
+  
+    // Update the order state with calculated values
     updateOrder({
-      sub_total,
+      chef_id: parseInt(chefId),
+      city_id: city.id,
+      sub_total: sub_total,
       delivery_price: deliverPriceSum,
       service_fee: platformPriceSum,
+      total_price: total
     });
-    updateOrder({ total_price: total });
-    // extract each Dish's detail a/c to OrderDetails(state)
-
-    //temporary array to hold orderDetails
+  
+    // Temporary array to hold orderDetails
     const menuDetails = [];
-    // select the chef according menuDetails
+  
+    // Select the chef according to menuDetails
     cartItem.forEach((chef) => {
       if (chef.id === parseInt(chefId)) {
         chef.menu.forEach((menu) => {
@@ -226,16 +235,18 @@ export const Checkout = () => {
         });
       }
     });
-    // Update - OrderDetail(state)
+  
+    // Update the orderDetail state
     setOrderDetails(menuDetails);
-
+  
     console.log("delivery data", orderDeliveryAddress);
     console.log("Order Detail ", menuDetails);
     console.log("Order  ", order);
-
+  
     console.log("UseEffect for cart updation is running .. CartItem", cartItem);
     //eslint-disable-next-line
   }, [cartItem, order.tip_price]);
+  
 
   // ---- On submit
   const [isPending, setIsPending] = useState(false);
@@ -271,6 +282,7 @@ export const Checkout = () => {
       setOrder(orderInitial);
       setOrderDetails(orderDetailInitial);
       setOrderDeliveryAddress(orderDeliveryAddressInitial);
+      // navigate to cart - not reversable
       navigate("/cart", { replace: true });
     } catch (error) {
       console.error("Error on Placing order ", error);
@@ -305,7 +317,7 @@ export const Checkout = () => {
         <div className="mb-3">
           <Link
             className="!text-black font-semibold flex items-center gap-2"
-            to="/"
+            to="/cart"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
