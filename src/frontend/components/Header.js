@@ -371,7 +371,7 @@ const Header = () => {
                                                                         <div className="cat-product">
                                                                             <div className="cat-name">
                                                                                 <NavLink>
-                                                                                    <p className="text-light-green"><span className="text-dark-white">{product.quantity}</span> {product.name}</p> 
+                                                                                    <p className="text-light-green"><span className="text-dark-white">{product.quantity}x </span> {product.name}</p> 
                                                                                     {/* <span className="text-light-white">small, chilli chicken</span> */}
                                                                                 </NavLink>
                                                                             </div>
@@ -386,9 +386,13 @@ const Header = () => {
                                                                             </div>
                                                                             <div className="price"> 
                                                                                 {/* <NavLink className="text-dark-white fw-500">
-                                                                                { (product.unit_price).toLocaleString('en-US',{ style: "currency", currency: "USD" }) 
+                                                                                { (product?.unit_price).toLocaleString('en-US',{ style: "currency", currency: "USD" }) 
                                                                                 } 
                                                                                 </NavLink> */}
+                                                                                <p className="text-dark-white fw-500">
+                                                                                { (product?.unit_price).toLocaleString('en-US',{ style: "currency", currency: "USD" }) 
+                                                                                } 
+                                                                                </p>
                                                                             </div>
                                                                         </div>
                                                                     </div>
