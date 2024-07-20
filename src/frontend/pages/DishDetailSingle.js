@@ -103,7 +103,6 @@ export const DishDetailSingle = () => {
 
   // add to cart
   const dispatch = useDispatch();
-  const [addedToCart, setAddedToCart] = useState(false);
   const handleAddToCart = () => {
     const unit_price = parseFloat(
       (
@@ -122,7 +121,6 @@ export const DishDetailSingle = () => {
     toast.dismiss();
     toast.success("Added to Cart ", { autoClose: 2000 });
     setQuantity(0);
-    setAddedToCart((prev) => !prev);
   };
 
   useEffect(() => {
@@ -138,7 +136,7 @@ export const DishDetailSingle = () => {
       }
     });
     console.log("Count useEffect is running ");
-  }, [dish, addedToCart]);
+  }, [dish, cartItem]);
 
   return (
     <div>
