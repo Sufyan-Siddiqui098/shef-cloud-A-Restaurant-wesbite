@@ -96,7 +96,7 @@ const MenuModal = ({
     platform_percentage: 10,
     delivery_percentage: 20,
   });
-  // need changes !!
+  // calculate delivery_price & platform_price
   const calculate = (price) => {
     const deliveryCost = parseFloat(
       (price * (platformRate.delivery_percentage / 100)).toFixed(2)
@@ -109,42 +109,44 @@ const MenuModal = ({
     updateFields({ delivery_price: deliveryCost });
     updateFields({ platform_price: platformCost });
   };
-  //--- Handle Portion type & platform_rate -api
+  //--- Handle platform_rate -api
   useEffect(() => {
-    (async () => {
-        // --- Platfrom Rate api
+    const fetchPlatformRate = async () => {
       try {
         const platformRateResponse = await handleGetPlatformRate(authToken);
-        // response 
         console.log("Platform rates", platformRateResponse);
-
-        // Check if response is valid and contains the expected data
+  
         if (
           platformRateResponse &&
           platformRateResponse.delivery_percentage !== undefined &&
           platformRateResponse.platform_percentage !== undefined
         ) {
-          const { delivery_percentage, platform_percentage } =
-            platformRateResponse;
+          const { delivery_percentage, platform_percentage } = platformRateResponse;
           setPlatformRate({ delivery_percentage, platform_percentage });
         } else {
-          console.warn(
-            "Unexpected platform rate response structure",
-            platformRateResponse
-          );
+          console.warn("Unexpected platform rate response structure", platformRateResponse);
         }
       } catch (error) {
-        console.error("Error while fetching platform rate \n", error);
+        console.error("Error while fetching platform rate:", error);
       }
-      // --- portion type api 
+    };
+  
+    fetchPlatformRate();
+  }, [authToken]);
+
+  //--- Handle Portion Type -api
+  useEffect(() => {
+    const fetchPortionTypes = async () => {
       try {
         const portionTypeResponse = await handleGetPortionType(authToken);
         setPortionTypes(portionTypeResponse);
-        //  console.log("portion type response ", portionTypeResponse)
+        // console.log("Portion type response", portionTypeResponse);
       } catch (error) {
-        console.log("Error while fetching Portion Type \n", error);
+        console.error("Error while fetching Portion Type:", error);
       }
-    })();
+    };
+  
+    fetchPortionTypes();
   }, [authToken]);
 
   //--- Handle data from Chef-Menu
