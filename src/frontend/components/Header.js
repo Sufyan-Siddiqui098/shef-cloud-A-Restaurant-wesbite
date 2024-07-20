@@ -406,7 +406,8 @@ const Header = () => {
                                                                     </span>
                                                                 </div>
                                                                 <div className="empty-bag padding-15"> 
-                                                                    <NavLink  onClick={() => setEmptyModalVisible(true)}>Empty bag</NavLink>
+                                                                    {/* <NavLink  onClick={() => setEmptyModalVisible(true)}>Empty bag</NavLink> */}
+                                                                    <button type='button' disabled={cartItem?.length===0} className='text-primary disabled:text-headGray' onClick={() => setEmptyModalVisible(true)}>Empty bag</button>
                                                                 </div>
                                                             </div>
                                                         </div>
