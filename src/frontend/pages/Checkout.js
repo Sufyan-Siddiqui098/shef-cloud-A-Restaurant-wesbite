@@ -203,7 +203,9 @@ export const Checkout = () => {
       chef_id: parseInt(chefId),
       city_id: city.id,
       sub_total: sub_total,
+      chef_earning_price: sub_total,
       delivery_price: deliverPriceSum,
+      delivery_percentage: ((deliverPriceSum / sub_total) * 100),
       service_fee: platformPriceSum,
       total_price: total
     });
