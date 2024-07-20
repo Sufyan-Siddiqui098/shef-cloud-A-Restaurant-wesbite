@@ -25,16 +25,17 @@ export const DishDetailSingle = () => {
   const [alreadyInCartCount, setAlreadyInCartCount] = useState(0);
   const handleIncrement = () => {
     setQuantity((prevQuantity) => prevQuantity + 1);
-    if(alreadyInCartCount !==0){
-      setAlreadyInCartCount((prev)=> prev + 1 )
+    if (alreadyInCartCount !== 0) {
+      setAlreadyInCartCount((prev) => prev + 1);
     }
-
   };
 
   const handleDecrement = () => {
     setQuantity((prevQuantity) => (prevQuantity > 0 ? prevQuantity - 1 : 0));
-    if(alreadyInCartCount !==0){
-      setAlreadyInCartCount((prevQuantity) => (prevQuantity > 0 ? prevQuantity - 1 : 0))
+    if (alreadyInCartCount !== 0) {
+      setAlreadyInCartCount((prevQuantity) =>
+        prevQuantity > 0 ? prevQuantity - 1 : 0
+      );
     }
   };
 
@@ -51,9 +52,9 @@ export const DishDetailSingle = () => {
   // -- Single Dish
   const [dish, setDish] = useState({});
   // --- Api is fetching
-  const[isFetching, setIsFetching] = useState(false)
+  const [isFetching, setIsFetching] = useState(false);
 
-  const { cartItem } = useSelector((state) => state.cart)
+  const { cartItem } = useSelector((state) => state.cart);
 
   // Fetch Single Dish
   useEffect(() => {
@@ -69,35 +70,40 @@ export const DishDetailSingle = () => {
           }
         });
 
-        let discount ;
-        if(dishResponse.auto_applied_discounts && dishResponse.auto_applied_discounts.length>0) {
-          const discountType = dishResponse.auto_applied_discounts[0].discount_type;
-          const discountAmount = parseFloat(dishResponse.auto_applied_discounts[0].discount)
-          if(discountType==="$"){
+        let discount;
+        if (
+          dishResponse.auto_applied_discounts &&
+          dishResponse.auto_applied_discounts.length > 0
+        ) {
+          const discountType =
+            dishResponse.auto_applied_discounts[0].discount_type;
+          const discountAmount = parseFloat(
+            dishResponse.auto_applied_discounts[0].discount
+          );
+          if (discountType === "$") {
             discount = dishResponse.chef_earning_fee - discountAmount;
-          } else if(discountType==="%") {
-            discount = dishResponse.chef_earning_fee - (dishResponse.chef_earning_fee * (discountAmount/100));
+          } else if (discountType === "%") {
+            discount =
+              dishResponse.chef_earning_fee -
+              dishResponse.chef_earning_fee * (discountAmount / 100);
           }
-          dishResponse.chef_earning_fee = discount
+          dishResponse.chef_earning_fee = discount;
         }
-        console.log("Chef discounted ", discount)
+        console.log("Chef discounted ", discount);
         console.log("response of single dish ", dishResponse);
         setDish(dishResponse);
-        
-        
       } catch (error) {
         console.error("Error while fetching single dish \n", error);
-      } finally{
+      } finally {
         setIsFetching(false);
       }
     };
     fetchSingleDish();
   }, [authToken, dishId]);
-  
- 
+
   // add to cart
   const dispatch = useDispatch();
-  const [addedToCart , setAddedToCart] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
   const handleAddToCart = () => {
     const unit_price = parseFloat(
       (
@@ -116,23 +122,23 @@ export const DishDetailSingle = () => {
     toast.dismiss();
     toast.success("Added to Cart ", { autoClose: 2000 });
     setQuantity(0);
-    setAddedToCart((prev)=> !prev)
+    setAddedToCart((prev) => !prev);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     // Checking if the item alreay exist in cart then show its count
     cartItem?.forEach((chef, chefIndex) => {
-      if(chef.id === dish?.chef?.id) {
-        chef.menu?.forEach((menu, menuIdex)=> {
-          if(menu.id === dish.id && menu.quantity>0) {
+      if (chef.id === dish?.chef?.id) {
+        chef.menu?.forEach((menu, menuIdex) => {
+          if (menu.id === dish.id && menu.quantity > 0) {
             console.log("Quantity already exist ", menu.quantity);
             setAlreadyInCartCount(menu.quantity);
           }
-        })
+        });
       }
-    })
-    console.log("Count useEffect is running ")
-  }, [dish, addedToCart])
+    });
+    console.log("Count useEffect is running ");
+  }, [dish, addedToCart]);
 
   return (
     <div>
@@ -207,12 +213,13 @@ export const DishDetailSingle = () => {
                       <span className="text-[14px] md:text-[18px] block -mt-1 text-green-700">
                         {/* [ 20% off ] */}[{" "}
                         {`${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `}
-                        <span className="text-[11px] md:text-[14px]">Off</span> ]
+                        <span className="text-[11px] md:text-[14px]">Off</span>{" "}
+                        ]
                       </span>
                     )}
                   </h2>
                 </div>
-                <div className="text-lg text-secondary  flex items-center gap-2 mb-3">
+                <div className="text-lg text-secondary  flex items-center gap-2 mb-1">
                   <span className="!text-headGray">by</span>
                   {/* <Link to="/shef-detail" className='!underline !text-headGray font-semibold'>Khudeja Fatima </Link> */}
                   <Link
@@ -221,16 +228,102 @@ export const DishDetailSingle = () => {
                   >
                     {`${dish?.chef?.first_name} ${dish?.chef?.last_name}`}
                   </Link>
-                  {/* <span className='!text-headGray'>rating</span>
 
-                                    <div className='inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]'>
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" fill="#323232">
-                                            <path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path>
-                                        </svg>
-                                        <h4 className='text-base leading-tight mb-0 font-semibold'>
-                                            4.5 <span className='text-[12px] font-normal'>(30)</span>
-                                        </h4>
-                                    </div> */}
+                  {/* <span className="!text-headGray">rating</span>
+
+                  <div className="inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="12"
+                      height="12"
+                      fill="#323232"
+                    >
+                      <path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path>
+                    </svg>
+                    <h4 className="text-base leading-tight mb-0 font-semibold">
+                      4.5 <span className="text-[12px] font-normal">(30)</span>
+                    </h4>
+                  </div> */}
+                </div>
+
+                {/* ---- Availibility ---- */}
+                <div className="mt-0 mb-3 ">
+                  <h4 className="text-[12px] text-headGray mb-1">
+                    Availibility:{" "}
+                  </h4>
+                  <ul className="flex gap-1 flex-wrap">
+                    {dish?.is_monday === 1 && (
+                      <div className="relative group">
+                        <li className="text p-1 bg-primary text-white rounded leading-tight mb-0">
+                          Mo
+                        </li>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                          Monday
+                        </div>
+                      </div>
+                    )}
+                    {dish?.is_tuesday === 1 && (
+                      <div className="relative group">
+                        <li className="text p-1 bg-primary text-white rounded leading-tight mb-0">
+                          Tu
+                        </li>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                          Tuesday
+                        </div>
+                      </div>
+                    )}
+                    {dish?.is_wednesday === 1 && (
+                      <div className="relative group">
+                        <li className="text p-1 bg-primary text-white rounded leading-tight mb-0">
+                          We
+                        </li>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                          Wednesday
+                        </div>
+                      </div>
+                    )}
+                    {dish?.is_thursday === 1 && (
+                      <div className="relative group">
+                        <li className="text p-1 bg-primary text-white rounded leading-tight mb-0">
+                          Th
+                        </li>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                          Thursday
+                        </div>
+                      </div>
+                    )}
+                    {dish?.is_friday === 1 && (
+                      <div className="relative group">
+                        <li className="text p-1 bg-primary text-white rounded leading-tight mb-0">
+                          Fr
+                        </li>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                          Friday
+                        </div>
+                      </div>
+                    )}
+                    {dish?.is_saturday === 1 && (
+                      <div className="relative group">
+                        <li className="text p-1 bg-primary text-white rounded leading-tight mb-0">
+                          St
+                        </li>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                          Saturday
+                        </div>
+                      </div>
+                    )}
+                    {dish?.is_sunday === 1 && (
+                      <div className="relative group">
+                        <li className="text p-1 bg-primary text-white rounded leading-tight mb-0">
+                          Su
+                        </li>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                          Sunday
+                        </div>
+                      </div>
+                    )}
+                  </ul>
                 </div>
                 <div className="md:w-2/3 w-full">
                   <div className="flex gap-3 mb-3 border-b">
@@ -325,9 +418,7 @@ export const DishDetailSingle = () => {
                           style: "currency",
                           currency: "USD",
                         })}
-                        <br />
-                        {" "}
-                        {dish.portion_size}{" "}
+                        <br /> {dish.portion_size}{" "}
                         {dish.base_type_id === 1
                           ? "oz Container"
                           : dish.base_type_id === 2
@@ -554,7 +645,11 @@ export const DishDetailSingle = () => {
                 <div className="grid grid-cols-12 mt-4 gap-3 ">
                   <div className="md:col-span-5 col-span-6 ">
                     <div className="flex items-center justify-between] bg-grayBg rounded-lg">
-                      <button disabled={quantity===0} onClick={handleDecrement} className="w-[25%] disabled:opacity-60">
+                      <button
+                        disabled={quantity === 0}
+                        onClick={handleDecrement}
+                        className="w-[25%] disabled:opacity-60"
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="mx-auto"
@@ -570,7 +665,11 @@ export const DishDetailSingle = () => {
                         <input
                           className="text-center border-0 bg-transparent text-base px-1 focus:border-0"
                           placeholder="1"
-                          value={alreadyInCartCount>0 ? alreadyInCartCount : quantity}
+                          value={
+                            alreadyInCartCount > 0
+                              ? alreadyInCartCount
+                              : quantity
+                          }
                           onChange={handleInputChange}
                         />
                       </div>
@@ -591,7 +690,7 @@ export const DishDetailSingle = () => {
                   <div className="md:col-span-7 col-span-6">
                     <button
                       onClick={handleAddToCart}
-                      disabled={isFetching || quantity === 0  }
+                      disabled={isFetching || quantity === 0}
                       className="text-lg font-bold bg-primary w-full h-full uppercase text-white rounded-[6px] disabled:opacity-60"
                     >
                       Add to Cart
