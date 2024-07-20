@@ -325,6 +325,8 @@ export const DishDetailSingle = () => {
                           style: "currency",
                           currency: "USD",
                         })}
+                        <br />
+                        {" "}
                         {dish.portion_size}{" "}
                         {dish.base_type_id === 1
                           ? "oz Container"
