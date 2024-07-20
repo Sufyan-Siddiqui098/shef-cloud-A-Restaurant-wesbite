@@ -18,7 +18,9 @@ const FilterAndDate = ({ chefAndDishes }) => {
     setActiveButton(buttonId);
   };
   const [isModalOpen, setModalOpen] = useState(false);
-  const openModal = () => {
+  const [modalDish, setModalDish] = useState({});
+  const openModal = (dish) => {
+    setModalDish(dish);
     setModalOpen(true);
   };
   const closeModal = () => {
@@ -52,7 +54,11 @@ const FilterAndDate = ({ chefAndDishes }) => {
     <>
       <div className="realtive">
         <div>
-          <CartModal isOpen={isModalOpen} onRequestClose={closeModal} />
+          <CartModal
+            modalDish={modalDish}
+            isOpen={isModalOpen}
+            onRequestClose={closeModal}
+          />
         </div>
         <div className="container mx-auto lg:px-2 px-2">
           {/* <div className='flex justify-between items-center mb-4 relative'>
@@ -248,7 +254,10 @@ const FilterAndDate = ({ chefAndDishes }) => {
               </h2>
               <div className="grid grid-cols-12 md:gap-x-4 gap-x-3 md:gap-y-3 gap-y-4">
                 {chefAndDishes?.menus?.map((dish) => (
-                  <div className="lg:col-span-4 sm:col-span-6 col-span-12">
+                  <div
+                    key={dish.id}
+                    className="lg:col-span-4 sm:col-span-6 col-span-12"
+                  >
                     <div className="product-box mb-md-20">
                       <div className="product-img relative">
                         {/* <img src={(dish.logo && isValidURL(dish.logo)) ? dish.logo : "/media/frontend/img/restaurants/255x104/order-1.jpg"} className="img-fluid  full-width h-24 max-h-24 object-cover" alt="product-img" /> */}
@@ -261,13 +270,22 @@ const FilterAndDate = ({ chefAndDishes }) => {
                           className="img-fluid  full-width h-24 max-h-24 object-cover"
                           alt="product-img"
                         />
-                        {/* <div className='absolute bottom-[12px] right-0 px-4'>
-                                                <div className='bg-primary p-[5px] rounded-[5px] cursor-pointer' onClick={openModal}>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="#fff">
-                                                        <path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path>
-                                                    </svg>
-                                                </div>
-                                            </div> */}
+                        {/* <div className="absolute bottom-[12px] right-0 px-4">
+                          <div
+                            className="bg-primary p-[5px] rounded-[5px] cursor-pointer"
+                            onClick={() => openModal(dish)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              width="22"
+                              height="22"
+                              fill="#fff"
+                            >
+                              <path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path>
+                            </svg>
+                          </div>
+                        </div> */}
                       </div>
                       <div className="p-4">
                         {/* <div className='flex items-center justify-between'>
@@ -298,7 +316,7 @@ const FilterAndDate = ({ chefAndDishes }) => {
                                                 </div>
                                                 <h4 className='bg-primaryLight px-3 py-1 text-sm rounded-[4px] inline-block mb-0'>1 serving</h4>
                                             </div> */}
-                        <div className="border-t border-primary mt-4 mb-4"></div>
+                        <div className="border- border-primary mt- mb-4"></div>
                         <div className="flex items-center justify-between">
                           {/* <h2 className='bg-primaryGreen py-1 px-3 rounded-[5px] text-white font-medium text-base mb-0 inline-block leading-tight'>15%</h2>
                                                 <h2 className='text-secondary font-semibold text-lg mb-0'>$15.99</h2> */}
@@ -313,13 +331,69 @@ const FilterAndDate = ({ chefAndDishes }) => {
                               currency: "USD",
                             })}
                             {dish?.auto_applied_discounts?.length > 0 && (
-                                <span className="block text-[13px] -mt-2 text-green-700">
-                                  [
-                                  {` ${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `}
-                                  <span className="text-[10px]">Off</span> ]
-                                </span>
-                              )}
+                              <span className="block text-[13px] -mt-2 text-green-700">
+                                [
+                                {` ${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `}
+                                <span className="text-[10px]">Off</span> ]
+                              </span>
+                            )}
                           </h2>
+                        </div>
+                        {/* Dish Availability */}
+                        <div className="border-t pt-3 mt-2">
+                          <div className="grid grid-cols-12 gap-x-1">
+                            <div className="col-span-9">
+                              <h4 className="text-[10px] text-headGray mb-0">
+                                Availibility:{" "}
+                              </h4>
+                              <ul className="flex gap-[2px] flex-wrap">
+                                {dish?.is_monday === 1 && (
+                                  <li className="text-[12px] p-1  bg-headGray text-white rounded leading-tight mb-0">
+                                    Mo
+                                  </li>
+                                )}
+                                {dish?.is_tuesday === 1 && (
+                                  <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                    Tu
+                                  </li>
+                                )}
+                                {dish?.is_wednesday === 1 && (
+                                  <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                    We
+                                  </li>
+                                )}
+                                {dish?.is_thursday === 1 && (
+                                  <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                    Th
+                                  </li>
+                                )}
+                                {dish?.is_friday === 1 && (
+                                  <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                    Fr
+                                  </li>
+                                )}
+                                {dish?.is_saturday === 1 && (
+                                  <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
+                                    St
+                                  </li>
+                                )}
+                                {dish?.is_sunday === 1 && (
+                                  <li className="text-[12px] p-1 px-[6px] bg-headGray text-white rounded leading-tight mb-0">
+                                    Su
+                                  </li>
+                                )}
+                              </ul>
+                            </div>
+                            <div className="col-span-3 my-auto">
+                              <Link
+                                to={`/dish-detail-single/${dish.id}`}
+                                className="bg-primary px-3 py-1 rounded-[4px] font-medium text-xs !text-white tracking-wide"
+                              >
+                                {" "}
+                                Detail
+                              </Link>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -539,152 +613,161 @@ const FilterAndDate = ({ chefAndDishes }) => {
                     Your order for delivery{" "}
                   </h3>
                   {cartItem.map((chef, chefIndex, chefArr) =>
-                    chef.id ===chefAndDishes.id ?  chef.menu.map((menu, menuIndex) => (
-                      <div>
-                          <div className="flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg">
-                            <img
-                              src={
-                                chef?.profile_pic &&
-                                isValidURL(chef?.profile_pic)
-                                  ? chef.profile_pic
-                                  : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-                              }
-                              className="object-top rounded-full w-[30px] object-cover h-[30px]"
-                              alt="ef"
-                            />
-                            {/* <img src={(chef?.profile_pic && isValidURL(chef?.profile_pic))?  chef.profile_pic: './media/frontend/img/banner/female-chef.png'} className='object-top rounded-full w-[30px] object-cover h-[30px]' alt='ef' /> */}
-                            {/* <Link className='!underline !text-secondary text-base font-semibold'> Shef Swarnamali</Link> */}
-                            <Link className="!underline !text-secondary text-base font-semibold">
-                              {`${chef.first_name} ${chef.last_name}`}
-                            </Link>
-                          </div>
-                          
-                        {/* Order Box */}
-                        <div className="flex items-center justify-between border border-primary border-dashed rounded-lg p-2 gap-x-2 mt-4">
-                          <div className="flex items-center gap-x-2 w-[65%]">
-                            {/* <img
+                    chef.id === chefAndDishes.id
+                      ? chef.menu.map((menu, menuIndex) => (
+                          <div key={menu.id}>
+                            <div className="flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg">
+                              <img
+                                src={
+                                  chef?.profile_pic &&
+                                  isValidURL(chef?.profile_pic)
+                                    ? chef.profile_pic
+                                    : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                                }
+                                className="object-top rounded-full w-[30px] object-cover h-[30px]"
+                                alt="ef"
+                              />
+                              {/* <img src={(chef?.profile_pic && isValidURL(chef?.profile_pic))?  chef.profile_pic: './media/frontend/img/banner/female-chef.png'} className='object-top rounded-full w-[30px] object-cover h-[30px]' alt='ef' /> */}
+                              {/* <Link className='!underline !text-secondary text-base font-semibold'> Shef Swarnamali</Link> */}
+                              <Link className="!underline !text-secondary text-base font-semibold">
+                                {`${chef.first_name} ${chef.last_name}`}
+                              </Link>
+                            </div>
+
+                            {/* Order Box */}
+                            <div className="flex items-center justify-between border border-primary border-dashed rounded-lg p-2 gap-x-2 mt-4">
+                              <div className="flex items-center gap-x-2 w-[65%]">
+                                {/* <img
                               src="./media/frontend/img/restaurants/255x104/order-2.jpg"
                               className="object-top rounded-lg w-[60px] object-cover h-[60px]"
                               alt="ef"
                             /> */}
-                            <img
-                              src={
-                                menu.logo && isValidURL(menu.logo)
-                                  ? menu.logo
-                                  : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
-                              }
-                              className="object-top rounded-lg w-[60px] object-cover h-[60px]"
-                              alt="ef"
-                            />
-                            <div>
-                              {/* <h3 className='mb-1 text-base font-semibold leading-tight'>Guajillo Grilled Shrimps </h3> */}
-                              <h3 className="mb-1 text-base font-semibold leading-tight">
-                                {menu.name}
-                              </h3>
-                              {/* <h4 className='text-sm fontsemibold mb-0'>$13.99</h4> */}
-                              <h4 className="text-sm fontsemibold mb-0">
-                                {(
-                                  (menu.chef_earning_fee +
-                                  menu.platform_price +
-                                  menu.delivery_price) * menu.quantity
-                                ).toLocaleString("en-US", {
-                                  style: "currency",
-                                  currency: "USD",
-                                })}
-                              </h4>
+                                <img
+                                  src={
+                                    menu.logo && isValidURL(menu.logo)
+                                      ? menu.logo
+                                      : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
+                                  }
+                                  className="object-top rounded-lg w-[60px] object-cover h-[60px]"
+                                  alt="ef"
+                                />
+                                <div>
+                                  {/* <h3 className='mb-1 text-base font-semibold leading-tight'>Guajillo Grilled Shrimps </h3> */}
+                                  <h3 className="mb-1 text-base font-semibold leading-tight">
+                                    {menu.name}
+                                  </h3>
+                                  {/* <h4 className='text-sm fontsemibold mb-0'>$13.99</h4> */}
+                                  <h4 className="text-sm fontsemibold mb-0">
+                                    {(
+                                      (menu.chef_earning_fee +
+                                        menu.platform_price +
+                                        menu.delivery_price) *
+                                      menu.quantity
+                                    ).toLocaleString("en-US", {
+                                      style: "currency",
+                                      currency: "USD",
+                                    })}
+                                  </h4>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between w-[35%] bg-primaryLight rounded-lg">
+                                <button
+                                  onClick={() =>
+                                    updateQuantityInStore(
+                                      chefIndex,
+                                      menuIndex,
+                                      menu.quantity,
+                                      "decrement"
+                                    )
+                                  }
+                                  className="w-[25%] border"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="mx-auto"
+                                    viewBox="0 0 24 24"
+                                    width="18"
+                                    height="18"
+                                    fill="rgba(0,0,0,1)"
+                                  >
+                                    <path d="M5 11V13H19V11H5Z"></path>
+                                  </svg>
+                                </button>
+                                <input
+                                  value={menu.quantity}
+                                  className="w-[50%] text-center border-0 bg-transparent text-xs px-1"
+                                  readOnly
+                                  placeholder="1"
+                                />
+                                <button
+                                  onClick={() =>
+                                    updateQuantityInStore(
+                                      chefIndex,
+                                      menuIndex,
+                                      menu.quantity,
+                                      "increment"
+                                    )
+                                  }
+                                  className="w-[25%]"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="mx-auto"
+                                    viewBox="0 0 24 24"
+                                    width="18"
+                                    height="18"
+                                    fill="rgba(0,0,0,1)"
+                                  >
+                                    <path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path>
+                                  </svg>
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex items-center justify-between w-[35%] bg-primaryLight rounded-lg">
-                            <button
-                              onClick={() =>
-                                updateQuantityInStore(
-                                  chefIndex,
-                                  menuIndex,
-                                  menu.quantity,
-                                  "decrement"
-                                )
-                              }
-                              className="w-[25%] border"
+                            {/* <h4 className='py-1 text-base text-center mt-6 mb-4 bg-greenLight'>Order amount must be at least <span className='font-bold'>$25.</span></h4> */}
+                            <Link
+                              to="/cart"
+                              className="flex justify-center items-center gap-x-3 my-2 bg-primary rounded-lg py-3 px-3 "
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="mx-auto"
                                 viewBox="0 0 24 24"
                                 width="18"
                                 height="18"
-                                fill="rgba(0,0,0,1)"
+                                fill="rgba(255,255,255,1)"
                               >
-                                <path d="M5 11V13H19V11H5Z"></path>
+                                <path d="M4.00488 16V4H2.00488V2H5.00488C5.55717 2 6.00488 2.44772 6.00488 3V15H18.4433L20.4433 7H8.00488V5H21.7241C22.2764 5 22.7241 5.44772 22.7241 6C22.7241 6.08176 22.7141 6.16322 22.6942 6.24254L20.1942 16.2425C20.083 16.6877 19.683 17 19.2241 17H5.00488C4.4526 17 4.00488 16.5523 4.00488 16ZM6.00488 23C4.90031 23 4.00488 22.1046 4.00488 21C4.00488 19.8954 4.90031 19 6.00488 19C7.10945 19 8.00488 19.8954 8.00488 21C8.00488 22.1046 7.10945 23 6.00488 23ZM18.0049 23C16.9003 23 16.0049 22.1046 16.0049 21C16.0049 19.8954 16.9003 19 18.0049 19C19.1095 19 20.0049 19.8954 20.0049 21C20.0049 22.1046 19.1095 23 18.0049 23Z"></path>
                               </svg>
-                            </button>
-                            <input
-                              value={menu.quantity}
-                              className="w-[50%] text-center border-0 bg-transparent text-xs px-1"
-                              readOnly
-                              placeholder="1"
-                            />
-                            <button
-                              onClick={() =>
-                                updateQuantityInStore(
-                                  chefIndex,
-                                  menuIndex,
-                                  menu.quantity,
-                                  "increment"
-                                )
-                              }
-                              className="w-[25%]"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="mx-auto"
-                                viewBox="0 0 24 24"
-                                width="18"
-                                height="18"
-                                fill="rgba(0,0,0,1)"
-                              >
-                                <path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path>
-                              </svg>
-                            </button>
+                              <span className="text-white text-lg">
+                                View Cart
+                              </span>
+                              <span className="text-white font-semibold text-lg">
+                                {/* (1) */}
+                                {cartItem.reduce(
+                                  (total, chef) => total + chef.menu.length,
+                                  0
+                                )}
+                              </span>
+                            </Link>
                           </div>
-                        </div>
-                        {/* <h4 className='py-1 text-base text-center mt-6 mb-4 bg-greenLight'>Order amount must be at least <span className='font-bold'>$25.</span></h4> */}
-                        <Link
-                          to="/cart"
-                          className="flex justify-center items-center gap-x-3 my-2 bg-primary rounded-lg py-3 px-3 "
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            width="18"
-                            height="18"
-                            fill="rgba(255,255,255,1)"
-                          >
-                            <path d="M4.00488 16V4H2.00488V2H5.00488C5.55717 2 6.00488 2.44772 6.00488 3V15H18.4433L20.4433 7H8.00488V5H21.7241C22.2764 5 22.7241 5.44772 22.7241 6C22.7241 6.08176 22.7141 6.16322 22.6942 6.24254L20.1942 16.2425C20.083 16.6877 19.683 17 19.2241 17H5.00488C4.4526 17 4.00488 16.5523 4.00488 16ZM6.00488 23C4.90031 23 4.00488 22.1046 4.00488 21C4.00488 19.8954 4.90031 19 6.00488 19C7.10945 19 8.00488 19.8954 8.00488 21C8.00488 22.1046 7.10945 23 6.00488 23ZM18.0049 23C16.9003 23 16.0049 22.1046 16.0049 21C16.0049 19.8954 16.9003 19 18.0049 19C19.1095 19 20.0049 19.8954 20.0049 21C20.0049 22.1046 19.1095 23 18.0049 23Z"></path>
-                          </svg>
-                          <span className="text-white text-lg">View Cart</span>
-                          <span className="text-white font-semibold text-lg">
-                            {/* (1) */}
-                            {cartItem.reduce((total, chef) => total + chef.menu.length, 0)}
-                          </span>
-                        </Link>
-                      </div>
-                    )) :( chefIndex === chefArr.length-1 &&
-                        <div className="pt-12">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mx-auto mb-3"
-                    viewBox="0 0 24 24"
-                    width="96"
-                    height="96"
-                    fill="#dcdcdc"
-                  >
-                    <path d="M6.50488 2H17.5049C17.8196 2 18.116 2.14819 18.3049 2.4L21.0049 6V21C21.0049 21.5523 20.5572 22 20.0049 22H4.00488C3.4526 22 3.00488 21.5523 3.00488 21V6L5.70488 2.4C5.89374 2.14819 6.19013 2 6.50488 2ZM19.0049 8H5.00488V20H19.0049V8ZM18.5049 6L17.0049 4H7.00488L5.50488 6H18.5049ZM9.00488 10V12C9.00488 13.6569 10.348 15 12.0049 15C13.6617 15 15.0049 13.6569 15.0049 12V10H17.0049V12C17.0049 14.7614 14.7663 17 12.0049 17C9.24346 17 7.00488 14.7614 7.00488 12V10H9.00488Z"></path>
-                  </svg>
-                  <h2 className="text-lg text-center text-secondary">
-                    No Item of this Chef<br /> 
-                  </h2>
-                </div>
-                    )
+                        ))
+                      : chefIndex === chefArr.length - 1 && (
+                          <div className="pt-12">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="mx-auto mb-3"
+                              viewBox="0 0 24 24"
+                              width="96"
+                              height="96"
+                              fill="#dcdcdc"
+                            >
+                              <path d="M6.50488 2H17.5049C17.8196 2 18.116 2.14819 18.3049 2.4L21.0049 6V21C21.0049 21.5523 20.5572 22 20.0049 22H4.00488C3.4526 22 3.00488 21.5523 3.00488 21V6L5.70488 2.4C5.89374 2.14819 6.19013 2 6.50488 2ZM19.0049 8H5.00488V20H19.0049V8ZM18.5049 6L17.0049 4H7.00488L5.50488 6H18.5049ZM9.00488 10V12C9.00488 13.6569 10.348 15 12.0049 15C13.6617 15 15.0049 13.6569 15.0049 12V10H17.0049V12C17.0049 14.7614 14.7663 17 12.0049 17C9.24346 17 7.00488 14.7614 7.00488 12V10H9.00488Z"></path>
+                            </svg>
+                            <h2 className="text-lg text-center text-secondary">
+                              No Item of this Chef
+                              <br />
+                            </h2>
+                          </div>
+                        )
                   )}
                 </div>
               )}
