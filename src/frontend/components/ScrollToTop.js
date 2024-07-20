@@ -8,22 +8,46 @@ const scrollToTopRoutes = [
   "/all-dish-detail",
   "/become-a-chef",
   "/faqs",
-  "/checkout",
+  "/checkout*",
   "/order-summary",
   "/privacy-policy",
   "/terms-of-servies",
   "/homemade-food-delivery",
-  '/all-chef',
+  "/all-chef*",
+  "/shef-detail*",
+  "/dish-detail-single*",
+  "/categorize-dishes*",
+  "/profile",
+  "/order-summary",
+  // Dashboard routes
+  "/shef/dashboard",
+  "/shef/profile",
+  "/shef/my-menu",
+  "/shef/order",
+  "/shef/sales-statment",
+  "/shef/order-review",
+  "/shef/coupon",
+  "/shef/order-summary",
 ]; // Routes to scroll to top
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const shouldScrollToTop = scrollToTopRoutes.includes(pathname);
+    // Convert routes with wildcards to regex patterns
+    const regexPatterns = scrollToTopRoutes.map(
+      (route) => new RegExp(`^${route.replace("*", ".*")}$`)
+    );
 
+    // Check if current path matches any of the regex patterns
+    const shouldScrollToTop = regexPatterns.some((regex) =>
+      regex.test(pathname)
+    );
+
+    // console.log("Pathname == ", pathname);
     if (shouldScrollToTop) {
-      window.scrollTo(0, 0);
+      // console.log("Path matched ", shouldScrollToTop);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [pathname]);
 
