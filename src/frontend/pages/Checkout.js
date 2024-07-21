@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { handleCreateOrder } from "../../services/order";
+import { handleCheckDiscount, handleCreateOrder } from "../../services/order";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
@@ -13,8 +13,10 @@ import { updateUser } from "../../store/slice/user";
 import Modal from "react-modal";
 
 export const Checkout = () => {
+  // User Info - redux store
   const { userInfo } = useSelector((state) => state.user);
 
+  // Chef Tip
   const [activeButton, setActiveButton] = useState(null);
   const handleButtonClick = (buttonId, percent) => {
     setActiveButton(buttonId);
@@ -73,11 +75,49 @@ export const Checkout = () => {
   };
   //--- END - Initial Value for State
 
+  // Order API - States
   const [order, setOrder] = useState(orderInitial);
   const [orderDetails, setOrderDetails] = useState(orderDetailInitial);
   const [orderDeliveryAddress, setOrderDeliveryAddress] = useState(
     orderDeliveryAddressInitial
   );
+  // Order States - End
+
+  // Update Fields States - (Order, OrderDeliveryAddress, OrderDetail)
+  const updateOrder = (field) => {
+    setOrder((prev) => {
+      return { ...prev, ...field };
+    });
+  };
+  const updateOrderDeliveryAddress = (field) => {
+    setOrderDeliveryAddress((prev) => {
+      return { ...prev, ...field };
+    });
+  };
+
+  // ---- Promo Code 
+  const [promoCode, setPromoCode] = useState({
+    code: '', // promo code
+    order_total : 0, // Total of order,
+    menus : [], // array with menu.id (i.e. user_menu_id) & menu.quantity
+  })
+  // Promo code - Submit
+  const handlePromoCodeSubmit = async(e) => {
+    try {
+      console.log("Promo code payload ", promoCode)
+      const discountResponse = await handleCheckDiscount(authToken, promoCode);
+      console.log("respons of promo code ", discountResponse)
+      // If no promo code is present 
+      if(discountResponse?.original?.error){
+        toast.error(discountResponse?.original?.error || "Something's wrong with Promo Code")
+      }
+      // If promo code is present  --- Set discount_price here
+      // updateOrder({ discount_price: "somehing", discount_promo_id: "somthign" })
+      
+    } catch (error) {
+      console.error("Error while getting promo code \n", error)
+    }
+  }
 
   // Use effect to set the initial delivery address from the last order address
   useEffect(() => {
@@ -100,24 +140,14 @@ export const Checkout = () => {
   // Calculate and update tip_price
   const calculateTip = (percent) => {
     const tip_amount = parseFloat(
-      (order.sub_total * (percent / 100)).toFixed(2)
+      (order.chef_earning_price * (percent / 100)).toFixed(2)
     );
     updateOrder({ tip_price: tip_amount });
   };
 
-  // Update Fields States - (Order, OrderDeliveryAddress, OrderDetail)
-  const updateOrder = (field) => {
-    setOrder((prev) => {
-      return { ...prev, ...field };
-    });
-  };
-  const updateOrderDeliveryAddress = (field) => {
-    setOrderDeliveryAddress((prev) => {
-      return { ...prev, ...field };
-    });
-  };
+  
 
-  // Chef id
+  // Chef id - from url parameter
   const { chefId } = useParams();
 
   // longitude & latitude
@@ -170,6 +200,7 @@ export const Checkout = () => {
     let sub_total = 0;
     let deliverPriceSum = 0;
     let platformPriceSum = 0;
+    let chefEarningSum = 0;
   
     // Calculate the sub total, delivery price sum, and platform price sum
     cartItem.forEach((chef) => {
@@ -180,14 +211,17 @@ export const Checkout = () => {
           const delivery_price = menu.delivery_price || 0;
           const platform_price = menu.platform_price || 0;
   
+          // Calculate chef_earning_fee for each item
+          chefEarningSum += chef_earning_fee * quantity;
+
           // Calculate sub total for each item
-          sub_total += chef_earning_fee * quantity;
+          sub_total += (chef_earning_fee * quantity) + (platform_price * quantity);
   
           // Calculate delivery price sum for each item
           deliverPriceSum += delivery_price * quantity;
   
-          // Calculate platform price sum for each item
-          platformPriceSum += platform_price * quantity;
+          // Calculate platform price sum for each item -- teax & fee 
+          // platformPriceSum += platform_price * quantity;
         });
       }
     });
@@ -196,27 +230,35 @@ export const Checkout = () => {
     const city = JSON.parse(localStorage.getItem("region"));
   
     // Calculate the total order price
-    const total = sub_total + order.tip_price + deliverPriceSum + platformPriceSum;
+    const total = sub_total + order.tip_price + deliverPriceSum;
+    // const total = sub_total + order.tip_price + deliverPriceSum + platformPriceSum;
+
+    // --- Promo code payload 
+    setPromoCode((prev) => ({
+      ...prev, 
+      order_total: total,
+    }))
   
     // Update the order state with calculated values
     updateOrder({
       chef_id: parseInt(chefId),
       city_id: city.id,
       sub_total: sub_total,
-      chef_earning_price: sub_total,
+      chef_earning_price: chefEarningSum,
       delivery_price: deliverPriceSum,
-      delivery_percentage: ((deliverPriceSum / sub_total) * 100),
+      delivery_percentage: ((deliverPriceSum / chefEarningSum) * 100),
       service_fee: platformPriceSum,
       total_price: total
     });
   
     // Temporary array to hold orderDetails
     const menuDetails = [];
-  
+    const promoCodeMenu = [];
     // Select the chef according to menuDetails
     cartItem.forEach((chef) => {
       if (chef.id === parseInt(chefId)) {
         chef.menu.forEach((menu) => {
+          // ---- Menu Detail for create-order api
           menuDetails.push({
             name: menu.name,
             user_menu_id: menu.id,
@@ -234,22 +276,32 @@ export const Checkout = () => {
             delivery_price: menu.delivery_price,
             chef_price: menu.chef_earning_fee,
           });
+          // ---- For promo Code API
+          promoCodeMenu.push({
+            id: menu.id,
+            qty: menu.quantity
+          })
         });
       }
     });
   
     // Update the orderDetail state
     setOrderDetails(menuDetails);
-  
+    // Promo Code 
+    setPromoCode((prev) => ({
+      ...prev, 
+      menus: promoCodeMenu
+    }))
+    // console.log("PromoCode required data from menu ", promoCodeMenu)
+
     console.log("delivery data", orderDeliveryAddress);
     console.log("Order Detail ", menuDetails);
     console.log("Order  ", order);
   
-    console.log("UseEffect for cart updation is running .. CartItem", cartItem);
+    // console.log("UseEffect for cart updation is running .. CartItem", cartItem);
     //eslint-disable-next-line
   }, [cartItem, order.tip_price]);
   
-
   // ---- On submit
   const [isPending, setIsPending] = useState(false);
   const { authToken } = useSelector((state) => state.user);
@@ -294,6 +346,7 @@ export const Checkout = () => {
     }
   };
 
+  // Modal for Existing Addresses
   const [isOpen, setIsOpen] = useState(false);
   const onRequestClose = () => {
     setIsOpen(false);
@@ -557,7 +610,8 @@ export const Checkout = () => {
                     placeholder=""
                   />
                 </div>
-                {/* <div className="border-b border-primary border-dashed pb-5 mb-4">
+                {/* ------ Promo Code ------ */}
+                <div className="border-b border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
                     Promo code or Gift card{" "}
                     <span className="text-primary">*</span>
@@ -566,13 +620,18 @@ export const Checkout = () => {
                     <input
                       className="border rounded-md w-full"
                       name=""
+                      value={promoCode.code}
+                      onChange={(e) => setPromoCode((prev) => ({
+                        ...prev, 
+                        code: e.target.value
+                      }))}
                       placeholder="Promo Code"
                     />
-                    <button className="text-[10px] font-semobold bg-primary px-2 py-1 text-white rounded-md absolute right-2 top-[50%] translate-y-[-50%]">
+                    <button type="button" onClick={handlePromoCodeSubmit} className="text-[10px] font-semobold bg-primary px-2 py-1 text-white rounded-md absolute right-2 top-[50%] translate-y-[-50%]">
                       Submit
                     </button>
                   </div>
-                </div> */}
+                </div>
                 <div className="mt-8 border-b border-primary border-dashed pb-2">
                   <div className="flex items-center justify-between">
                     <h2 className="font-semibold text-xl uppercase text-secondary tracking-widest">
@@ -957,6 +1016,16 @@ export const Checkout = () => {
                   })}
                 </h4>
               </div>
+              {/* Discount */}
+             {order?.discount_price>0 && <div className="flex justify-between gap-2 mb-1">
+                <h3 className="text-lg font-medium mb-0">Discount</h3>
+                <h4 className="text-lg font-medium mb-0">
+                  {order.discount_price.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  })}
+                </h4>
+              </div>}
               <div className="flex justify-between gap-2 mb-1 bg-primaryLight py-2 px-3 rounded-md">
                 <h3 className="text-lg font-bold mb-0">Total</h3>
                 {/* <h4 className='text-lg font-bold mb-0'>$61.06</h4> */}
