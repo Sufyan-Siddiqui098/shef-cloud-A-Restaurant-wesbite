@@ -36,4 +36,16 @@ export const handleCreateOrder = async (token, payload) => {
       console.error("Error While fetching orders\n", error);
     }
   };
+
+  // Get Discount - Promo Code (Checkout page)
+  export const handleCheckDiscount = async(token, payload) => {
+    try {
+      const { data } = await api.post("/api/check-discount", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
   
