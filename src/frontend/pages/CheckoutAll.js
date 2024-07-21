@@ -80,13 +80,14 @@ export const CheckoutAll = () => {
     orderDeliveryAddressInitial
   );
   // Summary price
-  const [orderSummaryForUser, setOrderSummaryForUser ] = useState({
+  const [orderSummaryForUser, setOrderSummaryForUser] = useState({
+    chef_earning_price: 0,
     subTotal: 0,
-    deliveryFee : 0, 
+    deliveryFee: 0,
     platformFee: 0,
-    total: 0, 
+    total: 0,
     shefTip: 0,
-  })
+  });
   // isFetching - is api is in pending state
   const [isPending, setIsPending] = useState(false);
   const [isOpen, setIsOpen] = useState(false); // Modal for existing addresses
@@ -127,16 +128,18 @@ export const CheckoutAll = () => {
   const [activeChefTip, setActiveChefTip] = useState(0);
   const handleChefTip = (tip_percent) => {
     setActiveChefTip(tip_percent);
-    const chefSummaryTip = orderSummaryForUser.subTotal * (tip_percent / 100);
+    const chefSummaryTip =
+      orderSummaryForUser.chef_earning_price * (tip_percent / 100);
     setOrderSummaryForUser((prev) => {
       return {...prev, shefTip: chefSummaryTip}
     })
-    console.log("Tip percentage ", chefSummaryTip)
+    // console.log("Tip percentage ", chefSummaryTip);
+
+    // removed code 
     //Calculate and update tip_price
     // calculateTip(percent);
   };
 
-  
 
   // longitude & latitude
   useEffect(() => {
@@ -178,40 +181,55 @@ export const CheckoutAll = () => {
     // eslint-disable-next-line
   }, []);
 
-    // Summary of prices for User
-    useEffect(() => {
-      // Sub total = chef-earning * quantity
-      const sub_total = cartItem.reduce((accChef, chef) => {
-        const chefTotal = chef.menu.reduce((accMenu, menu) => {
-          return accMenu + (menu.chef_earning_fee || 0) * menu.quantity;
-        }, 0);
-        return accChef + chefTotal;
+  // Summary of prices for User
+  useEffect(() => {
+    // chef earning = chef_earning * quantity
+    const chef_earning_sum = cartItem.reduce((accChef, chef) => {
+      const chefTotal = chef.menu.reduce((accMenu, menu) => {
+        return accMenu + (menu.chef_earning_fee || 0) * menu.quantity;
       }, 0);
-      // Delivery
-      const deliverPriceSum = cartItem.reduce((accChef, chef) => {
-        const chefTotal = chef.menu.reduce((accMenu, menu) => {
-          return accMenu + (menu.delivery_price || 0) * menu.quantity;
-        }, 0);
-        return accChef + chefTotal;
+      return accChef + chefTotal;
+    }, 0);
+
+    // Sub total = chef-earning * quantity + platform_price * quantity
+    const sub_total = cartItem.reduce((accChef, chef) => {
+      const chefTotal = chef.menu.reduce((accMenu, menu) => {
+        return (
+          accMenu +
+          (menu.chef_earning_fee || 0) * menu.quantity +
+          (menu.platform_price || 0) * menu.quantity
+        );
       }, 0);
-      // Platform
-      const platformPriceSum = cartItem.reduce((accChef, chef) => {
-        const chefTotal = chef.menu.reduce((accMenu, menu) => {
-          return accMenu + (menu.platform_price || 0) * menu.quantity;
-        }, 0);
-        return accChef + chefTotal;
+      return accChef + chefTotal;
+    }, 0);
+    // Delivery
+    const deliverPriceSum = cartItem.reduce((accChef, chef) => {
+      const chefTotal = chef.menu.reduce((accMenu, menu) => {
+        return accMenu + (menu.delivery_price || 0) * menu.quantity;
       }, 0);
-      console.log("Summary amount is calculated for user")
-      // user Summary
-      setOrderSummaryForUser((prev) => ({
-        ...prev,
-        subTotal: sub_total,
-        deliveryFee: deliverPriceSum,
-        platformFee: platformPriceSum,
-        total: sub_total + deliverPriceSum + platformPriceSum + (orderSummaryForUser?.shefTip || 0)
-      }))
-     
-    }, [cartItem, orderSummaryForUser.shefTip])
+      return accChef + chefTotal;
+    }, 0);
+
+    // Platform
+    // const platformPriceSum = cartItem.reduce((accChef, chef) => {
+    //   const chefTotal = chef.menu.reduce((accMenu, menu) => {
+    //     return accMenu + (menu.platform_price || 0) * menu.quantity;
+    //   }, 0);
+    //   return accChef + chefTotal;
+    // }, 0);
+
+    console.log("Summary amount is calculated for user");
+    // user Summary
+    setOrderSummaryForUser((prev) => ({
+      ...prev,
+      chef_earning_price: chef_earning_sum,
+      subTotal: sub_total,
+      deliveryFee: deliverPriceSum,
+      // platformFee: platformPriceSum || 0,
+      // total: sub_total + deliverPriceSum + (platformPriceSum || 0) + (orderSummaryForUser?.shefTip || 0)
+      total: sub_total + deliverPriceSum + (orderSummaryForUser?.shefTip || 0),
+    }));
+  }, [cartItem, orderSummaryForUser.shefTip]);
 
   // increment/decrement Quantity - Update directly in redux-store
   const updateQuantityInStore = (chefIndex, menuIndex, quantity, operation) => {
@@ -232,11 +250,11 @@ export const CheckoutAll = () => {
     );
   };
 
-  // Calculate and update tip_price -- To be added inside looping for each chef's dishes.
-  const calculateTip = (percent, subTotalAmount) => {
+  // Calculate and update tip_price a/c to chef_earning
+  const calculateTip = (percent, chefEarningFee) => {
     // console.log("percent tip = ", percent / 100)
     const tip_amount = parseFloat(
-      (subTotalAmount * (percent / 100)).toFixed(2)
+      (chefEarningFee * (percent / 100)).toFixed(2)
     );
     // console.log("single chef tip = ", tip_amount)
     // updateOrder({ tip_price: tip_amount });
@@ -248,6 +266,7 @@ export const CheckoutAll = () => {
     let sub_total = 0;
     let deliverPriceSum = 0;
     let platformPriceSum = 0;
+    let chefEarningSum = 0;
 
     chef.menu.forEach((menu) => {
       const chef_earning_fee = menu.chef_earning_fee || 0;
@@ -255,26 +274,32 @@ export const CheckoutAll = () => {
       const delivery_price = menu.delivery_price || 0;
       const platform_price = menu.platform_price || 0;
 
-      sub_total += chef_earning_fee * quantity;
+      // Calculate chef_earning_fee for each item
+      chefEarningSum += chef_earning_fee * quantity
+      // Calculate sub_total = chef_earning_fee * quantity;
+      sub_total += chef_earning_fee * quantity + platform_price * quantity;
+      // Calculate DeliveryPrice 
       deliverPriceSum += delivery_price * quantity;
-      platformPriceSum += platform_price * quantity;
+
+      // platformPriceSum += platform_price * quantity;
     });
 
     const city = JSON.parse(localStorage.getItem("region"));
     // Calculate tip & update the tip_price in Order(state)
-    const tip_price = calculateTip(activeChefTip, sub_total);
-    console.log("checking order(state) after calculateTip ", order)
+    const tip_price = calculateTip(activeChefTip, chefEarningSum);
+    console.log("checking order(state) after calculateTip ", order);
     const total = sub_total + tip_price + deliverPriceSum + platformPriceSum;
 
+    // Payload creation for create-order api
     const orderPayload = {
       ...order,
       chef_id: chef.id,
       city_id: city.id,
       sub_total: sub_total,
-      chef_earning_price: sub_total,
+      chef_earning_price: chefEarningSum,
       tip_price: tip_price,
       delivery_price: deliverPriceSum,
-      delivery_percentage: ((deliverPriceSum / sub_total) * 100),
+      delivery_percentage: (deliverPriceSum / chefEarningSum) * 100,
       service_fee: platformPriceSum,
       total_price: total,
       orderDetails: chef.menu.map((menu) => ({
@@ -297,12 +322,15 @@ export const CheckoutAll = () => {
     };
 
     const payload = { ...orderPayload, orderDeliveryAddress };
-    console.log("Payload is ", payload )
-
+    console.log("Payload is ", payload);
+    // Api Call
     try {
       const response = await handleCreateOrder(authToken, payload);
-      console.log("checkout all response ", response)
-      toast.success(`Order confirmed. Chef ${chef?.first_name} is now preparing your meal.`, { theme: "colored" });
+      console.log("checkout all response ", response);
+      toast.success(
+        `Order of Chef ${chef?.first_name} is confirmed`,
+        { theme: "colored" }
+      );
       // remove that chef from redux
       dispatch(onOrderSubmit({ chefId: chef.id }));
       // update user in redux with last_order_address
@@ -316,18 +344,19 @@ export const CheckoutAll = () => {
       dispatch(updateUser(updatedUserInfo));
     } catch (error) {
       console.error("Order creation failed:", error);
-      toast.error(error.error || "Order creation failed", { theme: "colored" });
-      // throw error;
+      toast.error(error.message || "Order creation failed", { theme: "colored" });
+      throw error;
     }
   };
-  // handle All Checkout
+
+  // handle All Checkout in loop
   const handleCheckout = async (e) => {
     e.preventDefault();
     setIsPending(true);
     try {
       const orderIds = await Promise.all(cartItem.map(createOrderForChef));
-      console.log("order id ", orderIds)
-      navigate("/", {replace: true});
+      console.log("order id ", orderIds);
+      navigate("/", { replace: true });
       // navigate(`/orders/${orderIds.join(',')}`);
     } catch (error) {
       console.error("Failed to create orders:", error);
@@ -336,34 +365,6 @@ export const CheckoutAll = () => {
     }
   };
 
-  // const onSubmit = async (e) => {
-  //   try {
-  //     e.preventDefault();
-  //     setIsPending(true);
-  //     console.log("submitting ");
-  //   } catch (error) {
-  //     console.error("Error on placing order", error);
-  //     toast.error(error.message, { theme: "colored" });
-  //   } finally {
-  //     setIsPending(false);
-  //   }
-  // };
-
-  // const onSelectExistingAddress = (address) => {
-  //   const updatedOrders = orders.map(order => ({
-  //     ...order,
-  //     orderDeliveryAddress: {
-  //       ...order.orderDeliveryAddress,
-  //       address: address.address,
-  //       line2: address.line2,
-  //       city: address.city,
-  //       postal_code: address.postal_code,
-  //       state: address.state,
-  //     },
-  //   }));
-  //   setOrders(updatedOrders);
-  //   setIsOpen(false);
-  // };
 
   return (
     <>
@@ -598,8 +599,12 @@ export const CheckoutAll = () => {
                       Tip Shef:
                     </h2>
                     <h2 className="font-semibold text-2xl uppercase text-primary tracking-widest">
-                      {/* $5.99 */}
-                      {order.tip_price.toLocaleString("en-US", {
+                      {/* {order.tip_price.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })} */}
+                      {/* Chef Tip -- for user view */}
+                      {orderSummaryForUser.shefTip.toLocaleString("en-US", {
                         style: "currency",
                         currency: "USD",
                       })}
@@ -766,7 +771,7 @@ export const CheckoutAll = () => {
                 {/* Order Box */}
                 {cartItem.map((chef, chefIndex) => (
                   <div key={chefIndex}>
-                    <div className="flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg">
+                    <div className="flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg mt-2">
                       <img
                         src={
                           chef.profile_pic && isValidURL(chef.profile_pic)
