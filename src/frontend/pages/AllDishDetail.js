@@ -203,42 +203,112 @@ export const DishDetail = () => {
                           <h4 className="text-[10px] text-headGray mb-0">
                             Availibility:{" "}
                           </h4>
-                          <ul className="flex gap-[2px] flex-wrap">
-                            {dish?.is_monday === 1 && (
-                              <li className="text-[12px] p-1  bg-headGray text-white rounded leading-tight mb-0">
-                                Mo
+                          <ul className="flex gap-1 flex-wrap">
+                            {/* Days - starting from sunday */}
+                            <div className="relative group">
+                              <li
+                                className={`text w-5 h-5 text-center ${
+                                  dish?.is_sunday === 1
+                                    ? "bg-primary text-white"
+                                    : "border"
+                                } rounded-full mb-0 flex items-center justify-center`}
+                              >
+                                S
                               </li>
-                            )}
-                            {dish?.is_tuesday === 1 && (
-                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
-                                Tu
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                Sunday
+                              </div>
+                            </div>
+
+                            <div className="relative group">
+                              <li
+                                className={`text w-5 h-5 text-center ${
+                                  dish?.is_monday === 1
+                                    ? "bg-primary text-white"
+                                    : "border"
+                                } rounded-full mb-0 flex items-center justify-center`}
+                              >
+                                M
                               </li>
-                            )}
-                            {dish?.is_wednesday === 1 && (
-                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
-                                We
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                Monday
+                              </div>
+                            </div>
+
+                            <div className="relative group">
+                              <li
+                                className={`text w-5 h-5 text-center ${
+                                  dish?.is_tuesday === 1
+                                    ? "bg-primary text-white"
+                                    : "border"
+                                } rounded-full mb-0 flex items-center justify-center`}
+                              >
+                                T
                               </li>
-                            )}
-                            {dish?.is_thursday === 1 && (
-                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
-                                Th
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                Tuesday
+                              </div>
+                            </div>
+
+                            <div className="relative group">
+                              <li
+                                className={`text w-5 h-5 text-center ${
+                                  dish?.is_wednesday === 1
+                                    ? "bg-primary text-white"
+                                    : "border"
+                                } rounded-full mb-0 flex items-center justify-center`}
+                              >
+                                W
                               </li>
-                            )}
-                            {dish?.is_friday === 1 && (
-                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
-                                Fr
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                Wednesday
+                              </div>
+                            </div>
+
+                            <div className="relative group">
+                              <li
+                                className={`text w-5 h-5 text-center ${
+                                  dish?.is_thursday === 1
+                                    ? "bg-primary text-white"
+                                    : "border"
+                                } rounded-full mb-0 flex items-center justify-center`}
+                              >
+                                T
                               </li>
-                            )}
-                            {dish?.is_saturday === 1 && (
-                              <li className="text-[12px] p-1 bg-headGray text-white rounded leading-tight mb-0">
-                                St
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                Thursday
+                              </div>
+                            </div>
+
+                            <div className="relative group">
+                              <li
+                                className={`text w-5 h-5 text-center ${
+                                  dish?.is_friday === 1
+                                    ? "bg-primary text-white"
+                                    : "border"
+                                } rounded-full mb-0 flex items-center justify-center`}
+                              >
+                                F
                               </li>
-                            )}
-                            {dish?.is_sunday === 1 && (
-                              <li className="text-[12px] p-1 px-[6px] bg-headGray text-white rounded leading-tight mb-0">
-                                Su
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                Friday
+                              </div>
+                            </div>
+
+                            <div className="relative group">
+                              <li
+                                className={`text w-5 h-5 text-center ${
+                                  dish?.is_saturday === 1
+                                    ? "bg-primary text-white"
+                                    : "border"
+                                } rounded-full mb-0 flex items-center justify-center`}
+                              >
+                                S
                               </li>
-                            )}
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                Saturday
+                              </div>
+                            </div>
                           </ul>
                         </div>
                         <div className="col-span-3 my-auto">
