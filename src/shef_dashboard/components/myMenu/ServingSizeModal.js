@@ -285,18 +285,18 @@ const MenuModal = ({
                   <div className="">
                     <div className="flex items-center border-b gap-2">
                       <h3 className="text-base mb-0 text-white">
-                        17 oz container
+                        17 grams container
                       </h3>
                       <h3 className="text-base mb-0 text-white">|</h3>
                       <h3 className="text-base font-semibold mb-0 text-white">
-                        $12.00
+                        Pkr 1,000
                       </h3>
                     </div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-[12px] mb-0 text-white">
                         Earn{" "}
                         <span className="font-semibold text-primaryGreen">
-                          $9.00
+                          Pkr 2,000
                         </span>{" "}
                         per sale
                       </h3>
@@ -352,7 +352,7 @@ const MenuModal = ({
                       value={numericPortionSize}
                       onChange={handleNumericPortionSizeChange}
                     />
-                    <span className="w-[40%]">oz</span>
+                    <span className="w-[40%]">grams</span>
                   </div>
                   <button onClick={handleIncrement} className="w-[25%]">
                     <svg
@@ -428,7 +428,7 @@ const MenuModal = ({
                 </div>
               </div>
               <p className="bg-grayBg p-3 rounded-lg text-center mt-3">
-                Similar dishes are usually priced between $9.99 and $13.99.
+                Similar dishes are usually priced between Pkr 9.99 and Pkr 13.99.
               </p>
               <div className="rounded-lg bg-grayBg p-4 mt-4">
                 <div className="flex items-center gap-2">
@@ -573,7 +573,7 @@ const MenuModal = ({
                   </p>
                 </div>
                 <div className="md:w-[20%] w-[45%] flex items-center justify-start border border-headGray rounded-lg px-2">
-                  <span className="text-lg font-semibold mr-1 w-[10%]">$</span>
+                  <span className="text-lg font-semibold mr-1 w-[10%]">Pkr </span>
                   <input
                     required
                     className="text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]"
@@ -588,7 +588,7 @@ const MenuModal = ({
                 </div>
               </div>
               <p className="bg-grayBg p-3 rounded-lg text-center mt-3">
-                Similar dishes are usually priced between $9.99 and $13.99.
+                Similar dishes are usually priced between Pkr 9.99 and Pkr 13.99.
               </p>
               <div className="rounded-lg bg-grayBg p-4 mt-4">
                 <div className="flex items-center gap-2">
@@ -706,7 +706,7 @@ const MenuModal = ({
                   </p>
                 </div>
                 <div className="md:w-[20%] w-[45%] flex items-center justify-start border border-headGray rounded-lg px-2">
-                  <span className="text-lg font-semibold mr-1 w-[10%]">$</span>
+                  <span className="text-lg font-semibold mr-1 w-[10%]">Pkr </span>
                   <input
                     required
                     className="text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]"
@@ -721,7 +721,7 @@ const MenuModal = ({
                 </div>
               </div>
               <p className="bg-grayBg p-3 rounded-lg text-center mt-3">
-                Similar dishes are usually priced between $9.99 and $13.99.
+                Similar dishes are usually priced between Pkr 9.99 and Pkr 13.99.
               </p>
               <div className="rounded-lg bg-grayBg p-4 mt-4">
                 <div className="flex items-center gap-2">
@@ -799,7 +799,7 @@ const MenuModal = ({
                     <span>
                       You earn{" "}
                       <span className="text-primaryGreen font-semibold">
-                        ${chef_earning_fee}
+                        Pkr {chef_earning_fee}
                       </span>{" "}
                       from each dish sold!
                     </span>
@@ -847,7 +847,7 @@ const MenuModal = ({
                       Separately,
                       <span className="text-[#30abaf] font-semibold">
                         {" "}
-                        $
+                        Pkr 
                         {(
                           (platformRate.delivery_percentage / 100) *
                           chef_earning_fee

@@ -83,7 +83,7 @@ const CartModal = ({ isOpen, onRequestClose }) => {
                         <h3 className='text-base font-bold'>Serving Count <span className='text-[11px] font-medium ml-3 bg-primaryLight text-secondary px-2 py-[3px] leading-tight rounded-[3px]'>Required</span></h3>
                         <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 mb-4 prtionRadio">
                             <div>
-                                <span className="text-base font-medium mr-2">$16.99 16 oz container</span>
+                                <span className="text-base font-medium mr-2">Pkr 1,600 16 grams container</span>
                                 <span className='text-[12px]'>(1 serving)</span>
                             </div>
                             <input type="radio" className="form-radio text-primary w-[16px] h-[16px]" name="radioGroup" value="option1" />
@@ -91,7 +91,7 @@ const CartModal = ({ isOpen, onRequestClose }) => {
                         <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 mb-4 prtionRadio">
                             <div className='flex justify-between items-center w-full'>
                                 <div>
-                                    <span className="text-base font-medium mr-2">$40.99 16 oz container</span>
+                                    <span className="text-base font-medium mr-2">Pkr 4,000 16 grams container</span>
                                     <span className='text-[12px]'>(3 serving)</span>
                                 </div>
                                 <h6 className='text-[10px] text-primary mb-0 mr-3'>save 18%</h6>
