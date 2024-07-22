@@ -520,7 +520,7 @@ export const MyMenu = () => {
                             {/* PKR */}
                             {(dish.chef_earning_fee +
                               dish.platform_price +
-                              dish.delivery_price).toLocaleString("en-US", {
+                              dish.delivery_price).toLocaleString("en-PK", {
                                 style: "currency",
                                 currency: "PKR",
                               })}

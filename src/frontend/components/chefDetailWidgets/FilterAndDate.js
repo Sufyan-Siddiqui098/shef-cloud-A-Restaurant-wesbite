@@ -326,7 +326,7 @@ const FilterAndDate = ({ chefAndDishes }) => {
                               dish.chef_earning_fee +
                               dish.platform_price +
                               dish.delivery_price
-                            ).toLocaleString("en-US", {
+                            ).toLocaleString("en-PK", {
                               style: "currency",
                               currency: "PKR",
                             })}
@@ -663,7 +663,7 @@ const FilterAndDate = ({ chefAndDishes }) => {
                                         menu.platform_price +
                                         menu.delivery_price) *
                                       menu.quantity
-                                    ).toLocaleString("en-US", {
+                                    ).toLocaleString("en-PK", {
                                       style: "currency",
                                       currency: "PKR",
                                     })}

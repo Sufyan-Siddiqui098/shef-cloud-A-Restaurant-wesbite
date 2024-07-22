@@ -202,7 +202,7 @@ export const DishDetailSingle = () => {
                       dish.chef_earning_fee +
                       dish.platform_price +
                       dish.delivery_price
-                    ).toLocaleString("en-US", {
+                    ).toLocaleString("en-PK", {
                       style: "currency",
                       currency: "PKR",
                     })}
@@ -447,7 +447,7 @@ export const DishDetailSingle = () => {
                           dish.chef_earning_fee +
                           dish.platform_price +
                           dish.delivery_price
-                        ).toLocaleString("en-US", {
+                        ).toLocaleString("en-PK", {
                           style: "currency",
                           currency: "PKR",
                         })}
