@@ -441,7 +441,7 @@ export const DishDetailSingle = () => {
                       </h4>
                     </div>
                     <div className="">
-                      {/* <h5 className="text-lg font-semibold mr-2 mb-1">$12.99 16 oz container</h5> */}
+                      {/* <h5 className="text-lg font-semibold mr-2 mb-1">$12.99 16 grams container</h5> */}
                       <h5 className="text-lg font-semibold mr-2 mb-1">
                         {(
                           dish.chef_earning_fee +
@@ -453,7 +453,7 @@ export const DishDetailSingle = () => {
                         })}
                         <br /> {dish.portion_size}{" "}
                         {dish.base_type_id === 1
-                          ? "oz Container"
+                          ? "grams Container"
                           : dish.base_type_id === 2
                           ? "pieces Pieces"
                           : dish.base_type_id === 3 && "Other"}
@@ -479,7 +479,7 @@ export const DishDetailSingle = () => {
                                             <h4 className='text-[10px] font-semibold mb-0 leading-tight'>2 serving</h4>
                                         </div>
                                         <div className=''>
-                                            <h5 className="text-lg font-semibold mr-2 mb-1">$20.99 16 oz container</h5>
+                                            <h5 className="text-lg font-semibold mr-2 mb-1">$20.99 16 grams container</h5>
                                             <h6 className='text-[12px] text-primaryGreen mb-0 mr-3'>Save 18%</h6>
                                         </div>
                                     </div>
@@ -497,7 +497,7 @@ export const DishDetailSingle = () => {
                                             <h4 className='text-[10px] font-semibold mb-0 leading-tight'>3 serving</h4>
                                         </div>
                                         <div className=''>
-                                            <h5 className="text-lg font-semibold mr-2 mb-1">$26.99 16 oz container</h5>
+                                            <h5 className="text-lg font-semibold mr-2 mb-1">$26.99 16 grams container</h5>
                                             <h6 className='text-[12px] text-primaryGreen mb-0 mr-3'>Save 33%</h6>
                                         </div>
                                     </div>

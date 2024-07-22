@@ -42,7 +42,7 @@ const LocalChef = () => {
                                         <div className='lg:w-4/5 sm:w-2/3 w-full lg:mx-0 mx-auto'>
                                             <p className='mb-0 text-base text-headGray'>
                                                 Freshly prepared, chilled and delivered to your doorstep,
-                                                starting at just $9 per meal.
+                                                starting at just Pkr 900 per meal.
                                             </p>
                                         </div>
 

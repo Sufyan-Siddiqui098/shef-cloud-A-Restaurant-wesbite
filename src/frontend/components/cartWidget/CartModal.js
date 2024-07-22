@@ -98,106 +98,52 @@ const CartModal = ({ isOpen, onRequestClose, modalDish }) => {
                 <p className="text-base">
                   {/* Orange juice, sugar, rice vinegar, soy sauce, ginger, garlic powder, 
                             red chili flakes, orange zest, corn starch, water, green onion, boneless 
-                            chicken, cilantro, rice, orange slices, extra virgin olive oil */}
-                  {modalDish?.ingredients
-                    ?.map((ing) => ing?.ingredient.name)
-                    .join(", ")}
-                </p>
-              )}
-            </div>
-            <div>
-              <div className="block w-full mt-6">
-                <h3 className="text-base font-bold">
-                  Serving Count{" "}
-                  <span className="text-[11px] font-medium ml-3 bg-primaryLight text-secondary px-2 py-[3px] leading-tight rounded-[3px]">
-                    Required
-                  </span>
-                </h3>
-                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 mb-4 prtionRadio">
-                  <div>
-                    <span className="text-base font-medium mr-2">
-                      $16.99 16 oz container
-                    </span>
-                    <span className="text-[12px]">(1 serving)</span>
-                  </div>
-                  <input
-                    type="radio"
-                    className="form-radio text-primary w-[16px] h-[16px]"
-                    name="radioGroup"
-                    value="option1"
-                  />
-                </label>
-                <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 mb-4 prtionRadio">
-                  <div className="flex justify-between items-center w-full">
-                    <div>
-                      <span className="text-base font-medium mr-2">
-                        $40.99 16 oz container
-                      </span>
-                      <span className="text-[12px]">(3 serving)</span>
+                            chicken, cilantro, rice, orange slices, extra virgin olive oil
+                        </p>
+                    }
+                </div>
+                <div>
+                    <div className="block w-full mt-6">
+                        <h3 className='text-base font-bold'>Serving Count <span className='text-[11px] font-medium ml-3 bg-primaryLight text-secondary px-2 py-[3px] leading-tight rounded-[3px]'>Required</span></h3>
+                        <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 mb-4 prtionRadio">
+                            <div>
+                                <span className="text-base font-medium mr-2">Pkr 1,600 16 grams container</span>
+                                <span className='text-[12px]'>(1 serving)</span>
+                            </div>
+                            <input type="radio" className="form-radio text-primary w-[16px] h-[16px]" name="radioGroup" value="option1" />
+                        </label>
+                        <label className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 mb-4 prtionRadio">
+                            <div className='flex justify-between items-center w-full'>
+                                <div>
+                                    <span className="text-base font-medium mr-2">Pkr 4,000 16 grams container</span>
+                                    <span className='text-[12px]'>(3 serving)</span>
+                                </div>
+                                <h6 className='text-[10px] text-primary mb-0 mr-3'>save 18%</h6>
+                            </div>
+                            <input type="radio" className="form-radio text-primary w-[16px] h-[16px]" name="radioGroup" value="option2" />
+                        </label>
                     </div>
-                    <h6 className="text-[10px] text-primary mb-0 mr-3">
-                      save 18%
-                    </h6>
-                  </div>
-                  <input
-                    type="radio"
-                    className="form-radio text-primary w-[16px] h-[16px]"
-                    name="radioGroup"
-                    value="option2"
-                  />
-                </label>
-              </div>
-              {/* <div className='pb-12'></div>  */}
+                    {/* <div className='pb-12'></div>  */}
+                </div>
+                
+                <div className='flex gap-4 sticky bottom-0 w-full left-0 z-10 bg-white'>
+                    
+                    <div className='flex items-center justify-between w-1/2 bg-primaryLight rounded-lg'>
+                        <button className='w-[25%]'>
+                            <svg xmlns="http://www.w3.org/2000/svg" className='mx-auto' viewBox="0 0 24 24" width="18" height="18" fill="rgba(0,0,0,1)"><path d="M5 11V13H19V11H5Z"></path></svg>
+                        </button>
+                        <input className='w-[50%] text-center border-0 bg-transparent text-xs px-1' placeholder='1' />
+                        <button className='w-[25%]'>
+                            <svg xmlns="http://www.w3.org/2000/svg" className='mx-auto' viewBox="0 0 24 24" width="18" height="18" fill="rgba(0,0,0,1)"><path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path></svg>
+                        </button>
+                    </div>
+                    <Link to="/cart" className='w-1/2 flex justify-center items-center gap-x-3 bg-primary rounded-lg py-3 px-3 '>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="rgba(255,255,255,1)"><path d="M4.00488 16V4H2.00488V2H5.00488C5.55717 2 6.00488 2.44772 6.00488 3V15H18.4433L20.4433 7H8.00488V5H21.7241C22.2764 5 22.7241 5.44772 22.7241 6C22.7241 6.08176 22.7141 6.16322 22.6942 6.24254L20.1942 16.2425C20.083 16.6877 19.683 17 19.2241 17H5.00488C4.4526 17 4.00488 16.5523 4.00488 16ZM6.00488 23C4.90031 23 4.00488 22.1046 4.00488 21C4.00488 19.8954 4.90031 19 6.00488 19C7.10945 19 8.00488 19.8954 8.00488 21C8.00488 22.1046 7.10945 23 6.00488 23ZM18.0049 23C16.9003 23 16.0049 22.1046 16.0049 21C16.0049 19.8954 16.9003 19 18.0049 19C19.1095 19 20.0049 19.8954 20.0049 21C20.0049 22.1046 19.1095 23 18.0049 23Z"></path></svg>
+                        <span className='text-white text-lg'>View Cart</span>
+                    </Link>
+                    
+                </div>
             </div>
-
-            <div className="flex gap-4 sticky bottom-0 w-full left-0 z-10 bg-white">
-              <div className="flex items-center justify-between w-1/2 bg-primaryLight rounded-lg">
-                <button className="w-[25%]">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mx-auto"
-                    viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
-                    fill="rgba(0,0,0,1)"
-                  >
-                    <path d="M5 11V13H19V11H5Z"></path>
-                  </svg>
-                </button>
-                <input
-                  className="w-[50%] text-center border-0 bg-transparent text-xs px-1"
-                  placeholder="1"
-                />
-                <button className="w-[25%]">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mx-auto"
-                    viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
-                    fill="rgba(0,0,0,1)"
-                  >
-                    <path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path>
-                  </svg>
-                </button>
-              </div>
-              <Link
-                to="/cart"
-                className="w-1/2 flex justify-center items-center gap-x-3 bg-primary rounded-lg py-3 px-3 "
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="18"
-                  height="18"
-                  fill="rgba(255,255,255,1)"
-                >
-                  <path d="M4.00488 16V4H2.00488V2H5.00488C5.55717 2 6.00488 2.44772 6.00488 3V15H18.4433L20.4433 7H8.00488V5H21.7241C22.2764 5 22.7241 5.44772 22.7241 6C22.7241 6.08176 22.7141 6.16322 22.6942 6.24254L20.1942 16.2425C20.083 16.6877 19.683 17 19.2241 17H5.00488C4.4526 17 4.00488 16.5523 4.00488 16ZM6.00488 23C4.90031 23 4.00488 22.1046 4.00488 21C4.00488 19.8954 4.90031 19 6.00488 19C7.10945 19 8.00488 19.8954 8.00488 21C8.00488 22.1046 7.10945 23 6.00488 23ZM18.0049 23C16.9003 23 16.0049 22.1046 16.0049 21C16.0049 19.8954 16.9003 19 18.0049 19C19.1095 19 20.0049 19.8954 20.0049 21C20.0049 22.1046 19.1095 23 18.0049 23Z"></path>
-                </svg>
-                <span className="text-white text-lg">View Cart</span>
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
     </Modal>

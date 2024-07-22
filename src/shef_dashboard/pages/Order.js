@@ -60,7 +60,7 @@ export const Order = () => {
                                                 <h4 className='text-[14px] mb-0 leading-tight'>Mild</h4>
                                             </td>
                                             <td>
-                                                <h4 className='text-[14px] mb-0 leading-tight'>16 oz</h4>
+                                                <h4 className='text-[14px] mb-0 leading-tight'>16 grams</h4>
                                             </td>
                                             <td>
                                                 <h4 className='text-[14px] mb-0 leading-tight'>3 Serving</h4>

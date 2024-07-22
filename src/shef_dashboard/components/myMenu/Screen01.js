@@ -180,7 +180,7 @@ const DetailStep = ({
                     <div className='my-6 border-b'></div>
                     <div className=''>
                         <h3 className='text-lg font-semibold mb-1 leading-tight'>Spice options</h3>
-                        <p className='text-[12px]'>Choose whether the spice level can be customized for this dish.</p>
+                        <p className='text-[12px]'>Select a spice option for your dish</p>
                         <select id="selectOption" value={spice_level_id} onChange={handleSpiceLevelChange} >
                             <option value="" >--- Select Spice Option ---</option>
                             {/* <option value="option1">Yes, spice level can be customized</option>
