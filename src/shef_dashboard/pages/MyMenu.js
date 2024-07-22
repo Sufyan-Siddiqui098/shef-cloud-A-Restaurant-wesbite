@@ -268,7 +268,7 @@ export const MyMenu = () => {
         return;
       }
     }
-    // onSubmit();
+    onSubmit();
     setCurrentStep(currentStep + 1);
   };
 
