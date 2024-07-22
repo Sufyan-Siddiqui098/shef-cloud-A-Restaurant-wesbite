@@ -111,8 +111,17 @@ export const Checkout = () => {
       if(discountResponse?.original?.error){
         toast.error(discountResponse?.original?.error || "Something's wrong with Promo Code")
       }
+     
       // If promo code is present  --- Set discount_price here
-      // updateOrder({ discount_price: "somehing", discount_promo_id: "somthign" })
+      if(discountResponse?.original?.success){
+        toast.success(discountResponse?.original?.success || "Discount is applied" );
+        // discounted amount
+        const  { discounted_amount } = discountResponse.original;
+        // calculate discount on total amount 
+        const discountedTotal = order.total_price - discounted_amount;
+        // -- Update discount_price & total
+        updateOrder({ discount_price: discounted_amount , total_price:  discountedTotal})
+      }
       
     } catch (error) {
       console.error("Error while getting promo code \n", error)
