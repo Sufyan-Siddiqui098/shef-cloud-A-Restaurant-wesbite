@@ -114,7 +114,7 @@ export const MyMenu = () => {
   const nextStep = () => {
     // Screen 1
     if (currentStep === 0) {
-      const requiredFields = {
+      const requiredFields = {      //add creation of the
         name: "", // Expected data types can be specified for validation
         food_type_id: "",
         spice_level_id: "",
@@ -268,7 +268,7 @@ export const MyMenu = () => {
         return;
       }
     }
-
+    onSubmit();
     setCurrentStep(currentStep + 1);
   };
 
