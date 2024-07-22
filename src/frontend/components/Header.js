@@ -386,11 +386,11 @@ const Header = () => {
                                                                             </div>
                                                                             <div className="price"> 
                                                                                 {/* <NavLink className="text-dark-white fw-500">
-                                                                                { (product?.unit_price).toLocaleString('en-US',{ style: "currency", currency: "USD" }) 
+                                                                                { (product?.unit_price).toLocaleString('en-US',{ style: "currency", currency: "PKR" }) 
                                                                                 } 
                                                                                 </NavLink> */}
                                                                                 <p className="text-dark-white fw-500">
-                                                                                { (product?.unit_price).toLocaleString('en-US',{ style: "currency", currency: "USD" }) 
+                                                                                { (product?.unit_price).toLocaleString('en-US',{ style: "currency", currency: "PKR" }) 
                                                                                 } 
                                                                                 </p>
                                                                             </div>
@@ -405,7 +405,7 @@ const Header = () => {
                                                                     {/* <span className="text-dark-white fw-700">$9.99</span> */}
                                                                     <span className="text-dark-white fw-700">
                                                                         {
-                                                                        subTotal.toLocaleString('en-US',{ style: "currency", currency: "USD" })
+                                                                        subTotal.toLocaleString('en-US',{ style: "currency", currency: "PKR" })
                                                                         } 
                                                                     </span>
                                                                 </div>

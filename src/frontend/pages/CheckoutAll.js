@@ -601,12 +601,12 @@ export const CheckoutAll = () => {
                     <h2 className="font-semibold text-2xl uppercase text-primary tracking-widest">
                       {/* {order.tip_price.toLocaleString("en-US", {
                         style: "currency",
-                        currency: "USD",
+                        currency: "PKR",
                       })} */}
                       {/* Chef Tip -- for user view */}
                       {orderSummaryForUser.shefTip.toLocaleString("en-US", {
                         style: "currency",
-                        currency: "USD",
+                        currency: "PKR",
                       })}
                     </h2>
                   </div>
@@ -866,7 +866,7 @@ export const CheckoutAll = () => {
                                 x{" "}
                                 {menu.unit_price.toLocaleString("en-US", {
                                   style: "currency",
-                                  currency: "USD",
+                                  currency: "PKR",
                                 })}
                               </h4>
                             </div>
@@ -906,11 +906,11 @@ export const CheckoutAll = () => {
                 <h4 className="text-lg font-bold mb-0">
                   {orderSummaryForUser.subTotal.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })}
                   {/* {order.sub_total.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })} */}
                 </h4>
               </div>
@@ -920,11 +920,11 @@ export const CheckoutAll = () => {
                 <h4 className="text-lg font-medium mb-0">
                   {orderSummaryForUser.deliveryFee.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })}
                   {/* {order.delivery_price.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })} */}
                 </h4>
               </div>
@@ -934,11 +934,11 @@ export const CheckoutAll = () => {
                 <h4 className="text-lg font-medium mb-0">
                   {orderSummaryForUser.platformFee.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })}
                   {/* {order.service_fee.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })} */}
                 </h4>
               </div>
@@ -948,11 +948,11 @@ export const CheckoutAll = () => {
                 <h4 className="text-lg font-medium mb-0">
                   {orderSummaryForUser.shefTip.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })}
                   {/* {order.tip_price.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })} */}
                 </h4>
               </div>
@@ -962,11 +962,11 @@ export const CheckoutAll = () => {
                 <h4 className="text-lg font-bold mb-0">
                   {orderSummaryForUser.total.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })}
                   {/* {order.total_price.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })} */}
                 </h4>
               </div>

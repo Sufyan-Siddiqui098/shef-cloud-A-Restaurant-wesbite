@@ -202,7 +202,7 @@ const PopularCollection = () => {
                                 dish.delivery_price
                               ).toLocaleString("en-US", {
                                 style: "currency",
-                                currency: "USD",
+                                currency: "PKR",
                               })}
 
                               {dish?.auto_applied_discounts?.length > 0 && (

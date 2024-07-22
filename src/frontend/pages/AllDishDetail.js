@@ -184,7 +184,7 @@ export const DishDetail = () => {
                           dish.delivery_price
                         ).toLocaleString("en-US", {
                           style: "currency",
-                          currency: "USD",
+                          currency: "PKR",
                         })}
                         {dish?.auto_applied_discounts?.length > 0 && (
                           <span className="block text-[13px] -mt-2 text-green-700">

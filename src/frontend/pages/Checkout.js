@@ -650,7 +650,7 @@ export const Checkout = () => {
                       {/* $5.99 */}
                       {order.tip_price.toLocaleString("en-US", {
                         style: "currency",
-                        currency: "USD",
+                        currency: "PKR",
                       })}
                     </h2>
                   </div>
@@ -922,7 +922,7 @@ export const Checkout = () => {
                                     x
                                     {menu.unit_price.toLocaleString("en-US", {
                                       style: "currency",
-                                      currency: "USD",
+                                      currency: "PKR",
                                     })}
                                   </h4>
                                 </div>
@@ -991,7 +991,7 @@ export const Checkout = () => {
                 <h4 className="text-lg font-bold mb-0">
                   {order.sub_total.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })}
                 </h4>
               </div>
@@ -1001,7 +1001,7 @@ export const Checkout = () => {
                 <h4 className="text-lg font-medium mb-0">
                   {order.delivery_price.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })}
                 </h4>
               </div>
@@ -1011,7 +1011,7 @@ export const Checkout = () => {
                 <h4 className="text-lg font-medium mb-0">
                   {order.service_fee.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })}
                 </h4>
               </div>
@@ -1021,7 +1021,7 @@ export const Checkout = () => {
                 <h4 className="text-lg font-medium mb-0">
                   {order.tip_price.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })}
                 </h4>
               </div>
@@ -1031,7 +1031,7 @@ export const Checkout = () => {
                 <h4 className="text-lg font-medium mb-0">
                   {order.discount_price.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })}
                 </h4>
               </div>}
@@ -1041,7 +1041,7 @@ export const Checkout = () => {
                 <h4 className="text-lg font-bold mb-0">
                   {order.total_price.toLocaleString("en-US", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "PKR",
                   })}
                 </h4>
               </div>

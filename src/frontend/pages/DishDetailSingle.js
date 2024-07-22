@@ -204,7 +204,7 @@ export const DishDetailSingle = () => {
                       dish.delivery_price
                     ).toLocaleString("en-US", {
                       style: "currency",
-                      currency: "USD",
+                      currency: "PKR",
                     })}
 
                     {dish?.auto_applied_discounts?.length > 0 && (
@@ -449,7 +449,7 @@ export const DishDetailSingle = () => {
                           dish.delivery_price
                         ).toLocaleString("en-US", {
                           style: "currency",
-                          currency: "USD",
+                          currency: "PKR",
                         })}
                         <br /> {dish.portion_size}{" "}
                         {dish.base_type_id === 1

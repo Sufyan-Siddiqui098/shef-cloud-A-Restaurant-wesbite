@@ -328,7 +328,7 @@ const FilterAndDate = ({ chefAndDishes }) => {
                               dish.delivery_price
                             ).toLocaleString("en-US", {
                               style: "currency",
-                              currency: "USD",
+                              currency: "PKR",
                             })}
                             {dish?.auto_applied_discounts?.length > 0 && (
                               <span className="block text-[13px] -mt-2 text-green-700">
@@ -665,7 +665,7 @@ const FilterAndDate = ({ chefAndDishes }) => {
                                       menu.quantity
                                     ).toLocaleString("en-US", {
                                       style: "currency",
-                                      currency: "USD",
+                                      currency: "PKR",
                                     })}
                                   </h4>
                                 </div>

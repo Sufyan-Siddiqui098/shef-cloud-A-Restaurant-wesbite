@@ -517,10 +517,13 @@ export const MyMenu = () => {
                         </td>
                         <td data-title="Price">
                           <h4 className="text-[14px] mt-2">
-                            $
-                            {dish.chef_earning_fee +
+                            {/* PKR */}
+                            {(dish.chef_earning_fee +
                               dish.platform_price +
-                              dish.delivery_price}
+                              dish.delivery_price).toLocaleString("en-US", {
+                                style: "currency",
+                                currency: "PKR",
+                              })}
                           </h4>
                         </td>
                         <td data-title="Action">
