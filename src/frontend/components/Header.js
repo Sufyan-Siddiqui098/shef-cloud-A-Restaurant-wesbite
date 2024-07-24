@@ -194,7 +194,7 @@ const Header = () => {
                                           
                                             {/* <div className='hover:bg-transparent my-1 bg-primary hover:border transition-colors rounded '> */}
                                                 <NavLink 
-                                                    className="font-semibold font-sans px-1 !text-white border border-transparent bg-primary rounded  hover:bg-transparent hover:bg-primaryDark hover:!ext-primary  sm:text-lg  sm:px-3"    
+                                                    className="font-semibold font-sans px-1 !text-white border border-transparent bg-primary rounded hover:!bg-primaryDark sm:text-lg  sm:px-3"    
                                                     to='/become-a-chef'
                                                 >
                                                         Become A Chef
