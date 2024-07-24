@@ -188,10 +188,29 @@ const Header = () => {
                                         </div>
                                     </div>
                                     <div className=''>
-                                        {/*  Login Button */}
-                                          {!userInfo &&  <div className='hover:opacity-80 my-1 bg-primary  transition rounded '>
-                                                <NavLink className="font-semibold !text-white sm:text-lg font-sans px-1 sm:px-3" to='/login'>Log in</NavLink>
-                                            </div>}
+                                        {/*  Login & Become a chef Link*/}
+                                          {!userInfo && 
+                                        <div className='flex items-center gap-1 sm:gap-2 py-2'>
+                                          
+                                            {/* <div className='hover:bg-transparent my-1 bg-primary hover:border transition-colors rounded '> */}
+                                                <NavLink 
+                                                    className="font-semibold font-sans px-1 !text-white border border-transparent bg-primary rounded  hover:bg-transparent hover:bg-primaryDark hover:!ext-primary  sm:text-lg  sm:px-3"    
+                                                    to='/become-a-chef'
+                                                >
+                                                        Become A Chef
+                                                </NavLink>
+                                            {/* </div> */}
+                                            {/* <div className='hover:bg-primary my-1 bg-transparent border transition rounded '> */}
+                                                <NavLink 
+                                                    className="font-semibold font-sans px-1 rounded !text-primary border border-primary hover:!underline sm:text-lg  sm:px-3" to='/login'
+                                                >
+                                                    Login
+                                                </NavLink>
+                                            {/* </div> */}
+                                         
+                                        </div>
+                                            }
+                                            
 
                                         { userInfo && <div className="right-side fw-700 mainNavCol">         
                                             {/* <!-- user account -->*/}
