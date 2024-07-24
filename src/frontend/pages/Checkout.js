@@ -237,6 +237,11 @@ export const Checkout = () => {
   
     // Fetch the city data from local storage
     const city = JSON.parse(localStorage.getItem("region"));
+
+    // Update city
+    updateOrderDeliveryAddress({
+      city: city.name
+    })
   
     // Calculate the total order price
     const total = sub_total + order.tip_price + deliverPriceSum;
@@ -507,11 +512,11 @@ export const Checkout = () => {
                     }
                     placeholder="City"
                   />
+                  {/* Not required */}
                   <h4 className="text-base font-semibold mb-1 mt-3">
-                    Postal Code <span className="text-primary">*</span>
+                    Postal Code 
                   </h4>
                   <input
-                    required
                     className="border rounded-md w-full "
                     name=""
                     value={orderDeliveryAddress.postal_code}
@@ -522,11 +527,10 @@ export const Checkout = () => {
                     }
                     placeholder="Postal Code"
                   />
-                  <h4 className="text-base font-semibold mb-1 mt-3">
-                    State <span className="text-primary">*</span>
+                  {/* <h4 className="text-base font-semibold mb-1 mt-3">
+                    State 
                   </h4>
                   <input
-                    required
                     className="border rounded-md w-full "
                     name=""
                     value={orderDeliveryAddress.state}
@@ -534,7 +538,7 @@ export const Checkout = () => {
                       updateOrderDeliveryAddress({ state: e.target.value })
                     }
                     placeholder="State"
-                  />
+                  /> */}
                   {/* <h4 className="text-base font-semibold mb-1 mt-3">
                       Longitude <span className="text-primary">*</span>
                     </h4>
@@ -586,7 +590,7 @@ export const Checkout = () => {
                     placeholder="Type Query..."
                   ></textarea>
                 </div>
-                <div className="border-b border-primary border-dashed pb-5 mb-4">
+                {/* <div className="border-b border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
                     Delivery Notes <span className="text-primary">*</span>
                   </h4>
@@ -602,7 +606,7 @@ export const Checkout = () => {
                     }}
                     placeholder="Delivery Notes "
                   ></textarea>
-                </div>
+                </div> */}
                 <div className="border-b border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
                     Delivery time <span className="text-primary">*</span>
@@ -623,7 +627,7 @@ export const Checkout = () => {
                 <div className="border-b border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
                     Promo code or Gift card{" "}
-                    <span className="text-primary">*</span>
+                    {/* <span className="text-primary">*</span> */}
                   </h4>
                   <div className="relative">
                     <input
