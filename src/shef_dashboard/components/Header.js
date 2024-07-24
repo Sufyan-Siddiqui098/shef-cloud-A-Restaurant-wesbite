@@ -55,6 +55,9 @@ export const Header = () => {
                                     <li className='lg:inline-block shefD_nav mr-5'>
                                         <NavLink to="/shef/my-menu" className="text-lg font-semibold !text-secondary hover:!text-primary">My Menu</NavLink>
                                     </li>
+                                    <li className='lg:inline-block shefD_nav mr-5'>
+                                        <NavLink to="/shef/order" className="text-lg font-semibold !text-secondary hover:!text-primary">Orders</NavLink>
+                                    </li>
                                     <li className='lg:inline-block shefD_nav mr-5 relative'>
                                         <NavLink onClick={toggleBox} className="text-lg font-semibold !text-secondary hover:!text-primary flex items-center gap-x-3 ">
                                             <span>Reports</span>
@@ -73,9 +76,9 @@ export const Header = () => {
                                         {/* Open Menu Box */}
                                         {isSubMenuVisible && (
                                             <ul className='absolute left-0 top-9 bg-white w-[200px] p-3 rounded-md border border-borderClr'>
-                                                <li className='block border-b border-borderClr mb-2 pb-2'>
+                                                {/* <li className='block border-b border-borderClr mb-2 pb-2'>
                                                     <NavLink to="/shef/order" className="text-lg font-semibold !text-secondary hover:!text-primary">Order </NavLink>
-                                                </li>
+                                                </li> */}
                                                 <li className='block border-b border-borderClr mb-2 pb-2'>
                                                     <NavLink to="/shef/sales-statment" className="text-lg font-semibold !text-secondary hover:!text-primary">Sales Statement </NavLink>
                                                 </li>
