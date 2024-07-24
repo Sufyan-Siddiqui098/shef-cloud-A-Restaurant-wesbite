@@ -503,9 +503,9 @@ export const CheckoutAll = () => {
                     }
                     placeholder="City"
                   />
-                  <h4 className="text-base font-semibold mb-1 mt-3">
+                  {/* ---- UNNECESSARY ----  */}
+                  {/* <h4 className="text-base font-semibold mb-1 mt-3">
                     Postal Code
-                    {/* <span className="text-primary">*</span> */}
                   </h4>
                   <input
                     className="border rounded-md w-full "
@@ -517,7 +517,7 @@ export const CheckoutAll = () => {
                       })
                     }
                     placeholder="Postal Code"
-                  />
+                  /> */}
                   {/* <h4 className="text-base font-semibold mb-1 mt-3">
                     State 
                   </h4>

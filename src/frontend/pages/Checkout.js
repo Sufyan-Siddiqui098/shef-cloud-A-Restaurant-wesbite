@@ -513,7 +513,7 @@ export const Checkout = () => {
                     placeholder="City"
                   />
                   {/* Not required */}
-                  <h4 className="text-base font-semibold mb-1 mt-3">
+                  {/* <h4 className="text-base font-semibold mb-1 mt-3">
                     Postal Code 
                   </h4>
                   <input
@@ -526,7 +526,7 @@ export const Checkout = () => {
                       })
                     }
                     placeholder="Postal Code"
-                  />
+                  /> */}
                   {/* <h4 className="text-base font-semibold mb-1 mt-3">
                     State 
                   </h4>
