@@ -55,7 +55,7 @@ const ShefCouponForm = ({ isOpen, onClose, discountWithMenus }) => {
       const payload = {
         menus: menuIds,
         is_auto_apply: 1, // Frontend will always have this as 1 
-        max_user_use: e.target.max_user_use.value,
+        // max_user_use: e.target.max_user_use.value,
         discount_type: discountType,
         discount: e.target.discount.value,
         min_order: e.target.min_order.value,
@@ -70,7 +70,7 @@ const ShefCouponForm = ({ isOpen, onClose, discountWithMenus }) => {
       const updatedDiscountWithMenus = {
         ...discountWithMenus,
         menus: menuIds,
-        max_user_use: e.target.max_user_use.value,
+        // max_user_use: e.target.max_user_use.value,
         discount_type: discountType,
         discount: e.target.discount.value,
         min_order: e.target.min_order.value,
