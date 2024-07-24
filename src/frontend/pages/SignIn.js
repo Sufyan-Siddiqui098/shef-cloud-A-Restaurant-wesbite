@@ -129,7 +129,7 @@ const SignIn = () => {
                     required
                     className="mb-3" 
                     type="email" 
-                    placeholder="Email" 
+                    placeholder="john@example.com" 
                   />
                   <input
                     value={credentials.password}

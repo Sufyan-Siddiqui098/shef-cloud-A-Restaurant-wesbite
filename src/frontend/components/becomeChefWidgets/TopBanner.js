@@ -17,8 +17,53 @@ const TopBanner = () => {
     is_chef: 1,
   });
 
+  const [error, setError] = useState("");
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    // setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === "phone") {
+      // Validate the phone number length (exactly 13 characters)
+      if (value.length > 13) {
+        setError("Phone number must be exactly 13 characters long.");
+        setTimeout(()=>{
+          setError('')
+        }, [1500])
+        return;
+      }
+      
+      // Validate the phone number format
+      const isValidPhone = /^[+]?[\d]*$/.test(value);
+      if (!isValidPhone) {
+        setError(
+          "Phone number can only contain numbers and must start with +."
+        );
+        return;
+      }
+
+      if (
+        (value[0] && value[0] !== "+") ||
+        (value[1] && value[1] !== "9") ||
+        (value[2] && value[2] !== "2")
+      ) {
+        setError("Phone number must start with +92 ", value[1]);
+        return;
+      }
+
+      // Clear error if the phone number is valid
+      setError("");
+
+      // Set the formatted phone number
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   // image handling
@@ -48,10 +93,10 @@ const TopBanner = () => {
   };
   const handleCoverChange = (e) => {
     const file = e.target.files[0];
-    if(file){
-      setFormData((prev) => ({...prev, cover_pic: file}))
+    if (file) {
+      setFormData((prev) => ({ ...prev, cover_pic: file }));
     }
-  }
+  };
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -66,7 +111,7 @@ const TopBanner = () => {
         toast.error("Profile is required");
         return;
       }
-      if(!formData.cover_pic){
+      if (!formData.cover_pic) {
         coverImageRef.current.focus();
         toast.error("Cover is required");
         return;
@@ -180,7 +225,7 @@ const TopBanner = () => {
                         type="email"
                         name="email"
                         className=""
-                        placeholder="Email"
+                        placeholder="john@example.com"
                       />
                     </div>
 
@@ -214,8 +259,35 @@ const TopBanner = () => {
                         type="text"
                         name="phone"
                         className=""
-                        placeholder="Mobile Number"
+                        placeholder="+923155541711"
                       />
+                      {error && (
+                        <div className="bg-[#ff1c1c31] mt-1 text-red-200 py-1 px-1 text-[12px] font-semibold ">
+                          {error} {/* Close button */}
+                          {/* <button
+                            type="button"
+                            class="ms-auto -mx-1.5 -my-1.5  rounded-lg p-1.5 hover:text-primaryDark inline-flex items-center justify-center h-6 w-6 "
+                            onClick={() => setError("")}
+                          >
+                            <span class="sr-only">Close</span>
+                            <svg
+                              class="w-3 h-3"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 14 14"
+                            >
+                              <path
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                              />
+                            </svg>
+                          </button>{" "} */}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex mt-3 gap-1">
@@ -245,7 +317,7 @@ const TopBanner = () => {
                     </div>
                   </div>
                   <div className="my-2">
-                    <button className="grid-row-s rounded-md py-2 px-8 text-base font-semibold whitespace-nowrap bg-primary text-white hover:text-green-400 uppercase tracking-wider">
+                    <button disabled={error} className="grid-row-s rounded-md py-2 px-8 text-base font-semibold whitespace-nowrap bg-primary text-white hover:text-green-400 uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed">
                       Submit
                     </button>
                   </div>
