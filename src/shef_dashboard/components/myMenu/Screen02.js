@@ -44,7 +44,7 @@ const DescScreen = ({
                               
                             placeholder="Description of Dish..."
                         />
-                        <p className='text-headGray'>{description.length} / 400</p>
+                        <p className='text-headGray'>{description?.length} / 400</p>
                     </div>
                     <div className='rounded-lg bg-grayBg mt-4 p-4'>
                         <div className='flex items-center gap-2'>

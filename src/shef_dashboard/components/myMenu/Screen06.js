@@ -22,10 +22,12 @@ const IngredientsScreen = ({updateFields, logo}) => {
     useEffect(()=> {
         // if logo is url
         if(logo && typeof logo ==='string'){
+            // console.log("is string")
             setSelectedImage(logo)
         } 
         // if logo is file
-        else if(logo) {
+        else if(logo  && logo instanceof File) {
+            // console.log("is file ")
             const reader = new FileReader();
             reader.onload = () => {
                 // Set the selected image in state
