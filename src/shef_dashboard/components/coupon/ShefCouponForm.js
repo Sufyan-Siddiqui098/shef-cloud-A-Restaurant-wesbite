@@ -4,7 +4,7 @@ import Modal from "react-modal";
 import { handleCreateDiscount, handleGetAllDishes, handleUpdateDiscount } from "../../../services/shef";
 import { useSelector } from "react-redux";
 
-const ShefCouponForm = ({ isOpen, onClose, discountWithMenus }) => {
+const ShefCouponForm = ({ isOpen, onClose, discountWithMenus, fetchDiscount }) => {
   const [isPending, setIsPending] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [discountType, setDiscountType] = useState('');
@@ -86,6 +86,8 @@ const ShefCouponForm = ({ isOpen, onClose, discountWithMenus }) => {
       setDiscountType('');
       e.target.reset(); 
       onClose();
+      // fetch discount at ShefCoupon
+      fetchDiscount();
     } catch (error) {
       console.error("Error submitting form:", error.message);
     } finally {

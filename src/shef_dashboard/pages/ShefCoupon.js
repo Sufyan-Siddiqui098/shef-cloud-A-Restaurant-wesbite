@@ -20,18 +20,24 @@ const ShefCoupon = () => {
     setIsEditModalOpen(false);
   };
 
+  // when coupon form submit
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const onCouponSubmit = () => {
+    setFormSubmitted((pre) => !pre);
+  }
   //fetch all discounts
-  const fetchDiscount = async () => {
-    try {
-      const discountsArray = await handleGetAllDiscount(authToken);
-      setDiscounts(discountsArray.original);
-    } catch (error) {
-      console.error("Error fetching discounts", error.message);
-    }
-  };
   useEffect(() => {
+    const fetchDiscount = async () => {
+      try {
+        const discountsArray = await handleGetAllDiscount(authToken);
+        setDiscounts(discountsArray.original);
+      } catch (error) {
+        console.error("Error fetching discounts", error.message);
+      }
+    };
     fetchDiscount();
-  }, [authToken]);
+    // console.log("use Effect is running for fetchin discount")
+  }, [authToken, formSubmitted]);
 
   //handle edit
   const openEditModal = async (id) => {
@@ -343,9 +349,9 @@ const ShefCoupon = () => {
         </div>
       )}
       {/* editing coupon form */}
-      {isEditModalOpen && discountWithMenus &&<ShefCouponForm isOpen={isEditModalOpen} onClose={closeEditCouponModal} discountWithMenus={discountWithMenus}/>}
+      {isEditModalOpen && discountWithMenus &&<ShefCouponForm isOpen={isEditModalOpen} onClose={closeEditCouponModal} discountWithMenus={discountWithMenus} fetchDiscount={onCouponSubmit} />}
       {/* creating coupon form */}
-      {isModalOpen && <ShefCouponForm isOpen={isModalOpen} onClose={closeCouponModal} editParameters={null}/>}
+      {isModalOpen && <ShefCouponForm isOpen={isModalOpen} onClose={closeCouponModal} editParameters={null} fetchDiscount={onCouponSubmit} />}
     </>
   );
 };
