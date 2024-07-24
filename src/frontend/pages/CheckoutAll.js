@@ -131,15 +131,14 @@ export const CheckoutAll = () => {
     const chefSummaryTip =
       orderSummaryForUser.chef_earning_price * (tip_percent / 100);
     setOrderSummaryForUser((prev) => {
-      return {...prev, shefTip: chefSummaryTip}
-    })
+      return { ...prev, shefTip: chefSummaryTip };
+    });
     // console.log("Tip percentage ", chefSummaryTip);
 
-    // removed code 
+    // removed code
     //Calculate and update tip_price
     // calculateTip(percent);
   };
-
 
   // longitude & latitude
   useEffect(() => {
@@ -178,6 +177,12 @@ export const CheckoutAll = () => {
       }));
     }
 
+    // Fetch city from localStorage
+    const city = JSON.parse(localStorage.getItem("region"));
+    // Update city
+    updateOrderDeliveryAddress({
+      city: city?.name,
+    });
     // eslint-disable-next-line
   }, []);
 
@@ -275,10 +280,10 @@ export const CheckoutAll = () => {
       const platform_price = menu.platform_price || 0;
 
       // Calculate chef_earning_fee for each item
-      chefEarningSum += chef_earning_fee * quantity
+      chefEarningSum += chef_earning_fee * quantity;
       // Calculate sub_total = chef_earning_fee * quantity;
       sub_total += chef_earning_fee * quantity + platform_price * quantity;
-      // Calculate DeliveryPrice 
+      // Calculate DeliveryPrice
       deliverPriceSum += delivery_price * quantity;
 
       // platformPriceSum += platform_price * quantity;
@@ -327,10 +332,9 @@ export const CheckoutAll = () => {
     try {
       const response = await handleCreateOrder(authToken, payload);
       console.log("checkout all response ", response);
-      toast.success(
-        `Order of Chef ${chef?.first_name} is confirmed`,
-        { theme: "colored" }
-      );
+      toast.success(`Order of Chef ${chef?.first_name} is confirmed`, {
+        theme: "colored",
+      });
       // remove that chef from redux
       dispatch(onOrderSubmit({ chefId: chef.id }));
       // update user in redux with last_order_address
@@ -344,7 +348,9 @@ export const CheckoutAll = () => {
       dispatch(updateUser(updatedUserInfo));
     } catch (error) {
       console.error("Order creation failed:", error);
-      toast.error(error.message || "Order creation failed", { theme: "colored" });
+      toast.error(error.message || "Order creation failed", {
+        theme: "colored",
+      });
       throw error;
     }
   };
@@ -364,7 +370,6 @@ export const CheckoutAll = () => {
       setIsPending(false);
     }
   };
-
 
   return (
     <>
@@ -499,10 +504,10 @@ export const CheckoutAll = () => {
                     placeholder="City"
                   />
                   <h4 className="text-base font-semibold mb-1 mt-3">
-                    Postal Code <span className="text-primary">*</span>
+                    Postal Code
+                    {/* <span className="text-primary">*</span> */}
                   </h4>
                   <input
-                    required
                     className="border rounded-md w-full "
                     name=""
                     value={orderDeliveryAddress.postal_code}
@@ -513,11 +518,10 @@ export const CheckoutAll = () => {
                     }
                     placeholder="Postal Code"
                   />
-                  <h4 className="text-base font-semibold mb-1 mt-3">
-                    State <span className="text-primary">*</span>
+                  {/* <h4 className="text-base font-semibold mb-1 mt-3">
+                    State 
                   </h4>
                   <input
-                    required
                     className="border rounded-md w-full "
                     name=""
                     value={orderDeliveryAddress.state}
@@ -525,7 +529,7 @@ export const CheckoutAll = () => {
                       updateOrderDeliveryAddress({ state: e.target.value })
                     }
                     placeholder="State"
-                  />
+                  /> */}
                 </div>
                 <div className="border-b border-t pt-5 border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
@@ -543,7 +547,7 @@ export const CheckoutAll = () => {
                     placeholder="Type Query..."
                   ></textarea>
                 </div>
-                <div className="border-b border-primary border-dashed pb-5 mb-4">
+                {/* <div className="border-b border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
                     Delivery Notes <span className="text-primary">*</span>
                   </h4>
@@ -559,7 +563,7 @@ export const CheckoutAll = () => {
                     }}
                     placeholder="Delivery Notes "
                   ></textarea>
-                </div>
+                </div> */}
                 <div className="border-b border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
                     Delivery time <span className="text-primary">*</span>
@@ -576,19 +580,23 @@ export const CheckoutAll = () => {
                     placeholder=""
                   />
                 </div>
-                {/* ---- PROMO CODE */}
+                {/* ------ Promo Code ------ */}
                 {/* <div className="border-b border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
                     Promo code or Gift card{" "}
-                    <span className="text-primary">*</span>
                   </h4>
                   <div className="relative">
                     <input
                       className="border rounded-md w-full"
                       name=""
+                      value={promoCode.code}
+                      onChange={(e) => setPromoCode((prev) => ({
+                        ...prev, 
+                        code: e.target.value
+                      }))}
                       placeholder="Promo Code"
                     />
-                    <button className="text-[10px] font-semobold bg-primary px-2 py-1 text-white rounded-md absolute right-2 top-[50%] translate-y-[-50%]">
+                    <button type="button" onClick={handlePromoCodeSubmit} className="text-[10px] font-semobold bg-primary px-2 py-1 text-white rounded-md absolute right-2 top-[50%] translate-y-[-50%]">
                       Submit
                     </button>
                   </div>
