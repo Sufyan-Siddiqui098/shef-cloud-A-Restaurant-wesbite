@@ -75,9 +75,7 @@ export const ProfileForm = () => {
     (async () => {
       const response = await handleShowProfile(authToken);
       // console.log("show profile data ", response);
-      //Object.entries - creates array from object && Object.entries - create an object from array
-      // const filteredData = Object.fromEntries(Object.entries(response).filter(([_, v]) => v != null));
-      // console.log("filetered", filteredData)
+    
       if (response) {
         localStorage.setItem("user", JSON.stringify(response)); //update user in local-storage
         dispatch(updateUser(response));
@@ -341,7 +339,7 @@ export const ProfileForm = () => {
               </h4>
               <input
                 type="text"
-                placeholder="Enter Mobile Number"
+                placeholder="+92xxxxxxxxxx"
                 id=""
                 name="phone"
                 onChange={handleProfileDataChange}

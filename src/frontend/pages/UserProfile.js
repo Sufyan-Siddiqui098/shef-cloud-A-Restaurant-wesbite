@@ -199,7 +199,7 @@ export const UserProfile = () => {
                 </h4>
                 <input
                   type="text"
-                  placeholder="Enter Mobile Number"
+                  placeholder="+92xxxxxxxxxx"
                   id=""
                   name="phone"
                   onChange={handleProfileDataChange}
