@@ -16,47 +16,69 @@ const TopBanner = () => {
     cover_pic: "",
     is_chef: 1,
   });
+  // For user to see formatted phone number 
+  const [formattedPhone, setFormattedPhone] = useState("")
 
   const [error, setError] = useState("");
+
   const handleChange = (e) => {
-    // setFormData({ ...formData, [e.target.name]: e.target.value });
     const { name, value } = e.target;
 
     if (name === "phone") {
       // Validate the phone number length (exactly 13 characters)
-      if (value.length > 13) {
+      // console.log("value length ", value.length, formData.phone.length);
+      if (value.length > 16 ) {
         setError("Phone number must be exactly 13 characters long.");
-        setTimeout(()=>{
-          setError('')
-        }, [1500])
+        setTimeout(() => {
+          setError("");
+        }, [1500]);
         return;
       }
-      
+
       // Validate the phone number format
-      const isValidPhone = /^[+]?[\d]*$/.test(value);
+      const isValidPhone = /^\(?\+\d*\)?\s?\d*/.test(value);
       if (!isValidPhone) {
         setError(
-          "Phone number can only contain numbers and must start with +."
+          "Phone number can only contain numbers and must start with +92."
         );
         return;
       }
 
       if (
-        (value[0] && value[0] !== "+") ||
-        (value[1] && value[1] !== "9") ||
-        (value[2] && value[2] !== "2")
+        value.length < 3 &&
+        ((value[0] && value[0] !== "+") ||
+          (value[1] && value[1] !== "9") ||
+          (value[2] && value[2] !== "2"))
       ) {
         setError("Phone number must start with +92 ", value[1]);
         return;
+      } else if (
+        (formData.phone[0] && formData.phone[0] !== "+") ||
+        (formData.phone[1] && formData.phone[1] !== "9") ||
+        (formData.phone[2] && formData.phone[2] !== "2")
+      ) {
+        setError("Phone number must start with +92 ", value[1]);
+        return;
+      }
+      // format
+      let formattedNumber = value;
+      if (value.length === 3) {
+        formattedNumber = `(+92) ${value.slice(3)}`;
+      } else if(value.length===5 && value[0]==="(") {
+        formattedNumber = `(+92) ${value.slice(5)}`
       }
 
       // Clear error if the phone number is valid
       setError("");
 
       // Set the formatted phone number
+      setFormattedPhone(formattedNumber);
+      const onlyNumbers = formattedNumber.replace(/[^+\d]/g, '');
+      // console.log("only number in top banner ", onlyNumbers)
+      // for payload
       setFormData({
         ...formData,
-        [name]: value,
+        [name]: onlyNumbers,
       });
     } else {
       setFormData({
@@ -65,6 +87,54 @@ const TopBanner = () => {
       });
     }
   };
+
+  // const handleChange = (e) => {
+  //   // setFormData({ ...formData, [e.target.name]: e.target.value });
+  //   const { name, value } = e.target;
+
+  //   if (name === "phone") {
+  //     // Validate the phone number length (exactly 13 characters)
+  //     if (value.length > 13) {
+  //       setError("Phone number must be exactly 13 characters long.");
+  //       setTimeout(()=>{
+  //         setError('')
+  //       }, [1500])
+  //       return;
+  //     }
+      
+  //     // Validate the phone number format
+  //     const isValidPhone = /^[+]?[\d]*$/.test(value);
+  //     if (!isValidPhone) {
+  //       setError(
+  //         "Phone number can only contain numbers and must start with +."
+  //       );
+  //       return;
+  //     }
+
+  //     if (
+  //       (value[0] && value[0] !== "+") ||
+  //       (value[1] && value[1] !== "9") ||
+  //       (value[2] && value[2] !== "2")
+  //     ) {
+  //       setError("Phone number must start with +92 ", value[1]);
+  //       return;
+  //     }
+
+  //     // Clear error if the phone number is valid
+  //     setError("");
+
+  //     // Set the formatted phone number
+  //     setFormData({
+  //       ...formData,
+  //       [name]: value,
+  //     });
+  //   } else {
+  //     setFormData({
+  //       ...formData,
+  //       [name]: value,
+  //     });
+  //   }
+  // };
 
   // image handling
   const fileInputRef = useRef(null);
@@ -116,7 +186,8 @@ const TopBanner = () => {
         toast.error("Cover is required");
         return;
       }
-      const response = await handleChefSignUp(formData);
+      
+      await handleChefSignUp(formData);
       // console.log("reponse ", response)
       if (authToken) {
         dispatch(signOutUser());
@@ -253,13 +324,13 @@ const TopBanner = () => {
                     </div> */}
                     <div className="form-group">
                       <input
-                        value={formData.phone}
+                        value={formattedPhone}
                         onChange={handleChange}
                         required
                         type="text"
                         name="phone"
                         className=""
-                        placeholder="+923155541711"
+                        placeholder="(+92) xxxxxxxxxx"
                       />
                       {error && (
                         <div className="bg-[#ff1c1c31] mt-1 text-red-200 py-1 px-1 text-[12px] font-semibold ">

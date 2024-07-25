@@ -13,52 +13,76 @@ const SignUp = () => {
     first_name: "",
     last_name: "",
   });
+
+  // For user to see formatted phone number 
+  const [formattedPhone, setFormattedPhone]= useState('')
   const [isPending, setIsPending] = useState(false);
 
   const { userInfo } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
-  // Input field - OnChnage
-  // Input field - OnChnage
+  // phone validation error
   const [error, setError] = useState("");
+  
+  // Input field - OnChnage
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "phone") {
       // Validate the phone number length (exactly 13 characters)
-      if (value.length > 13) {
+      // console.log("value length ", value.length, credentials.phone.length);
+      if (value.length > 16 ) {
         setError("Phone number must be exactly 13 characters long.");
         setTimeout(() => {
           setError("");
-        }, [1800]);
+        }, [1500]);
         return;
       }
 
       // Validate the phone number format
-      const isValidPhone = /^[+]?[\d]*$/.test(value);
+      const isValidPhone = /^\(?\+\d*\)?\s?\d*/.test(value);
       if (!isValidPhone) {
         setError(
-          "Phone number can only contain numbers and must start with +."
+          "Phone number can only contain numbers and must start with +92."
         );
         return;
       }
 
       if (
-        (value[0] && value[0] !== "+") ||
-        (value[1] && value[1] !== "9") ||
-        (value[2] && value[2] !== "2")
+        value.length < 3 &&
+        ((value[0] && value[0] !== "+") ||
+          (value[1] && value[1] !== "9") ||
+          (value[2] && value[2] !== "2"))
       ) {
         setError("Phone number must start with +92 ", value[1]);
         return;
+      } else if (
+        (credentials.phone[0] && credentials.phone[0] !== "+") ||
+        (credentials.phone[1] && credentials.phone[1] !== "9") ||
+        (credentials.phone[2] && credentials.phone[2] !== "2")
+      ) {
+        setError("Phone number must start with +92 ", value[1]);
+        return;
+      }
+      // format
+      let formattedNumber = value;
+      if (value.length === 3) {
+        formattedNumber = `(+92) ${value.slice(3)}`;
+      } else if(value.length===5 && value[0]==="(") {
+        formattedNumber = `(+92) ${value.slice(5)}`
       }
 
       // Clear error if the phone number is valid
       setError("");
 
       // Set the formatted phone number
+      setFormattedPhone(formattedNumber);
+      const onlyNumbers = formattedNumber.replace(/[^+\d]/g, '');
+      // console.log("only number ", onlyNumbers)
+      // for payload
       setCredentials({
         ...credentials,
-        [name]: value,
+        [name]: onlyNumbers,
       });
     } else {
       setCredentials({
@@ -67,11 +91,7 @@ const SignUp = () => {
       });
     }
   };
-  console.log("register creds ", credentials);
-  // const handleChange = (e) =>{
-  //     setCredentials({...credentials, [e.target.name]: e.target.value});
-  // }
-
+  
   // Form submit
   const handleSubmit = async (e) => {
     try {
@@ -138,11 +158,11 @@ const SignUp = () => {
 
                         <input
                         className=""
-                        value={credentials.phone}
+                        value={formattedPhone}
                         onChange={handleChange}
                         name="phone"
                         type="text"
-                        placeholder="+923155541711"
+                        placeholder="(+92) xxxxxxxxxx"
                         required
                         />
                         {error && (

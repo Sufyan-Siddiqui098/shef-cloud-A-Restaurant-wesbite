@@ -10,6 +10,7 @@ const HeroBanner = () => {
     first_name: "",
     last_name: "",
   });
+  const [formattedPhone, setFormattedPhone] = useState("");
 
   const navigate = useNavigate();
 
@@ -20,39 +21,59 @@ const HeroBanner = () => {
 
     if (name === "phone") {
       // Validate the phone number length (exactly 13 characters)
-      if (value.length > 13) {
+      // console.log("value length ", value.length, credentials.phone.length);
+      if (value.length > 16 ) {
         setError("Phone number must be exactly 13 characters long.");
-        setTimeout(()=>{
-            setError('')
-          }, [1500])
+        setTimeout(() => {
+          setError("");
+        }, [1500]);
         return;
       }
-      
+
       // Validate the phone number format
-      const isValidPhone = /^[+]?[\d]*$/.test(value);
+      const isValidPhone = /^\(?\+\d*\)?\s?\d*/.test(value);
       if (!isValidPhone) {
         setError(
-          "Phone number can only contain numbers and must start with +."
+          "Phone number can only contain numbers and must start with +92."
         );
         return;
       }
 
       if (
-        (value[0] && value[0] !== "+") ||
-        (value[1] && value[1] !== "9") ||
-        (value[2] && value[2] !== "2")
+        value.length < 3 &&
+        ((value[0] && value[0] !== "+") ||
+          (value[1] && value[1] !== "9") ||
+          (value[2] && value[2] !== "2"))
       ) {
         setError("Phone number must start with +92 ", value[1]);
         return;
+      } else if (
+        (credentials.phone[0] && credentials.phone[0] !== "+") ||
+        (credentials.phone[1] && credentials.phone[1] !== "9") ||
+        (credentials.phone[2] && credentials.phone[2] !== "2")
+      ) {
+        setError("Phone number must start with +92 ", value[1]);
+        return;
+      }
+      // format
+      let formattedNumber = value;
+      if (value.length === 3) {
+        formattedNumber = `(+92) ${value.slice(3)}`;
+      } else if(value.length===5 && value[0]==="(") {
+        formattedNumber = `(+92) ${value.slice(5)}`
       }
 
       // Clear error if the phone number is valid
       setError("");
 
       // Set the formatted phone number
+      setFormattedPhone(formattedNumber);
+      const onlyNumbers = formattedNumber.replace(/[^+\d]/g, '');
+      // console.log("only number ", onlyNumbers)
+      // for payload
       setCredentials({
         ...credentials,
-        [name]: value,
+        [name]: onlyNumbers,
       });
     } else {
       setCredentials({
@@ -61,10 +82,7 @@ const HeroBanner = () => {
       });
     }
   };
-//   console.log("credentials ", credentials)
-//   const handleChange = (e) => {
-//     setCredentials({ ...credentials, [e.target.name]: e.target.value });
-//   };
+
 
   // Form submit
   const handleSubmit = async (e) => {
@@ -126,17 +144,17 @@ const HeroBanner = () => {
                       <div className="form-group mb-4">
                         <input
                           onChange={handleChange}
-                          value={credentials.phone}
+                          value={formattedPhone}
                           type="text"
                           name="phone"
                           className=""
-                          placeholder="+923155541711"
+                          placeholder="(+92) xxxxxxxxxx"
                           required
                         />
                         {/* Error warning */}
                         {error && (
                           <div className="bg-[#ff1c1c31] mt-1 text-red-900 py-1 px-1 text-[12px] font-semibold">
-                            {error} 
+                            {error}
                           </div>
                         )}
                       </div>
@@ -152,7 +170,10 @@ const HeroBanner = () => {
                         />
                       </div>
                       <div className="form-group">
-                        <button disabled={error} className="rounded-md py-2 px-4 text-base font-semibold whitespace-nowrap bg-primary text-white hover:text-green-400 uppercase tracking-wider disabled:cursor-not-allowed disabled:opacity-50">
+                        <button
+                          disabled={error}
+                          className="rounded-md py-2 px-4 text-base font-semibold whitespace-nowrap bg-primary text-white hover:text-green-400 uppercase tracking-wider disabled:cursor-not-allowed disabled:opacity-50"
+                        >
                           Get Started
                         </button>
                       </div>
