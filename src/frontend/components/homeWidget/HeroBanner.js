@@ -31,7 +31,7 @@ const HeroBanner = () => {
       }
 
       // Validate the phone number format
-      const isValidPhone = /^\(?\+\d*\)?\s?\d*/.test(value);
+      const isValidPhone = /^\(?\+\d*\)?\s?\d*$/.test(value);
       if (!isValidPhone) {
         setError(
           "Phone number can only contain numbers and must start with +92."

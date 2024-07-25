@@ -26,7 +26,7 @@ const TopBanner = () => {
 
     if (name === "phone") {
       // Validate the phone number length (exactly 13 characters)
-      // console.log("value length ", value.length, formData.phone.length);
+      console.log("value length ", value.length, formData.phone.length);
       if (value.length > 16 ) {
         setError("Phone number must be exactly 13 characters long.");
         setTimeout(() => {
@@ -36,7 +36,7 @@ const TopBanner = () => {
       }
 
       // Validate the phone number format
-      const isValidPhone = /^\(?\+\d*\)?\s?\d*/.test(value);
+      const isValidPhone = /^\(?\+\d*\)?\s?\d*$/.test(value);
       if (!isValidPhone) {
         setError(
           "Phone number can only contain numbers and must start with +92."
