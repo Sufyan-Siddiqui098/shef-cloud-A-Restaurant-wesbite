@@ -28,7 +28,7 @@ const UserOrder = () => {
                         order_id: order.order_code,
                         dish_name: detail.name,
                         quantity: detail.quantity,
-                        spice_level: detail.user_menu.spice_level_id,//name is not available at this time
+                        spice_level: detail.user_menu.spice_level?.name,
                         portion_size: detail.user_menu.portion_size,
                         // serving_size: detail.user_menu.portion_type_id,//name is not available at this time  - removed
                     }));

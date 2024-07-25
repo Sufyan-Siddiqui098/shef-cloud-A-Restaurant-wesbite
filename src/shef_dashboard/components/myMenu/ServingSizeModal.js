@@ -289,14 +289,14 @@ const MenuModal = ({
                       </h3>
                       <h3 className="text-base mb-0 text-white">|</h3>
                       <h3 className="text-base font-semibold mb-0 text-white">
-                        Pkr 1,000
+                        Rs 1,000
                       </h3>
                     </div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-[12px] mb-0 text-white">
                         Earn{" "}
                         <span className="font-semibold text-primaryGreen">
-                          Pkr 2,000
+                          Rs 2,000
                         </span>{" "}
                         per sale
                       </h3>
