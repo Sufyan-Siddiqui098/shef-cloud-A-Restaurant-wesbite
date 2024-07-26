@@ -389,7 +389,10 @@ export const MyMenu = () => {
       // refetch all dishes
       const updateDishes = await handleGetAllDishes(authToken);
       setDishes(updateDishes);
-      closeStepFormModal();
+      // To close only when hit the last screen
+      if(currentStep === 4){
+        closeStepFormModal();
+      }
     } catch (error) {
       toast.error(error.message || "Something went wrong");
     } finally {
