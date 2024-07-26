@@ -385,6 +385,8 @@ export const MyMenu = () => {
         console.log("create menu is called ");
         const response = await handleCreateMenu(authToken, chefMenu);
         toast.success(response.message);
+        // to close after screen
+        closeStepFormModal();
       }
       // refetch all dishes
       const updateDishes = await handleGetAllDishes(authToken);
