@@ -149,7 +149,7 @@ export const Order = () => {
                                         // .filter(filteredOrder => filteredOrder.status === 'pending')
                                         .map(order =>
                                         order.order_details?.map(detail => (
-                                            <tr className='border-b'>
+                                            <tr className='border-b' key={detail.id}>
                                                 <td>
                                                     <p className='text-primaryGreen text-[14px] mb-0'>{order.order_code}</p>
                                                 </td>
