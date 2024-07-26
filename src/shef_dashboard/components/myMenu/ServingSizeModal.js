@@ -413,7 +413,7 @@ const MenuModal = ({
                   </p>
                 </div>
                 <div className="md:w-[20%] w-[45%] flex items-center justify-start border border-headGray rounded-lg px-2">
-                  <span className="text-lg font-semibold mr-1 w-[10%]">$</span>
+                  <span className="text-lg font-semibold mr-1 w-[10%]">Rs</span>
                   <input
                     required
                     className="text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]"
@@ -573,7 +573,7 @@ const MenuModal = ({
                   </p>
                 </div>
                 <div className="md:w-[20%] w-[45%] flex items-center justify-start border border-headGray rounded-lg px-2">
-                  <span className="text-lg font-semibold mr-1 w-[10%]">Pkr </span>
+                  <span className="text-lg font-semibold mr-1 w-[10%]">Rs</span>
                   <input
                     required
                     className="text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]"
@@ -706,7 +706,7 @@ const MenuModal = ({
                   </p>
                 </div>
                 <div className="md:w-[20%] w-[45%] flex items-center justify-start border border-headGray rounded-lg px-2">
-                  <span className="text-lg font-semibold mr-1 w-[10%]">Pkr </span>
+                  <span className="text-lg font-semibold mr-1 w-[10%]">Rs</span>
                   <input
                     required
                     className="text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]"
@@ -847,7 +847,7 @@ const MenuModal = ({
                       Separately,
                       <span className="text-[#30abaf] font-semibold">
                         {" "}
-                        Pkr 
+                        Pkr {" "} 
                         {(
                           (platformRate.delivery_percentage / 100) *
                           chef_earning_fee
