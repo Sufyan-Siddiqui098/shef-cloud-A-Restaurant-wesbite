@@ -70,6 +70,8 @@ export const DishDetailSingle = () => {
           }
         });
 
+        let chefFeeAfterDiscount;
+        let chefFeeBeforeDiscount;
         let discount;
         if (
           dishResponse.auto_applied_discounts &&
@@ -81,13 +83,25 @@ export const DishDetailSingle = () => {
             dishResponse.auto_applied_discounts[0].discount
           );
           if (discountType === "$") {
-            discount = dishResponse.chef_earning_fee - discountAmount;
+            // dicount of
+            discount = discountAmount;
+            // after discount
+            chefFeeAfterDiscount =
+              dishResponse.chef_earning_fee - discountAmount;
+            // chef before discount
+            chefFeeBeforeDiscount = dishResponse.chef_earning_fee;
           } else if (discountType === "%") {
-            discount =
-              dishResponse.chef_earning_fee -
-              dishResponse.chef_earning_fee * (discountAmount / 100);
+            discount = dishResponse.chef_earning_fee * (discountAmount / 100);
+            // chef fee after discount
+            chefFeeAfterDiscount = dishResponse.chef_earning_fee - discount;
+            // chef fee before discount
+            chefFeeBeforeDiscount = dishResponse.chef_earning_fee;
           }
-          dishResponse.chef_earning_fee = discount;
+
+          dishResponse.chef_earning_fee = chefFeeAfterDiscount;
+          dishResponse.chefFeeBeforeDiscount = chefFeeBeforeDiscount;
+          // discount in amount
+          dishResponse.discount = discount;
         }
         console.log("Chef discounted ", discount);
         console.log("response of single dish ", dishResponse);
@@ -208,12 +222,30 @@ export const DishDetailSingle = () => {
                     })}
 
                     {dish?.auto_applied_discounts?.length > 0 && (
-                      <span className="text-[14px] md:text-[18px] block -mt-1 text-green-700">
-                        {/* [ 20% off ] */}[{" "}
-                        {`${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `}
-                        <span className="text-[11px] md:text-[14px]">Off</span>{" "}
-                        ]
-                      </span>
+                      <>
+                        <del className="text-[14px] md:text-[18px] block -mt-1 text-red-400">
+                          {(
+                            dish.chefFeeBeforeDiscount +
+                            dish.platform_price +
+                            dish.delivery_price
+                          ).toLocaleString("en-PK", {
+                            style: "currency",
+                            currency: "PKR",
+                          })}
+                        </del>
+                        <span className="text-[14px] md:text-[18px] block -mt-2 text-green-700">
+                          {/* [ 20% off ] */}[{" "}
+                          {/* {`${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `} */}
+                          {dish?.discount?.toLocaleString("en-PK", {
+                            style: "currency",
+                            currency: "PKR",
+                          })}{" "}
+                          <span className="text-[11px] md:text-[14px]">
+                            Off
+                          </span>{" "}
+                          ]
+                        </span>
+                      </>
                     )}
                   </h2>
                 </div>
