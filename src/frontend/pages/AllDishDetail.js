@@ -189,8 +189,24 @@ export const DishDetail = () => {
                         {dish?.auto_applied_discounts?.length > 0 && (
                           <span className="block text-[13px] -mt-2 text-green-700">
                             [
-                            {` ${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `}
-                            <span className="text-[10px]">Off</span> ]
+                            {/* {` ${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `} */}
+                            {dish.auto_applied_discounts[0].discount_type ==="$"
+                              ? dish.auto_applied_discounts[0].discount.toLocaleString(
+                                  "en-PK",
+                                  {
+                                    style: "currency",
+                                    currency: "PKR",
+                                  }
+                                )
+                              : (
+                                  dish.chef_earning_fee *
+                                  (dish.auto_applied_discounts[0].discount /
+                                    100)
+                                ).toLocaleString("en-PK", {
+                                  style: "currency",
+                                  currency: "PKR",
+                                })}
+                            <span className="text-[10px]"> Off</span> ]
                           </span>
                         )}
                       </h4>
