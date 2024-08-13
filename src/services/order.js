@@ -67,6 +67,6 @@ export const handleOrderReviewAndRating = async (token, payload) => {
     });
     return data;
   } catch (error) {
-    throw new Error(error);
+    throw new Error(error?.response?.data?.message || error);
   }
 };
