@@ -130,7 +130,7 @@ export const Header = () => {
                                             </ul>
                                         )}
                                     </div>
-                                    <NavLink>
+                                    <NavLink to="/">
                                         <img src="/media/frontend/img/logo/line-logo.jpg" width='' className="img-fluid h-[30px]" alt="Logo" />
                                     </NavLink>
                                 </div>
