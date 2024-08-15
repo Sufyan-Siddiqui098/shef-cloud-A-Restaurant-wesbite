@@ -193,7 +193,7 @@ export const Order = () => {
                         ))
                       )}
                     {/* If no order fetched or no matched found while searching */}
-                    {orderDetails.length < 1 && !isFetching && (
+                    {orderDetails?.length < 1 && !isFetching && (
                       <tr>
                         <td>No Order Found</td>
                       </tr>
