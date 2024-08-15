@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavLink, useNavigate } from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -11,10 +11,47 @@ import { toast } from 'react-toastify';
 import { emptyCart, removeFromCart } from '../../store/slice/cart';
 import RegionDropdown from './RegionDropdown';
 import isValidURL from '../../ValidateUrl';
+import { handleGetAllDishesOfCity } from '../../services/get_without_auth';
 
 const Header = () => {
     const [isBoxVisible, setBoxVisible] = useState(false);
     const [isEmptyModalVisible, setEmptyModalVisible] = useState(false);
+    // ---- Search bar Start 
+    const [allDishes, setAllDishes] = useState([]);
+    const [isFetching, setIsFetching] = useState(false);
+    //Search bar
+    const [search, setSearch] = useState('');
+    // matched dishes
+    const [ matchedDish, setMatchedDish ] = useState([]);
+
+    // ----- Search Bar End
+
+    // Fetch dishes for search bar
+    useEffect(() => {
+      const city = JSON.parse(localStorage.getItem("region"));
+      const fetchAllDishes = async () => {
+        try {
+          setIsFetching(true);
+          const dishResponse = await handleGetAllDishesOfCity(city.id);
+          console.log("Dishes for search bar ", dishResponse);
+          setAllDishes(dishResponse);
+        } catch (error) {
+          console.error("Error while fetching dishes \n", error);
+        } finally {
+          setIsFetching(false);
+        }
+      };
+      console.log("useEffect for search bar dishes")
+
+      fetchAllDishes();
+    }, []);
+
+    // Match the dish with search
+    useEffect(() => {
+        const searchedDish = allDishes.filter((dish) => dish.name.toLowerCase().includes(search.toLowerCase()));
+        setMatchedDish(searchedDish)
+        // console.log("searched dishes ", searchedDish)
+    }, [search])
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -162,13 +199,32 @@ const Header = () => {
                                                 <img src="/media/frontend/img/logo/line-logo.jpg" width='' className="img-fluid" alt="Logo" />
                                             </NavLink>
                                         </div>
+                                        {/* Search Bar */}
                                         <div className="main-search mainNavCol lg:!block !hidden">
                                             <form className="main-search search-form full-width">
                                                 <div className="grid grid-cols-9">
                                                     <div className="lg:col-span-4 col-span-7">
                                                         <div className="search-box padding-10">
                                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="19" height="19" fill="rgba(50,50,50,1)"><path d="M11 2C15.968 2 20 6.032 20 11C20 15.968 15.968 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2ZM11 18C14.8675 18 18 14.8675 18 11C18 7.1325 14.8675 4 11 4C7.1325 4 4 7.1325 4 11C4 14.8675 7.1325 18 11 18ZM19.4853 18.0711L22.3137 20.8995L20.8995 22.3137L18.0711 19.4853L19.4853 18.0711Z"></path></svg>
-                                                            <input type="text" className="form-control" placeholder="Pizza, Burger, Chinese" />
+                                                            <input 
+                                                                type="text" 
+                                                                value={search} 
+                                                                onChange={(e)=> setSearch(e.target.value)} 
+                                                                className="form-control border border-red-500 relaive" 
+                                                                placeholder="Pizza, Burger, Chinese" 
+                                                            />
+
+                                                            <div className={search?.length<1 ? "hidden" : `absolute top-[100%] bor shadow-sm p-1 pl-2 rounded-b bg-white max-h-[200px] overflow-y-auto w-full`}>
+                                                                {/* Matched dishes */}
+                                                                {matchedDish?.map((matched) => (
+                                                                    <NavLink className="block py-2 border-b font-semibold" id={matched.id} to={`/dish-detail-single/${matched.id}`}>
+                                                                        {matched.name}
+                                                                    </NavLink>
+                                                                ))}
+
+                                                                {/* If no Match found */}
+                                                                {matchedDish?.length<1 && !isFetching&& <p className='text-headGray text-center mt-2 border-b py-2 text-sm'>No Dish Found</p>}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div className="lg:col-span-4 col-span-5 my-auto">
