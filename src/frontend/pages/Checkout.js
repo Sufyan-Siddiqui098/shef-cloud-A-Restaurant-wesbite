@@ -11,6 +11,7 @@ import {
 import isValidURL from "../../ValidateUrl";
 import { updateUser } from "../../store/slice/user";
 import Modal from "react-modal";
+import { handleGetDefaultSetting } from "../../services/default_setting";
 
 export const Checkout = () => {
   // User Info - redux store
@@ -83,6 +84,8 @@ export const Checkout = () => {
   );
   // Order States - End
 
+  const { authToken } = useSelector((state) => state.user);
+
   // Update Fields States - (Order, OrderDeliveryAddress, OrderDetail)
   const updateOrder = (field) => {
     setOrder((prev) => {
@@ -95,38 +98,45 @@ export const Checkout = () => {
     });
   };
 
-  // ---- Promo Code 
+  // ---- Promo Code
   const [promoCode, setPromoCode] = useState({
-    code: '', // promo code
-    order_total : 0, // Total of order,
-    menus : [], // array with menu.id (i.e. user_menu_id) & menu.quantity
-  })
+    code: "", // promo code
+    order_total: 0, // Total of order,
+    menus: [], // array with menu.id (i.e. user_menu_id) & menu.quantity
+  });
   // Promo code - Submit
-  const handlePromoCodeSubmit = async(e) => {
+  const handlePromoCodeSubmit = async (e) => {
     try {
-      console.log("Promo code payload ", promoCode)
+      console.log("Promo code payload ", promoCode);
       const discountResponse = await handleCheckDiscount(authToken, promoCode);
-      console.log("respons of promo code ", discountResponse)
-      // If no promo code is present 
-      if(discountResponse?.original?.error){
-        toast.error(discountResponse?.original?.error || "Something's wrong with Promo Code")
+      console.log("respons of promo code ", discountResponse);
+      // If no promo code is present
+      if (discountResponse?.original?.error) {
+        toast.error(
+          discountResponse?.original?.error ||
+            "Something's wrong with Promo Code"
+        );
       }
-     
+
       // If promo code is present  --- Set discount_price here
-      if(discountResponse?.original?.success){
-        toast.success(discountResponse?.original?.success || "Discount is applied" );
+      if (discountResponse?.original?.success) {
+        toast.success(
+          discountResponse?.original?.success || "Discount is applied"
+        );
         // discounted amount
-        const  { discounted_amount } = discountResponse.original;
-        // calculate discount on total amount 
+        const { discounted_amount } = discountResponse.original;
+        // calculate discount on total amount
         const discountedTotal = order.total_price - discounted_amount;
         // -- Update discount_price & total
-        updateOrder({ discount_price: discounted_amount , total_price:  discountedTotal})
+        updateOrder({
+          discount_price: discounted_amount,
+          total_price: discountedTotal,
+        });
       }
-      
     } catch (error) {
-      console.error("Error while getting promo code \n", error)
+      console.error("Error while getting promo code \n", error);
     }
-  }
+  };
 
   // Use effect to set the initial delivery address from the last order address
   useEffect(() => {
@@ -143,7 +153,7 @@ export const Checkout = () => {
         state: lastOrderAddress?.state || "",
       }));
     }
-  
+
     // eslint-disable-next-line
   }, []);
   // Calculate and update tip_price
@@ -154,7 +164,23 @@ export const Checkout = () => {
     updateOrder({ tip_price: tip_amount });
   };
 
-  
+  // Default Setting
+  const [defaultSetting, setDefaultSetting] = useState("");
+  useEffect(() => {
+    const fetchDefaultSetting = async () => {
+      try {
+        const default_setting_response = await handleGetDefaultSetting(
+          authToken
+        );
+        console.log("default setting response", default_setting_response);
+        setDefaultSetting(default_setting_response);
+      } catch (error) {
+        console.error("Error while fethcing default setting ");
+      }
+    };
+
+    fetchDefaultSetting();
+  }, [authToken]);
 
   // Chef id - from url parameter
   const { chefId } = useParams();
@@ -210,49 +236,69 @@ export const Checkout = () => {
     let deliverPriceSum = 0;
     let platformPriceSum = 0;
     let chefEarningSum = 0;
-  
+
     // Calculate the sub total, delivery price sum, and platform price sum
     cartItem.forEach((chef) => {
       if (chef.id === parseInt(chefId)) {
         chef.menu.forEach((menu) => {
           const chef_earning_fee = menu.chef_earning_fee || 0;
           const quantity = menu.quantity || 0;
-          const delivery_price = menu.delivery_price || 0;
-          const platform_price = menu.platform_price || 0;
-  
+          // const delivery_price = menu.delivery_price || 0;
+          // const platform_price = menu.platform_price || 0;
+
+          // ---- Delivery Price
+          const deliveryPercentageFee =
+            (defaultSetting.delivery_charge_percentage / 100) *
+            chef_earning_fee;
+
+          const delivery_price =
+            deliveryPercentageFee > defaultSetting.delivery_charge
+              ? deliveryPercentageFee
+              : defaultSetting.delivery_charge;
+
+          // ---- Platform Price
+          const platformPercentageFee =
+            (defaultSetting.platform_charge_percentage / 100) *
+            chef_earning_fee;
+
+          const platform_price =
+            platformPercentageFee > defaultSetting.platform_charge
+              ? platformPercentageFee
+              : defaultSetting.platform_charge;
+
           // Calculate chef_earning_fee for each item
           chefEarningSum += chef_earning_fee * quantity;
 
           // Calculate sub total for each item
-          sub_total += (chef_earning_fee * quantity) + (platform_price * quantity);
-  
+          sub_total += chef_earning_fee * quantity + platform_price * quantity;
+
           // Calculate delivery price sum for each item
           deliverPriceSum += delivery_price * quantity;
-  
-          // Calculate platform price sum for each item -- teax & fee 
+
+          // Calculate platform price sum for each item -- teax & fee
           // platformPriceSum += platform_price * quantity;
         });
       }
     });
-  
+
     // Fetch the city data from local storage
     const city = JSON.parse(localStorage.getItem("region"));
 
     // Update city
     updateOrderDeliveryAddress({
-      city: city.name
-    })
-  
+      city: city.name,
+    });
+
     // Calculate the total order price
     const total = sub_total + order.tip_price + deliverPriceSum;
     // const total = sub_total + order.tip_price + deliverPriceSum + platformPriceSum;
 
-    // --- Promo code payload 
+    // --- Promo code payload
     setPromoCode((prev) => ({
-      ...prev, 
+      ...prev,
       order_total: total,
-    }))
-  
+    }));
+
     // Update the order state with calculated values
     updateOrder({
       chef_id: parseInt(chefId),
@@ -260,11 +306,11 @@ export const Checkout = () => {
       sub_total: sub_total,
       chef_earning_price: chefEarningSum,
       delivery_price: deliverPriceSum,
-      delivery_percentage: ((deliverPriceSum / chefEarningSum) * 100),
+      delivery_percentage: (deliverPriceSum / chefEarningSum) * 100,
       service_fee: platformPriceSum,
-      total_price: total
+      total_price: total,
     });
-  
+
     // Temporary array to hold orderDetails
     const menuDetails = [];
     const promoCodeMenu = [];
@@ -272,53 +318,75 @@ export const Checkout = () => {
     cartItem.forEach((chef) => {
       if (chef.id === parseInt(chefId)) {
         chef.menu.forEach((menu) => {
+          // --- Delivery Price - Default Setting 
+          const deliveryPercentageFee =
+            (defaultSetting.delivery_charge_percentage / 100) *
+            menu.chef_earning_fee;
+
+          const delivery_price =
+            deliveryPercentageFee > defaultSetting.delivery_charge
+              ? deliveryPercentageFee
+              : defaultSetting.delivery_charge;
+
+          // ---- Platform Price - Default Setting 
+          const platformPercentageFee =
+            (defaultSetting.platform_charge_percentage / 100) *
+            menu.chef_earning_fee;
+
+          const platform_price =
+            platformPercentageFee > defaultSetting.platform_charge
+              ? platformPercentageFee
+              : defaultSetting.platform_charge;
+
           // ---- Menu Detail for create-order api
           menuDetails.push({
             name: menu.name,
             user_menu_id: menu.id,
             unit_price: menu.unit_price,
             quantity: menu.quantity,
-            platform_percentage:
-              (menu.platform_percentage
-                ? menu.platform_percentage
-                : (menu.platform_price / menu.chef_earning_fee) * 100) || 0,
-            platform_price: menu.platform_price,
-            delivery_percentage:
-              (menu.delivery_percentage
-                ? menu.delivery_percentage
-                : (menu.delivery_price / menu.chef_earning_fee) * 100) || 0,
-            delivery_price: menu.delivery_price,
+            // platform_percentage:(menu.platform_percentage
+            //     ? menu.platform_percentage
+            //     : (menu.platform_price / menu.chef_earning_fee) * 100) || 0,
+            // platform_price: menu.platform_price,
+            platform_percentage: (platform_price / menu.chef_earning_fee) * 100 || 0,
+            platform_price: platform_price,
+            // delivery_percentage:
+            //   (menu.delivery_percentage
+            //     ? menu.delivery_percentage
+            //     : (menu.delivery_price / menu.chef_earning_fee) * 100) || 0,
+            delivery_percentage: (delivery_price / menu.chef_earning_fee) * 100 || 0,
+            // delivery_price: menu.delivery_price,
+            delivery_price: delivery_price,
             chef_price: menu.chef_earning_fee,
           });
           // ---- For promo Code API
           promoCodeMenu.push({
             id: menu.id,
-            qty: menu.quantity
-          })
+            qty: menu.quantity,
+          });
         });
       }
     });
-  
+
     // Update the orderDetail state
     setOrderDetails(menuDetails);
-    // Promo Code 
+    // Promo Code
     setPromoCode((prev) => ({
-      ...prev, 
-      menus: promoCodeMenu
-    }))
+      ...prev,
+      menus: promoCodeMenu,
+    }));
     // console.log("PromoCode required data from menu ", promoCodeMenu)
 
     console.log("delivery data", orderDeliveryAddress);
     console.log("Order Detail ", menuDetails);
     console.log("Order  ", order);
-  
+
     // console.log("UseEffect for cart updation is running .. CartItem", cartItem);
     //eslint-disable-next-line
-  }, [cartItem, order.tip_price]);
-  
+  }, [cartItem, order.tip_price, defaultSetting]);
+
   // ---- On submit
   const [isPending, setIsPending] = useState(false);
-  const { authToken } = useSelector((state) => state.user);
 
   const navigate = useNavigate();
   //--- On Submit Function
@@ -634,13 +702,19 @@ export const Checkout = () => {
                       className="border rounded-md w-full"
                       name=""
                       value={promoCode.code}
-                      onChange={(e) => setPromoCode((prev) => ({
-                        ...prev, 
-                        code: e.target.value
-                      }))}
+                      onChange={(e) =>
+                        setPromoCode((prev) => ({
+                          ...prev,
+                          code: e.target.value,
+                        }))
+                      }
                       placeholder="Promo Code"
                     />
-                    <button type="button" onClick={handlePromoCodeSubmit} className="text-[10px] font-semobold bg-primary px-2 py-1 text-white rounded-md absolute right-2 top-[50%] translate-y-[-50%]">
+                    <button
+                      type="button"
+                      onClick={handlePromoCodeSubmit}
+                      className="text-[10px] font-semobold bg-primary px-2 py-1 text-white rounded-md absolute right-2 top-[50%] translate-y-[-50%]"
+                    >
                       Submit
                     </button>
                   </div>
@@ -933,12 +1007,15 @@ export const Checkout = () => {
                               </div>
                             </div>
                             <div
-                              onClick={() =>{
-                                dispatch(removeFromCart({chefIndex, menuIndex}))
-                                navigate("/cart" , {replace: true})
-                                toast.success(`${menu?.name} is removed from cart`)
-                              }
-                              }
+                              onClick={() => {
+                                dispatch(
+                                  removeFromCart({ chefIndex, menuIndex })
+                                );
+                                navigate("/cart", { replace: true });
+                                toast.success(
+                                  `${menu?.name} is removed from cart`
+                                );
+                              }}
                               className="cursor-pointer"
                             >
                               <svg
@@ -1030,15 +1107,17 @@ export const Checkout = () => {
                 </h4>
               </div>
               {/* Discount */}
-             {order?.discount_price>0 && <div className="flex justify-between gap-2 mb-1">
-                <h3 className="text-lg font-medium mb-0">Discount</h3>
-                <h4 className="text-lg font-medium mb-0">
-                  {order.discount_price.toLocaleString("en-PK", {
-                    style: "currency",
-                    currency: "PKR",
-                  })}
-                </h4>
-              </div>}
+              {order?.discount_price > 0 && (
+                <div className="flex justify-between gap-2 mb-1">
+                  <h3 className="text-lg font-medium mb-0">Discount</h3>
+                  <h4 className="text-lg font-medium mb-0">
+                    {order.discount_price.toLocaleString("en-PK", {
+                      style: "currency",
+                      currency: "PKR",
+                    })}
+                  </h4>
+                </div>
+              )}
               <div className="flex justify-between gap-2 mb-1 bg-primaryLight py-2 px-3 rounded-md">
                 <h3 className="text-lg font-bold mb-0">Total</h3>
                 {/* <h4 className='text-lg font-bold mb-0'>$61.06</h4> */}
