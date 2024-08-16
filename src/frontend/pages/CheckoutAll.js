@@ -415,15 +415,9 @@ export const CheckoutAll = () => {
           user_menu_id: menu.id,
           unit_price: menu.unit_price,
           quantity: menu.quantity,
-          platform_percentage:
-            (menu.platform_percentage
-              ? menu.platform_percentage
-              : (platform_price / menu.chef_earning_fee) * 100) || 0,
+          platform_percentage: (platform_price / menu.chef_earning_fee) * 100 || 0,
           platform_price: platform_price, // Updated with computed platform price
-          delivery_percentage:
-            (menu.delivery_percentage
-              ? menu.delivery_percentage
-              : (delivery_price / menu.chef_earning_fee) * 100) || 0,
+          delivery_percentage: (delivery_price / menu.chef_earning_fee) * 100 || 0,
           delivery_price: delivery_price, // Updated with computed delivery price
           chef_price: menu.chef_earning_fee,
         };
