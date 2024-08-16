@@ -46,12 +46,17 @@ const Header = () => {
       fetchAllDishes();
     }, []);
 
-    // Match the dish with search
+    // filtering with debouncing
     useEffect(() => {
-        const searchedDish = allDishes.filter((dish) => dish.name.toLowerCase().includes(search.toLowerCase()));
-        setMatchedDish(searchedDish)
-        // console.log("searched dishes ", searchedDish)
-    }, [search])
+        const handleSearch = setTimeout(() => {
+            const searchedDish = allDishes.filter((dish) =>
+                dish.name.toLowerCase().includes(search.trim().toLowerCase())
+            );
+            setMatchedDish(searchedDish);
+        }, 300); // 300ms debounce time, adjust as necessary
+    
+        return () => clearTimeout(handleSearch);
+    }, [search, allDishes]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -217,7 +222,7 @@ const Header = () => {
                                                             <div className={search?.length<1 ? "hidden" : `absolute top-[100%] bor shadow-sm p-1 pl-2 rounded-b bg-white max-h-[200px] overflow-y-auto w-full`}>
                                                                 {/* Matched dishes */}
                                                                 {matchedDish?.map((matched) => (
-                                                                    <NavLink className="block py-2 border-b font-semibold" id={matched.id} to={`/dish-detail-single/${matched.id}`}>
+                                                                    <NavLink className="block py-2 border-b font-semibold" key={matched.id} to={`/dish-detail-single/${matched.id}`}>
                                                                         {matched.name}
                                                                     </NavLink>
                                                                 ))}
