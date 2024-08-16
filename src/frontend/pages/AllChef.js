@@ -34,7 +34,7 @@ const AllChef = () => {
           {/* Chefs */}
           {chefs?.map((item) => (
             <div className="lg:col-span-3 sm:col-span-6 col-span-12 bg-white p-2 rounded-lg shadow-lg border">
-              <Link className="flex flex-col justify-center py-4">
+              <Link to={`/shef-detail/${item.id}`} className="flex flex-col justify-center py-4">
                 <div className="flex items-center gap-x-3 ">
                   <img
                     src={item.profile_pic ? `${item.profile_pic}` : "./media/frontend/img/banner/chef-5.webp"}
