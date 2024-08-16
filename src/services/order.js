@@ -39,7 +39,7 @@ export const handleGetOrders = async (token) => {
 export const handleChangeOrderStatus = async (token, payload, id) => {
   try {
     console.log(token, payload, id);
-    const { data } = await api.post("/update_order_status/" + id, payload, {
+    const { data } = await api.post("/api/update_order_status/" + id, payload, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return data;
