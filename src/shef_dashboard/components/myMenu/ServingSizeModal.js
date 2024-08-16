@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 import {
-  handleGetPlatformRate,
+  // handleGetPlatformRate,
   handleGetPortionType,
 } from "../../../services/shef";
 import { toast } from "react-toastify";
+import { handleGetDefaultSetting } from "../../../services/default_setting";
 const MenuModal = ({
   isOpen,
   onClose,
@@ -92,40 +93,49 @@ const MenuModal = ({
   };
 
   const [portionTypes, setPortionTypes] = useState([]);
-  const [platformRate, setPlatformRate] = useState({
-    platform_percentage: 10,
-    delivery_percentage: 20,
-  });
+  // const [platformRate, setPlatformRate] = useState({
+  //   platform_percentage: 0,
+  //   delivery_percentage: 0,
+  // });
+
+  // Default setting state
+  const [defaultSetting, setDefaultSetting] = useState('')
+
   // calculate delivery_price & platform_price
   const calculate = (price) => {
-    const deliveryCost = parseFloat(
-      (price * (platformRate.delivery_percentage / 100)).toFixed(2)
-    );
-    const platformCost = parseFloat(
-      (price * (platformRate.platform_percentage / 100)).toFixed(2)
-    );
+    // These are only for UI.
+    // const deliveryCost = parseFloat(
+    //   (price * (platformRate.delivery_percentage / 100)).toFixed(2)
+    // );
+    // const platformCost = parseFloat(
+    //   (price * (platformRate.platform_percentage / 100)).toFixed(2)
+    // );
 
     // Update Delivery price & platform_price in Chef-Menu
-    updateFields({ delivery_price: deliveryCost });
-    updateFields({ platform_price: platformCost });
+    // ---- Hide it send the 0 in api developer said
+    // updateFields({ delivery_price: deliveryCost });
+    // updateFields({ platform_price: platformCost });
   };
   //--- Handle platform_rate -api
   useEffect(() => {
     const fetchPlatformRate = async () => {
       try {
-        const platformRateResponse = await handleGetPlatformRate(authToken);
-        console.log("Platform rates", platformRateResponse);
+        // const platformRateResponse = await handleGetPlatformRate(authToken);
+        // console.log("Platform rates", platformRateResponse);
   
-        if (
-          platformRateResponse &&
-          platformRateResponse.delivery_percentage !== undefined &&
-          platformRateResponse.platform_percentage !== undefined
-        ) {
-          const { delivery_percentage, platform_percentage } = platformRateResponse;
-          setPlatformRate({ delivery_percentage, platform_percentage });
-        } else {
-          console.warn("Unexpected platform rate response structure", platformRateResponse);
-        }
+        // if (
+        //   platformRateResponse &&
+        //   platformRateResponse.delivery_percentage !== undefined &&
+        //   platformRateResponse.platform_percentage !== undefined
+        // ) {
+        //   const { delivery_percentage, platform_percentage } = platformRateResponse;
+        //   setPlatformRate({ delivery_percentage, platform_percentage });
+        // } else {
+        //   console.warn("Unexpected platform rate response structure", platformRateResponse);
+        // }
+        const default_setting_response = await handleGetDefaultSetting(authToken);
+        setDefaultSetting(default_setting_response)
+        // setPlatformRate
       } catch (error) {
         console.error("Error while fetching platform rate:", error);
       }
@@ -428,7 +438,8 @@ const MenuModal = ({
                 </div>
               </div>
               <p className="bg-grayBg p-3 rounded-lg text-center mt-3">
-                Similar dishes are usually priced between Pkr 9.99 and Pkr 13.99.
+                Similar dishes are usually priced between Pkr 9.99 and Pkr
+                13.99.
               </p>
               <div className="rounded-lg bg-grayBg p-4 mt-4">
                 <div className="flex items-center gap-2">
@@ -588,7 +599,8 @@ const MenuModal = ({
                 </div>
               </div>
               <p className="bg-grayBg p-3 rounded-lg text-center mt-3">
-                Similar dishes are usually priced between Pkr 9.99 and Pkr 13.99.
+                Similar dishes are usually priced between Pkr 9.99 and Pkr
+                13.99.
               </p>
               <div className="rounded-lg bg-grayBg p-4 mt-4">
                 <div className="flex items-center gap-2">
@@ -721,7 +733,8 @@ const MenuModal = ({
                 </div>
               </div>
               <p className="bg-grayBg p-3 rounded-lg text-center mt-3">
-                Similar dishes are usually priced between Pkr 9.99 and Pkr 13.99.
+                Similar dishes are usually priced between Pkr 9.99 and Pkr
+                13.99.
               </p>
               <div className="rounded-lg bg-grayBg p-4 mt-4">
                 <div className="flex items-center gap-2">
@@ -823,7 +836,15 @@ const MenuModal = ({
                       {/* Platform collects --> might be !! */}
                       Shef collects{" "}
                       <span className="text-[#fca5a5] font-semibold">
-                        {platformRate.platform_percentage}%
+                        {/* {platformRate.platform_percentage}% */}
+                        {(defaultSetting.platform_charge_percentage / 100) *
+                          chef_earning_fee >
+                        defaultSetting.platform_charge
+                          ? defaultSetting.platform_charge_percentage
+                          : defaultSetting.platform_charge *
+                            chef_earning_fee *
+                            100}
+                        %
                       </span>{" "}
                       to cover marketing, customer support and software
                       development
@@ -847,11 +868,17 @@ const MenuModal = ({
                       Separately,
                       <span className="text-[#30abaf] font-semibold">
                         {" "}
-                        Pkr {" "} 
-                        {(
+                        Pkr{"  "}
+                        {/* {(
                           (platformRate.delivery_percentage / 100) *
                           chef_earning_fee
-                        ).toFixed(2)}
+                        ).toFixed(2)} */}
+                        {(defaultSetting.delivery_charge_percentage / 100) *
+                          chef_earning_fee >
+                        defaultSetting.delivery_charge
+                          ? (defaultSetting.delivery_charge_percentage / 100) *
+                            chef_earning_fee
+                          : defaultSetting.delivery_charge}
                       </span>{" "}
                       goes towards operations and delivery costs.
                     </span>
