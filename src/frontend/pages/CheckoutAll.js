@@ -11,11 +11,29 @@ import {
 import { updateUser } from "../../store/slice/user";
 import Modal from "react-modal";
 import isValidURL from "../../ValidateUrl";
+import { handleGetDefaultSetting } from "../../services/default_setting";
 
 export const CheckoutAll = () => {
   // From Redux
   const { userInfo, authToken } = useSelector((state) => state.user);
   const { cartItem } = useSelector((state) => state.cart);
+
+  // default setting 
+  const [defaultSetting, setDefaultSetting] = useState("");
+
+  useEffect(()=> {
+    const fetchDefaultSetting = async () => {
+      try {
+        const default_setting_response = await handleGetDefaultSetting(authToken);
+        // console.log("default setting response", default_setting_response);
+        setDefaultSetting(default_setting_response);
+      } catch (error) {
+        console.error("Error while fethcing default setting ");
+      }
+    };
+
+    fetchDefaultSetting();
+  }, [authToken])
 
   // to navigate
   const navigate = useNavigate();
@@ -199,23 +217,68 @@ export const CheckoutAll = () => {
     // Sub total = chef-earning * quantity + platform_price * quantity
     const sub_total = cartItem.reduce((accChef, chef) => {
       const chefTotal = chef.menu.reduce((accMenu, menu) => {
+        const chef_earning_fee = menu.chef_earning_fee || 0;
+        const platformPercentageFee = (defaultSetting.platform_charge_percentage / 100) * chef_earning_fee;
+        const platform_price = platformPercentageFee > defaultSetting.platform_charge 
+          ? platformPercentageFee 
+          : defaultSetting.platform_charge;
+    
         return (
           accMenu +
-          (menu.chef_earning_fee || 0) * menu.quantity +
-          (menu.platform_price || 0) * menu.quantity
+          chef_earning_fee * menu.quantity + 
+          platform_price * menu.quantity
         );
       }, 0);
       return accChef + chefTotal;
     }, 0);
+    // ---- OLDER
+    // const sub_total = cartItem.reduce((accChef, chef) => {
+    //   const chefTotal = chef.menu.reduce((accMenu, menu) => {
+    //     return (
+    //       accMenu +
+    //       (menu.chef_earning_fee || 0) * menu.quantity +
+    //       (menu.platform_price || 0) * menu.quantity
+    //     );
+    //   }, 0);
+    //   return accChef + chefTotal;
+    // }, 0);
+
     // Delivery
     const deliverPriceSum = cartItem.reduce((accChef, chef) => {
       const chefTotal = chef.menu.reduce((accMenu, menu) => {
-        return accMenu + (menu.delivery_price || 0) * menu.quantity;
+        const chef_earning_fee = menu.chef_earning_fee || 0;
+        const deliveryPercentageFee = (defaultSetting.delivery_charge_percentage / 100) * chef_earning_fee;
+        const delivery_price = deliveryPercentageFee > defaultSetting.delivery_charge 
+          ? deliveryPercentageFee 
+          : defaultSetting.delivery_charge;
+    
+        return accMenu + delivery_price * menu.quantity;
       }, 0);
       return accChef + chefTotal;
     }, 0);
+    // ---- OLDER
+    // const deliverPriceSum = cartItem.reduce((accChef, chef) => {
+    //   const chefTotal = chef.menu.reduce((accMenu, menu) => {
+    //     return accMenu + (menu.delivery_price || 0) * menu.quantity;
+    //   }, 0);
+    //   return accChef + chefTotal;
+    // }, 0);
 
     // Platform
+    // *********** In case if we need it ***********
+    // const platformPriceSum = cartItem.reduce((accChef, chef) => {
+    //   const chefTotal = chef.menu.reduce((accMenu, menu) => {
+    //     const chef_earning_fee = menu.chef_earning_fee || 0;
+    //     const platformPercentageFee = (defaultSetting.platform_charge_percentage / 100) * chef_earning_fee;
+    //     const platform_price = platformPercentageFee > defaultSetting.platform_charge 
+    //       ? platformPercentageFee 
+    //       : defaultSetting.platform_charge;
+    
+    //     return accMenu + platform_price * menu.quantity;
+    //   }, 0);
+    //   return accChef + chefTotal;
+    // }, 0);
+    // --- Older
     // const platformPriceSum = cartItem.reduce((accChef, chef) => {
     //   const chefTotal = chef.menu.reduce((accMenu, menu) => {
     //     return accMenu + (menu.platform_price || 0) * menu.quantity;
@@ -234,7 +297,7 @@ export const CheckoutAll = () => {
       // total: sub_total + deliverPriceSum + (platformPriceSum || 0) + (orderSummaryForUser?.shefTip || 0)
       total: sub_total + deliverPriceSum + (orderSummaryForUser?.shefTip || 0),
     }));
-  }, [cartItem, orderSummaryForUser.shefTip]);
+  }, [cartItem, orderSummaryForUser.shefTip, defaultSetting]);
 
   // increment/decrement Quantity - Update directly in redux-store
   const updateQuantityInStore = (chefIndex, menuIndex, quantity, operation) => {
@@ -276,8 +339,26 @@ export const CheckoutAll = () => {
     chef.menu.forEach((menu) => {
       const chef_earning_fee = menu.chef_earning_fee || 0;
       const quantity = menu.quantity || 0;
-      const delivery_price = menu.delivery_price || 0;
-      const platform_price = menu.platform_price || 0;
+      // const delivery_price = menu.delivery_price || 0;
+      // const platform_price = menu.platform_price || 0;
+      // --- Updated
+      // ---- Delivery Price
+      const deliveryPercentageFee =
+        (defaultSetting.delivery_charge_percentage / 100) * chef_earning_fee;
+
+      const delivery_price =
+        deliveryPercentageFee > defaultSetting.delivery_charge
+          ? deliveryPercentageFee
+          : defaultSetting.delivery_charge;
+
+      // ---- Platform Price
+      const platformPercentageFee =
+        (defaultSetting.platform_charge_percentage / 100) * chef_earning_fee;
+
+      const platform_price =
+        platformPercentageFee > defaultSetting.platform_charge
+          ? platformPercentageFee
+          : defaultSetting.platform_charge;
 
       // Calculate chef_earning_fee for each item
       chefEarningSum += chef_earning_fee * quantity;
@@ -307,23 +388,63 @@ export const CheckoutAll = () => {
       delivery_percentage: (deliverPriceSum / chefEarningSum) * 100,
       service_fee: platformPriceSum,
       total_price: total,
-      orderDetails: chef.menu.map((menu) => ({
-        name: menu.name,
-        user_menu_id: menu.id,
-        unit_price: menu.unit_price,
-        quantity: menu.quantity,
-        platform_percentage:
-          (menu.platform_percentage
-            ? menu.platform_percentage
-            : (menu.platform_price / menu.chef_earning_fee) * 100) || 0,
-        platform_price: menu.platform_price,
-        delivery_percentage:
-          (menu.delivery_percentage
-            ? menu.delivery_percentage
-            : (menu.delivery_price / menu.chef_earning_fee) * 100) || 0,
-        delivery_price: menu.delivery_price,
-        chef_price: menu.chef_earning_fee,
-      })),
+      // updated
+      orderDetails: chef.menu.map((menu) => {
+        // --- Delivery Price - Default Setting 
+        const deliveryPercentageFee =
+          (defaultSetting.delivery_charge_percentage / 100) *
+          menu.chef_earning_fee;
+    
+        const delivery_price =
+          deliveryPercentageFee > defaultSetting.delivery_charge
+            ? deliveryPercentageFee
+            : defaultSetting.delivery_charge;
+    
+        // ---- Platform Price - Default Setting 
+        const platformPercentageFee =
+          (defaultSetting.platform_charge_percentage / 100) *
+          menu.chef_earning_fee;
+    
+        const platform_price =
+          platformPercentageFee > defaultSetting.platform_charge
+            ? platformPercentageFee
+            : defaultSetting.platform_charge;
+    
+        return {
+          name: menu.name,
+          user_menu_id: menu.id,
+          unit_price: menu.unit_price,
+          quantity: menu.quantity,
+          platform_percentage:
+            (menu.platform_percentage
+              ? menu.platform_percentage
+              : (platform_price / menu.chef_earning_fee) * 100) || 0,
+          platform_price: platform_price, // Updated with computed platform price
+          delivery_percentage:
+            (menu.delivery_percentage
+              ? menu.delivery_percentage
+              : (delivery_price / menu.chef_earning_fee) * 100) || 0,
+          delivery_price: delivery_price, // Updated with computed delivery price
+          chef_price: menu.chef_earning_fee,
+        };
+      }),
+      // orderDetails: chef.menu.map((menu) => ({
+      //   name: menu.name,
+      //   user_menu_id: menu.id,
+      //   unit_price: menu.unit_price,
+      //   quantity: menu.quantity,
+      //   platform_percentage:
+      //     (menu.platform_percentage
+      //       ? menu.platform_percentage
+      //       : (menu.platform_price / menu.chef_earning_fee) * 100) || 0,
+      //   platform_price: menu.platform_price,
+      //   delivery_percentage:
+      //     (menu.delivery_percentage
+      //       ? menu.delivery_percentage
+      //       : (menu.delivery_price / menu.chef_earning_fee) * 100) || 0,
+      //   delivery_price: menu.delivery_price,
+      //   chef_price: menu.chef_earning_fee,
+      // })),
     };
 
     const payload = { ...orderPayload, orderDeliveryAddress };
