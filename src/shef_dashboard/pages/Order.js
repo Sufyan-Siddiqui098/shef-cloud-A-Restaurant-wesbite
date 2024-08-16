@@ -312,7 +312,7 @@ export const Order = () => {
                                   <option value="pending">Pending</option>
                                   <option value="accepted">In Process</option>
                                   <option value="delivered">Delivered</option>
-                                  <option value="cancelled">Cancelled</option>
+                                 {( order.status ==="pending" || order.status === null ) && <option value="cancelled">Cancelled</option>}
                                 </select>
                               </td>
                             </tr>
@@ -324,7 +324,7 @@ export const Order = () => {
               </div>
             </div>
           </div>
-          <div className="mt-6 p-5 bg-white rounded-xl border border-borderClr">
+          {/* <div className="mt-6 p-5 bg-white rounded-xl border border-borderClr">
             <div>
               <h3 className="text-xl font-semibold leading-tight uppercase mb-3 border-b pb-2">
                 Refunded Order (0)
@@ -380,7 +380,7 @@ export const Order = () => {
                 </table>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </>
