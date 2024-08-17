@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import { Link } from "react-router-dom";
-import { handleGetOrders, handleOrderReviewAndRating } from "../../services/order";
+import { handleChangeOrderStatus, handleGetOrders, handleOrderReviewAndRating } from "../../services/order";
 import { useSelector } from "react-redux";
 import Modal from "react-modal";
 import { toast } from "react-toastify";
+import { handleGetDefaultSetting } from "../../services/default_setting";
+import moment from "moment";
 
 const UserOrder = () => {
   const { authToken } = useSelector((state) => state.user);
+  const [defaultSettings, setDefaultSettings] = useState([]);
+  // Refetch orders - when update status of order
+  const [refetchOrder, setRefetchOrder] = useState(false);
   // const orderDetailInitial = {
   //     order_id: 1,
   //     dish_name: '',
@@ -17,7 +22,30 @@ const UserOrder = () => {
   //     serving_size: '',
   // };
   const [orderDetails, setOrderDetails] = useState([]);
-
+  const handleStatusChange = (e, id) => {
+    const newStatus = 'canceled'
+    const saveStatus = async () => {
+      try {
+        if (newStatus) {
+          const ordersRetrieved = await handleChangeOrderStatus(
+            authToken,
+            { status: newStatus },
+            id
+          );
+          console.log(ordersRetrieved);
+          if (ordersRetrieved.success) {
+            toast("Order Status Updated!");
+            setRefetchOrder((prevState) => !prevState)
+          }
+        }
+        // setOrderDetails(ordersRetrieved);
+      } catch (error) {
+        console.log("Error While Fetching Orders \n", error);
+        toast.warn("Order Status Failed to Update!");
+      }
+    };
+    saveStatus();
+  };
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -33,6 +61,8 @@ const UserOrder = () => {
             spice_level: detail.user_menu.spice_level?.name,
             portion_size: detail.user_menu.portion_size,
             reviews: order?.reviews,
+            created_at:order?.created_at,
+            status:order?.status? order?.status?.charAt(0).toUpperCase() + order?.status?.slice(1):'',
             // serving_size: detail.user_menu.portion_type_id,//name is not available at this time  - removed
           }));
           return acc.concat(orderDetails);
@@ -43,9 +73,21 @@ const UserOrder = () => {
         console.log("Error While Fetching Orders \n", error);
       }
     };
-
+  
     fetchOrders();
     console.log("useEffect is running userorder");
+  }, [authToken,refetchOrder]);
+
+  useEffect(() => {
+    const getDefaultSettings = async () => {
+      try {
+        const retrieveDefaultSettings = await handleGetDefaultSetting(authToken);
+        setDefaultSettings(retrieveDefaultSettings);
+      } catch (error) {
+        console.log("Error While Fetching Order Settings \n", error);
+      }
+    }
+    getDefaultSettings();
   }, [authToken]);
 
   //--- reviews & rating
@@ -115,11 +157,12 @@ const UserOrder = () => {
                 <table className="text-left w-full menuTable border-0">
                   <thead>
                     <tr className="border-b">
-                      <th className="w-[20%]">Order ID</th>
+                      <th className="w-[15%]">Order ID</th>
                       <th className="w-[20%]">Dish Name</th>
-                      <th className="w-[15%]">Quantity</th>
-                      <th className="w-[15%]">Spice Level</th>
-                      <th className="w-[15%]">Portion Size</th>
+                      <th className="w-[10%]">Quantity</th>
+                      <th className="w-[10%]">Spice Level</th>
+                      <th className="w-[10%]">Portion Size</th>
+                      <th className="w-[10%]">Status</th>
                       {/* <th className='w-[15%]'>Serving Size</th> */}
                     </tr>
                   </thead>
@@ -176,16 +219,35 @@ const UserOrder = () => {
                             {detail.portion_size}
                           </h4>
                         </td>
-                        {/* 
-                          <td>
-                              <h4 className='text-[14px] mb-0 leading-tight'>{detail.serving_size}</h4>
-                          </td> 
-                        */}
+                        
+                        <td>
+                          <h4 className='text-[14px] mb-0 leading-tight'>
+                            {detail.status}
+                          </h4>
+                        </td> 
+                       
                         {detail?.reviews?.length<1 && <td>
-                          <button onClick={()=> { setReviewAndRating(prev =>{ return{...prev, "order_id": detail.id, order_code: detail.order_id} } ); setIsOpen(true) }} className="text-[14px] text-primary hover:underline focus:underline mb-0 leading-tight">
+                          <button onClick={()=> { setReviewAndRating(prev =>{ return{...prev, "order_id": detail.id, order_code: detail.order_id} } ); setIsOpen(true) }} className="text-[14px] text-primaryGreen hover:underline focus:underline mb-0 leading-tight">
                             Add Rating
                           </button>
                         </td>}
+                        <td>
+                        {(() => {
+                          const orderCreatedTime = moment(detail.created_at);
+                          const currentTime = moment();
+                          const timeSinceCreation = moment.duration(currentTime.diff(orderCreatedTime));
+                          const canCancel = timeSinceCreation.asMinutes() <= defaultSettings.cancellation_time_span;
+                          return (
+                            <button
+                              disabled={!canCancel}
+                              onClick={(e) => handleStatusChange(e, detail.id)}
+                              className="text-[14px] text-primary hover:underline focus:text mb-0 leading-tight"
+                            >
+                              Cancel Order
+                            </button>
+                          );
+                        })()}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
