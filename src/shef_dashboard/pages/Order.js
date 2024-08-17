@@ -18,7 +18,7 @@ export const Order = () => {
   const [allOrders, setAllOrders] = useState([]);
   // Filter
   const [filterSearch, setFilterSearch] = useState("");
-
+  const [filterDate, setFilterDate] = useState("");
   // Refetch orders - when update status of order
   const [refetchOrder, setRefetchOrder] = useState(false);
 
@@ -65,23 +65,29 @@ export const Order = () => {
     const searchTerm = e.target.value.toLowerCase();
     setFilterSearch(searchTerm);
   };
+  const handleDateChange = (e) => {
+    setFilterDate(e.target.value);
+  };
 
   // Searching - Filter
-  function searchOrders(orders, searchTerm) {
-    return orders?.filter(
-      (order) =>
+  function searchOrders(orders, searchTerm, filterDate) {
+    return orders?.filter((order) => {
+      const orderDate = moment(order.created_at).format('YYYY-MM-DD');
+      const matchesDate = !filterDate || orderDate === filterDate;
+      const matchesSearch = 
         order.order_code.includes(searchTerm) ||
         order.order_details.some((detail) =>
           detail?.name?.toLowerCase().includes(searchTerm)
-        )
-    );
+        );
+      return matchesDate && matchesSearch;
+    });
   }
   useEffect(() => {
     // console.log("Searching useEffec is running");
-    const filteredOrder = searchOrders(allOrders, filterSearch);
+    const filteredOrder = searchOrders(allOrders, filterSearch, filterDate);
     setOrderDetails(filteredOrder);
     // console.log("filtered orders ", filteredOrder);
-  }, [allOrders, filterSearch]);
+  }, [allOrders, filterSearch, filterDate]);
 
   // Function to handle status change
   const handleStatusChange = (e, id) => {
@@ -129,7 +135,12 @@ export const Order = () => {
             </div>
             <div className="grid grid-cols-12 gap-3">
               <div className="lg:col-span-4 md:col-span-6 col-span-12">
-                <input type="date" className="w-full" />
+                <input 
+                    type="date" 
+                    className="w-full"
+                    value={filterDate}
+                    onChange={handleDateChange}
+                  />
               </div>
               <div className="lg:col-span-4 md:col-span-6 col-span-12 lg:block hidden"></div>
               <div className="lg:col-span-4 md:col-span-6 col-span-12">
@@ -166,9 +177,10 @@ export const Order = () => {
                     <tr className="border-b">
                       <th className="w-[20%]">Order ID</th>
                       <th className="w-[20%]">Dish Name</th>
-                      <th className="w-[15%]">Quantity</th>
+                      <th className="w-[19%]">Quantity</th>
                       <th className="w-[15%]">Spice Level</th>
                       <th className="w-[15%]">Portion Size</th>
+                      <th className="w-[15%]">Order Date/Day/Time</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -204,6 +216,28 @@ export const Order = () => {
                             <td>
                               <h4 className="text-[14px] mb-0 leading-tight">
                                 {detail.user_menu?.portion_size} grams
+                              </h4>
+                            </td>
+                            <td>
+                              <h4 className="text-[14px] mb-1 leading-tight">
+                                -{" "}
+                                {new Date(
+                                  detail.user_menu?.created_at
+                                ).toLocaleDateString()}
+                              </h4>
+                              <h4 className="text-[14px] mb-1 leading-tight">
+                                -{" "}
+                                {new Date(
+                                  detail.user_menu?.created_at
+                                ).toLocaleDateString("en-US", {
+                                  weekday: "long",
+                                })}
+                              </h4>
+                              <h4 className="text-[14px] mb-1 leading-tight">
+                                -{" "}
+                                {new Date(
+                                  detail.user_menu?.created_at
+                                ).toLocaleTimeString()}
                               </h4>
                             </td>
                           </tr>
