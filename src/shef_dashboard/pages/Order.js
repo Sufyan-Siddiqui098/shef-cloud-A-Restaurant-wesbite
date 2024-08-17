@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../shef_dashboard/components/Header";
 import { Link } from "react-router-dom";
-import { handleChangeOrderStatus, handleGetOrders } from "../../services/order";
+import { handleChangeOrderStatus, handleDefaultSettings, handleGetOrders } from "../../services/order";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import moment from 'moment';
 
 export const Order = () => {
   const { authToken } = useSelector((state) => state.user);
+  const {userInfo} = useSelector(state => state.user);
+  const [defaultSettings, setDefaultSettings] = useState([]);
   const [orderDetails, setOrderDetails] = useState([]);
   // Pending
   const [isFetching, setIsFetching] = useState(false);
@@ -21,7 +24,7 @@ export const Order = () => {
       try {
         setIsFetching(true);
         const ordersRetrieved = await handleGetOrders(authToken);
-        console.log("Order detail of shef ", ordersRetrieved);
+        console.log("Order detail of shef ", ordersRetrieved, defaultSettings);
         setOrderDetails(ordersRetrieved);
         setAllOrders(ordersRetrieved);
       } catch (error) {
@@ -30,7 +33,18 @@ export const Order = () => {
         setIsFetching(false);
       }
     };
-
+    const getDefaultSettings = async () => {
+      try {
+        setIsFetching(true);
+        const retrieveDefaultSettings = await handleDefaultSettings(authToken);
+        setDefaultSettings(retrieveDefaultSettings);
+      } catch (error) {
+        console.log("Error While Fetching Order Settings \n", error);
+      } finally {
+        setIsFetching(false);
+      }
+    }
+    getDefaultSettings();
     fetchOrders();
     console.log("useEffect is running userorder");
   }, [authToken]);
@@ -87,6 +101,7 @@ export const Order = () => {
         // setOrderDetails(ordersRetrieved);
       } catch (error) {
         console.log("Error While Fetching Orders \n", error);
+        toast.warn("Order Status Failed to Update!");
       }
     };
     saveStatus();
@@ -232,10 +247,16 @@ export const Order = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {orderDetails
-                        // .filter(filteredOrder => filteredOrder.status === 'pending')
-                        ?.map((order) =>
-                          order.order_details?.map((detail) => (
+                      {orderDetails?.map((order) =>
+                        order.order_details?.map((detail) => {
+                          // Calculate if the order can be cancelled or confirmed based on the timespan
+                          const orderCreatedTime = moment(order.created_at);
+                          const currentTime = moment();
+                          const timeSinceCreation = moment.duration(currentTime.diff(orderCreatedTime));
+
+                          const canCancel = timeSinceCreation.asMinutes() <= defaultSettings.cancellation_time_span;
+                          const canConfirm = timeSinceCreation.asMinutes() <= defaultSettings.confirmation_time_span;
+                          return (
                             <tr className="border-b" key={detail.id}>
                               <td>
                                 <p className="text-primaryGreen text-[14px] mb-0">
@@ -302,21 +323,25 @@ export const Order = () => {
                                 </h4>
                               </td>
                               <td>
-                                <select
-                                  id="selectOption"
+                               <select
+                                  className="text-sm font-medium text-headGray"
+                                  onChange={(e) => handleStatusChange(e, order.id)}
                                   defaultValue={order.status}
-                                  onChange={(e) =>
-                                    handleStatusChange(e, order.id)
-                                  }
                                 >
-                                  <option value="pending">Pending</option>
-                                  <option value="accepted">In Process</option>
-                                  <option value="delivered">Delivered</option>
-                                 {( order.status ==="pending" || order.status === null ) && <option value="cancelled">Cancelled</option>}
+                                  <option value="pending" hidden={true}>Pending</option>
+                                  <option value="accepted" hidden={order.status!='pending' && !canConfirm }>
+                                    In Process
+                                  </option>
+                                  <option value="delivered" hidden={order.status!='accepted'}>
+                                    Delivered
+                                  </option>
+                                  <option value="canceled" hidden={order.status=='accepted' || order.status=='delivered' || !canCancel }>{/*when do you don't want to show cancel?*/}
+                                    Cancelled
+                                  </option>
                                 </select>
                               </td>
                             </tr>
-                          ))
+                          )})
                         )}
                     </tbody>
                   </table>
