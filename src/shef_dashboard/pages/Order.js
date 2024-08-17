@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../shef_dashboard/components/Header";
 import { Link } from "react-router-dom";
-import { handleChangeOrderStatus, handleDefaultSettings, handleGetOrders } from "../../services/order";
+import { handleChangeOrderStatus, handleGetOrders } from "../../services/order";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import moment from 'moment';
+import { handleGetDefaultSetting } from "../../services/default_setting";
 
 export const Order = () => {
   const { authToken } = useSelector((state) => state.user);
-  const {userInfo} = useSelector(state => state.user);
+  // const {userInfo} = useSelector(state => state.user);
   const [defaultSettings, setDefaultSettings] = useState([]);
   const [orderDetails, setOrderDetails] = useState([]);
   // Pending
@@ -18,13 +19,16 @@ export const Order = () => {
   // Filter
   const [filterSearch, setFilterSearch] = useState("");
 
+  // Refetch orders - when update status of order
+  const [refetchOrder, setRefetchOrder] = useState(false);
+
   // Fetch All Orders
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         setIsFetching(true);
         const ordersRetrieved = await handleGetOrders(authToken);
-        console.log("Order detail of shef ", ordersRetrieved, defaultSettings);
+        // console.log("Order detail of shef ", ordersRetrieved, defaultSettings);
         setOrderDetails(ordersRetrieved);
         setAllOrders(ordersRetrieved);
       } catch (error) {
@@ -33,10 +37,17 @@ export const Order = () => {
         setIsFetching(false);
       }
     };
+    
+    fetchOrders();
+    console.log("useEffect is running for fetching order");
+  }, [authToken, refetchOrder]);
+
+  // Default Settings API
+  useEffect(()=> {
     const getDefaultSettings = async () => {
       try {
         setIsFetching(true);
-        const retrieveDefaultSettings = await handleDefaultSettings(authToken);
+        const retrieveDefaultSettings = await handleGetDefaultSetting(authToken);
         setDefaultSettings(retrieveDefaultSettings);
       } catch (error) {
         console.log("Error While Fetching Order Settings \n", error);
@@ -45,23 +56,14 @@ export const Order = () => {
       }
     }
     getDefaultSettings();
-    fetchOrders();
-    console.log("useEffect is running userorder");
-  }, [authToken]);
+    console.log("Use Effect for default setting ");
+    
+  }, [authToken])
 
   // Function to handle search input change
   const handleOnChange = (e) => {
     const searchTerm = e.target.value.toLowerCase();
     setFilterSearch(searchTerm);
-    // const items = dropdownMenuRef.current.querySelectorAll("option");
-    // items.forEach((item) => {
-    // const text = item.innerText.toLowerCase();
-    // if (text.includes(searchTerm)) {
-    //     item.style.display = "block";
-    // } else {
-    //     item.style.display = "none";
-    // }
-    // });
   };
 
   // Searching - Filter
@@ -75,11 +77,10 @@ export const Order = () => {
     );
   }
   useEffect(() => {
-    // let filterOrder = allOrders;
-    console.log("Searching useEffec is running");
+    // console.log("Searching useEffec is running");
     const filteredOrder = searchOrders(allOrders, filterSearch);
     setOrderDetails(filteredOrder);
-    console.log("filtered orders ", filteredOrder);
+    // console.log("filtered orders ", filteredOrder);
   }, [allOrders, filterSearch]);
 
   // Function to handle status change
@@ -96,6 +97,7 @@ export const Order = () => {
           console.log(ordersRetrieved);
           if (ordersRetrieved.success) {
             toast("Order Status Updated!");
+            setRefetchOrder((prevState) => !prevState)
           }
         }
         // setOrderDetails(ordersRetrieved);
@@ -329,13 +331,13 @@ export const Order = () => {
                                   defaultValue={order.status}
                                 >
                                   <option value="pending" hidden={true}>Pending</option>
-                                  <option value="accepted" hidden={order.status!='pending' && !canConfirm }>
+                                  <option value="accepted" hidden={order.status!=='pending' && !canConfirm }>
                                     In Process
                                   </option>
-                                  <option value="delivered" hidden={order.status!='accepted'}>
+                                  <option value="delivered" hidden={order.status!=='accepted'}>
                                     Delivered
                                   </option>
-                                  <option value="canceled" hidden={order.status=='accepted' || order.status=='delivered' || !canCancel }>{/*when do you don't want to show cancel?*/}
+                                  <option value="canceled" hidden={order.status==='accepted' || order.status==='delivered' || !canCancel }>{/*when do you don't want to show cancel?*/}
                                     Cancelled
                                   </option>
                                 </select>
