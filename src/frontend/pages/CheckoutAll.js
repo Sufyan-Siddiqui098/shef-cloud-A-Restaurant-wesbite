@@ -363,11 +363,11 @@ export const CheckoutAll = () => {
       // Calculate chef_earning_fee for each item
       chefEarningSum += chef_earning_fee * quantity;
       // Calculate sub_total = chef_earning_fee * quantity;
-      sub_total += chef_earning_fee * quantity + platform_price * quantity;
+      sub_total += chef_earning_fee * quantity ;
       // Calculate DeliveryPrice
       deliverPriceSum += delivery_price * quantity;
 
-      // platformPriceSum += platform_price * quantity;
+      platformPriceSum += platform_price * quantity;
     });
 
     const city = JSON.parse(localStorage.getItem("region"));
@@ -593,10 +593,9 @@ export const CheckoutAll = () => {
                     placeholder="Apartment, suite, unit, building, floor, etc."
                   />
                   <h4 className="text-base font-semibold mb-1 mt-3">
-                    Address Line 2 <span className="text-primary">*</span>
+                    Address Line 2 
                   </h4>
                   <input
-                    required
                     className="border rounded-md w-full "
                     name=""
                     value={orderDeliveryAddress.line2}

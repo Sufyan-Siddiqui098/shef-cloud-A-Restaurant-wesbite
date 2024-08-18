@@ -270,13 +270,13 @@ export const Checkout = () => {
           chefEarningSum += chef_earning_fee * quantity;
 
           // Calculate sub total for each item
-          sub_total += chef_earning_fee * quantity + platform_price * quantity;
+          sub_total += chef_earning_fee * quantity;
 
           // Calculate delivery price sum for each item
           deliverPriceSum += delivery_price * quantity;
 
           // Calculate platform price sum for each item -- teax & fee
-          // platformPriceSum += platform_price * quantity;
+          platformPriceSum += platform_price * quantity;
         });
       }
     });
@@ -290,8 +290,8 @@ export const Checkout = () => {
     });
 
     // Calculate the total order price
-    const total = sub_total + order.tip_price + deliverPriceSum;
-    // const total = sub_total + order.tip_price + deliverPriceSum + platformPriceSum;
+    // const total = sub_total + order.tip_price + deliverPriceSum;
+    const total = sub_total + order.tip_price + deliverPriceSum + platformPriceSum;
 
     // --- Promo code payload
     setPromoCode((prev) => ({
@@ -555,10 +555,9 @@ export const Checkout = () => {
                     placeholder="Apartment, suite, unit, building, floor, etc."
                   />
                   <h4 className="text-base font-semibold mb-1 mt-3">
-                    Address Line 2 <span className="text-primary">*</span>
+                    Address Line 2 
                   </h4>
                   <input
-                    required
                     className="border rounded-md w-full "
                     name=""
                     value={orderDeliveryAddress.line2}
