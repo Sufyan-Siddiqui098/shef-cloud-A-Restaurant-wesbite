@@ -34,7 +34,7 @@ const UserOrder = () => {
           );
           console.log(ordersRetrieved);
           if (ordersRetrieved.success) {
-            toast("Order Status Updated!");
+            toast("Order Canceled!");
             setRefetchOrder((prevState) => !prevState)
           }
         }
