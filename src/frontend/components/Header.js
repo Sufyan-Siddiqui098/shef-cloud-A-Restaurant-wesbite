@@ -12,6 +12,7 @@ import { emptyCart, removeFromCart } from '../../store/slice/cart';
 import RegionDropdown from './RegionDropdown';
 import isValidURL from '../../ValidateUrl';
 import { handleGetAllDishesOfCity } from '../../services/get_without_auth';
+import { handleGetPendingOrdersForChef } from '../../services/order';
 
 const Header = () => {
     const [isBoxVisible, setBoxVisible] = useState(false);
@@ -25,6 +26,37 @@ const Header = () => {
     const [ matchedDish, setMatchedDish ] = useState([]);
 
     // ----- Search Bar End
+
+    const {userInfo, authToken} = useSelector(state => state.user);
+
+
+    // Chef Pending Order notification
+    const [pendingOrderCount, setPendingOrderCount] = useState(0);
+    useEffect(() => {
+        let intervalId;
+        
+        const fetchPendingOrderCount = async () => {
+            try {
+                const pendingOrderResponse = await handleGetPendingOrdersForChef(userInfo.id, authToken);
+                setPendingOrderCount(pendingOrderResponse);
+                console.log("response of pending order ", pendingOrderResponse);
+            } catch (error) {
+                console.error("Error while fetching Pending orders \n", error);
+            }
+        };
+    
+        if (userInfo.is_chef === 1 || userInfo.is_admin === 1) {
+            fetchPendingOrderCount(); // Call it immediately on component mount if needed.
+            
+            intervalId = setInterval(() => {
+                fetchPendingOrderCount();
+            }, 300000); // 5 minutes in milliseconds
+        }
+    
+        return () => {
+            if (intervalId) clearInterval(intervalId); // Clear interval on unmount or dependency change
+        };
+    }, [authToken, userInfo.id, userInfo.is_chef, userInfo.is_admin]);
 
     // Fetch dishes for search bar
     useEffect(() => {
@@ -60,7 +92,6 @@ const Header = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const {userInfo} = useSelector(state => state.user);
 
     const toggleBox = () => {
         setBoxVisible(!isBoxVisible);
@@ -476,7 +507,11 @@ const Header = () => {
                                                 </div>
                                             </div>
                                             {/* <!-- user notification -->*/}
-                                            {/* <div className="cart-btn notification-btn mr-2">
+                                            {  ((userInfo.is_chef ===1 || userInfo.is_admin ===1) 
+                                                && 
+                                                (pendingOrderCount>0)) 
+                                                && 
+                                            <div className="cart-btn notification-btn mr-2">
                                                 <NavLink className="text-light-green fw-700">
                                                     <div className="notifyBx">
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="rgba(255,255,255,1)">
@@ -487,17 +522,27 @@ const Header = () => {
                                                 </NavLink>
                                                 <div className="notification-dropdown">
                                                     <div className="product-detail">
-                                                        <NavLink>
+                                                        {pendingOrderCount>0 && <NavLink to="/shef/order">
+                                                            {/* <div className="img-box">
+                                                                <img src="./media/frontend/img/shop-1.png" className="rounded" alt="Lil Johnny’s" />
+                                                            </div> */}
+                                                            <div className="product-about">
+                                                                <p className="text-light-black">{userInfo.first_name}</p>
+                                                                <p className="text-light-white">You have {pendingOrderCount} Pending orders</p>
+                                                            </div>
+                                                        </NavLink>}
+                                                        {/* <NavLink to="/shef/order">
                                                             <div className="img-box">
                                                                 <img src="./media/frontend/img/shop-1.png" className="rounded" alt="Lil Johnny’s" />
                                                             </div>
                                                             <div className="product-about">
-                                                                <p className="text-light-black">Lil Johnny’s</p>
+                                                                <p className="text-light-black">Lilly</p>
                                                                 <p className="text-light-white">Spicy Maxican Grill</p>
                                                             </div>
-                                                        </NavLink>
+                                                        </NavLink> */}
+                                                        
                                                     </div>
-                                                    <div className="rating-box">
+                                                    {/* <div className="rating-box">
                                                         <p className="text-light-black">How was your last order ?.</p>
                                                         <div className="ratingStar d-flex align-items-lg-center justify-content-between">
                                                             <div>
@@ -510,9 +555,9 @@ const Header = () => {
                                                             <cite className="text-light-white">Ordered 2 days ago</cite>
                                                         </div>
 
-                                                    </div>
+                                                    </div> */}
                                                 </div>
-                                            </div> */}
+                                            </div>}
                                             {/*
                                             <!-- user notification -->*/}
                                             {/* <!-- user cart -->*/}
