@@ -40,7 +40,7 @@ const UserOrder = () => {
         }
         // setOrderDetails(ordersRetrieved);
       } catch (error) {
-        console.log("Error While Fetching Orders \n", error);
+        console.log("Error While Updating Orders Status \n", error);
         toast.warn("Order Status Failed to Update!");
       }
     };
