@@ -113,7 +113,7 @@ const Header = () => {
                     <header className="full-width">
                         <div className="container mx-auto big-screen">
                             <div className="">
-                                <div className="mainNavCol flex justify-between items-center gap-x-6">
+                                <div className="mainNavCol flex justify-between items-center gap-x-2 sm:gap-x-6">
                                     <div className='flex justify-start items-center gap-x-4'>
                                         <div className="catring parent-megamenu flex items-center">
                                             <button onClick={toggleBox}>
@@ -168,7 +168,7 @@ const Header = () => {
                                                                             </li>
                                                                             <li className=''>
                                                                                 <NavLink to="/become-a-chef" className='!inline-flex !items-center gap-x-2'>
-                                                                                    <img src="./media/frontend/img/chef-icon.svg" className='w-[16px]' alt="Become a Chef" />
+                                                                                    <img src="/media/frontend/img/chef-icon.svg" className='w-[16px]' alt="Become a Chef" />
                                                                                     <div className='text-[16px] text-secondary hover:text-primary font-medium'>Become a Chef</div>
                                                                                 </NavLink>
                                                                             </li>
@@ -251,11 +251,11 @@ const Header = () => {
                                     <div className=''>
                                         {/*  Login & Become a chef Link*/}
                                           {!userInfo && 
-                                        <div className='flex items-center gap-1 sm:gap-2 py-2'>
+                                        <div className='flex items-center gap-1 sm:gap-2 py-2 px-0'>
                                           
                                             {/* <div className='hover:bg-transparent my-1 bg-primary hover:border transition-colors rounded '> */}
                                                 <NavLink 
-                                                    className="font-semibold font-sans px-1 !text-white border border-transparent bg-primary rounded hover:!bg-primaryDark sm:text-lg  sm:px-3"    
+                                                    className="font-semibold font-sans px-1 py-1 text-xs !text-white border border-transparent bg-primary rounded hover:!bg-primaryDark sm:text-lg  sm:px-3 sm:py-2"    
                                                     to='/become-a-chef'
                                                 >
                                                         Become A Chef
@@ -268,6 +268,84 @@ const Header = () => {
                                                     Login
                                                 </NavLink>
                                             {/* </div> */}
+
+                                            {/* <!-- user cart -->*/}
+                                            <div className="cart-btn cart-dropdown ms-0">
+                                                <NavLink className="text-light-green fw-700" to='/cart'>
+                                                    <div className="notifyBx">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="rgba(255,255,255,1)">
+                                                            <path d="M7.00488 7.99966V5.99966C7.00488 3.23824 9.24346 0.999664 12.0049 0.999664C14.7663 0.999664 17.0049 3.23824 17.0049 5.99966V7.99966H20.0049C20.5572 7.99966 21.0049 8.44738 21.0049 8.99966V20.9997C21.0049 21.5519 20.5572 21.9997 20.0049 21.9997H4.00488C3.4526 21.9997 3.00488 21.5519 3.00488 20.9997V8.99966C3.00488 8.44738 3.4526 7.99966 4.00488 7.99966H7.00488ZM7.00488 9.99966H5.00488V19.9997H19.0049V9.99966H17.0049V11.9997H15.0049V9.99966H9.00488V11.9997H7.00488V9.99966ZM9.00488 7.99966H15.0049V5.99966C15.0049 4.34281 13.6617 2.99966 12.0049 2.99966C10.348 2.99966 9.00488 4.34281 9.00488 5.99966V7.99966Z"></path>
+                                                        </svg>
+                                                        {/* <span className="userCartCount">3</span> */}
+                                                        <span className="userCartCount">
+                                                            {cartItem.reduce((total, chef) => total + chef.menu.length, 0)}
+                                                        </span>
+                                                    </div>
+
+                                                </NavLink>
+                                                <div className="cart-detail-box overflow-y-auto max-h-[85vh]">
+                                                    <div className="card">
+                                                        <div className="card-header padding-15">Your Order</div>
+                                                        <div className="card-body no-padding">
+                                                            {/* Products from Cart */}
+                                                            { cartItem.map((chef, chefIndex) => ( 
+                                                                chef.menu.map((product, menuIndex)=>(
+                                                                    <div key={menuIndex} className="cat-product-box">
+                                                                        <div className="cat-product">
+                                                                            <div className="cat-name">
+                                                                                <NavLink>
+                                                                                    <p className="text-light-green"><span className="text-dark-white">{product.quantity}x </span> {product.name}</p> 
+                                                                                    {/* <span className="text-light-white">small, chilli chicken</span> */}
+                                                                                </NavLink>
+                                                                            </div>
+                                                                            <div className="delete-btn">
+                                                                                {/* <NavLink className="text-dark-white"> <i className="far fa-trash-alt"></i>
+                                                                                </NavLink> */}
+                                                                                <button 
+                                                                                    onClick={() => dispatch(removeFromCart({chefIndex,menuIndex})) } className="text-dark-white"
+                                                                                > 
+                                                                                    <FontAwesomeIcon icon={faTrashAlt} />
+                                                                                </button>
+                                                                            </div>
+                                                                            <div className="price"> 
+                                                                                {/* <NavLink className="text-dark-white fw-500">
+                                                                                { (product?.unit_price).toLocaleString('en-PK',{ style: "currency", currency: "PKR" }) 
+                                                                                } 
+                                                                                </NavLink> */}
+                                                                                <p className="text-dark-white fw-500">
+                                                                                { (product?.unit_price).toLocaleString('en-PK',{ style: "currency", currency: "PKR" }) 
+                                                                                } 
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                )) 
+                                                        ))}
+                                                            
+                                                            <div className="item-total">
+                                                                <div className="total-price border-0"> <span className="text-dark-white fw-700">Items subtotal:</span>
+                                                                    {/* <span className="text-dark-white fw-700">$9.99</span> */}
+                                                                    <span className="text-dark-white fw-700">
+                                                                        {
+                                                                        subTotal.toLocaleString('en-PK',{ style: "currency", currency: "PKR" })
+                                                                        } 
+                                                                    </span>
+                                                                </div>
+                                                                <div className="empty-bag padding-15"> 
+                                                                    {/* <NavLink  onClick={() => setEmptyModalVisible(true)}>Empty bag</NavLink> */}
+                                                                    <button type='button' disabled={cartItem?.length===0} className='text-primary disabled:text-headGray' onClick={() => setEmptyModalVisible(true)}>Empty bag</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="card-footer padding-15"> 
+                                                            <NavLink to="/cart" className="btn-first green-btn text-custom-white full-width fw-500 !text-white hover:!text-primary focus:!text-primary">
+                                                                Proceed to Cart
+                                                            </NavLink>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                          
                                         </div>
                                             }
@@ -436,7 +514,7 @@ const Header = () => {
                                                 </div>
                                             </div> */}
                                             {/*
-                                        <!-- user notification -->*/}
+                                            <!-- user notification -->*/}
                                             {/* <!-- user cart -->*/}
                                             <div className="cart-btn cart-dropdown ms-0">
                                                 <NavLink className="text-light-green fw-700" to='/cart'>
