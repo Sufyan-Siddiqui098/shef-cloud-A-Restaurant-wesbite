@@ -50,7 +50,6 @@ const UserOrder = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        console.log(userInfo.id,'00000000000000000000000000')
         const ordersRetrieved = await handleGetOrders(authToken, { user_id: userInfo.id });
         // console.log("user/shef orders", ordersRetrieved);
         // Flatten the nested order details into a single array of order details
