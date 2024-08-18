@@ -105,7 +105,7 @@ export const DishDetail = () => {
               >
                 <div className="product-box">
                   <div className="relative">
-                    <div className="absolute right-2 top-2 cursor-pointer">
+                    {/* <div className="absolute right-2 top-2 cursor-pointer">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -118,8 +118,8 @@ export const DishDetail = () => {
                       {/******* When User Add To Wishlish Show This Icon  ******/}
                       {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#ec2044">
                                             <path d="M16.5 3C19.5376 3 22 5.5 22 9C22 16 14.5 20 12 21.5C9.5 20 2 16 2 9C2 5.5 4.5 3 7.5 3C9.35997 3 11 4 12 5C13 4 14.64 3 16.5 3Z"></path>
-                                        </svg> */}
-                    </div>
+                                        </svg>
+                    </div> */}
                     <img
                       src={`${
                         dish.logo && isValidURL(dish.logo)
