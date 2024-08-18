@@ -46,7 +46,7 @@ const CategorizeDishes = () => {
             Category Foods Plan
           </h2>
           <div className="grid grid-cols-12 gap-4 mt-6">
-            {!isFetching && categoryDishes.length < 1 && (
+            {!isFetching && categoryDishes?.length < 1 && (
               <div className=" col-span-12">
                 <p className="font-semibold text-base sm:text-xl my-2 text-headGray">
                   No Dishes
@@ -54,7 +54,7 @@ const CategorizeDishes = () => {
               </div>
             )}
             {/* Dishes  */}
-            {categoryDishes.map((dish) => (
+            {categoryDishes?.map((dish) => (
               <div
                 key={dish.id}
                 className="lg:col-span-3 sm:col-span-6 col-span-12"
