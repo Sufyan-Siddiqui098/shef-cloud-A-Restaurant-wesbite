@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../assets/css/main-style.css";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { handleFacebookLogin, handleUserLogin } from "../auth/Auth";
