@@ -77,7 +77,7 @@ const UserOrder = () => {
   
     fetchOrders();
     console.log("useEffect is running userorder");
-  }, [authToken,refetchOrder]);
+  }, [authToken,refetchOrder, userInfo.id]);
 
   useEffect(() => {
     const getDefaultSettings = async () => {
