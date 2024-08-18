@@ -20,7 +20,7 @@ export const DishDetailSingle = () => {
   // Description Tabs End
 
   // Plus Minus Quantity Start
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   // If already in cart then show the count
   const [alreadyInCartCount, setAlreadyInCartCount] = useState(0);
   const handleIncrement = () => {
