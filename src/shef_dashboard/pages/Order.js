@@ -265,7 +265,7 @@ export const Order = () => {
               </div>
               <div>
                 <h3 className="text-xl font-semibold leading-tight uppercase pt-2 mb-3 mt-6 border-b pb-2">
-                  Active Orders(1)
+                  Active Orders ({ orderDetails?.filter(order => order.status !== "canceled")?.length})
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="text-left w-full menuTable border-0">
