@@ -36,17 +36,7 @@ export const handleGetOrders = async (token) => {
     console.error("Error While fetching orders\n", error);
   }
 };
-// ALready in the file "default_setting" - Remove the below one after getting it from "default_setting "file 
-export const handleDefaultSettings = async (token) => {
-  try {
-    const { data } = await api.get("/api/default_settings", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return data;
-  } catch (error) {
-    console.error("Error While fetching orders\n", error);
-  }
-};
+
 export const handleChangeOrderStatus = async (token, payload, id) => {
   try {
     // console.log(token, payload, id);
