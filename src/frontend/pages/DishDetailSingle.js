@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../store/slice/cart";
 import { toast } from "react-toastify";
@@ -152,11 +152,14 @@ export const DishDetailSingle = () => {
     console.log("Count useEffect is running ");
   }, [dish, cartItem]);
 
+  const navigate = useNavigate();
+
   return (
     <div>
       <Header />
       <div className="container mx-auto my-8 lg:px-2 px-4">
-        <Link to="/all-dish-detail">
+        {/* Back Button */}
+        <div className="cursor-pointer" onClick={()=> navigate(-1)}>
           <div className="flex items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -171,7 +174,7 @@ export const DishDetailSingle = () => {
               <h1 className="text-lg font-semibold mb-0">Back</h1>
             </div>
           </div>
-        </Link>
+        </div>
         <div className="mt-8 border p-4 rounded-xl">
           <div className="grid grid-cols-12 gap-6">
             <div className="lg:col-span-5 col-span-12">
