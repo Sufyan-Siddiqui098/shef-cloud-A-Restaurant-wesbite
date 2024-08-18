@@ -74,9 +74,9 @@ function App() {
       <Route path="/faqs" element={<Faqs />} />
       <Route path="/categorize-dishes/:foodCategoryId?" element={<CategorizeDishes />} />
       <Route path="/all-chef" element={<AllChef />} />
+        <Route path="/cart" element={<CartPage />} />
       {/* Protected Route */}
       <Route element={<AuthProtected/>}>
-        <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout/:chefId" element={<Checkout />} />
         <Route path="/checkout-all" element={<CheckoutAll />} />
         <Route path="/order-summary" element={<OrderSummary />} />
