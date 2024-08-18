@@ -6,7 +6,7 @@ const AuthProtected = () => {
     const {userInfo} = useSelector(state => state.user);
 
     if(!userInfo){
-        return <Navigate to="/" replace />
+        return <Navigate to="/login" replace />
     }
 
     return <Outlet/>
