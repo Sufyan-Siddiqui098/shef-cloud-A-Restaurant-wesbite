@@ -26,10 +26,11 @@ export const handleCreateOrder = async (token, payload) => {
     throw new Error(err || error.message);
   }
 };
-export const handleGetOrders = async (token) => {
+export const handleGetOrders = async (token,params) => {
   try {
     const { data } = await api.get("/api/order", {
       headers: { Authorization: `Bearer ${token}` },
+      params,
     });
     return data;
   } catch (error) {

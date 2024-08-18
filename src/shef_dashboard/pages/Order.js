@@ -9,7 +9,7 @@ import { handleGetDefaultSetting } from "../../services/default_setting";
 
 export const Order = () => {
   const { authToken } = useSelector((state) => state.user);
-  // const {userInfo} = useSelector(state => state.user);
+  const {userInfo} = useSelector(state => state.user);
   const [defaultSettings, setDefaultSettings] = useState([]);
   const [orderDetails, setOrderDetails] = useState([]);
   // Pending
@@ -27,7 +27,7 @@ export const Order = () => {
     const fetchOrders = async () => {
       try {
         setIsFetching(true);
-        const ordersRetrieved = await handleGetOrders(authToken);
+        const ordersRetrieved = await handleGetOrders(authToken, { chef_id: userInfo.id });
         // console.log("Order detail of shef ", ordersRetrieved, defaultSettings);
         setOrderDetails(ordersRetrieved);
         setAllOrders(ordersRetrieved);
