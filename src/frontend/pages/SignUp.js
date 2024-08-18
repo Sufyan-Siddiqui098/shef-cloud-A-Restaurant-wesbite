@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { handleUserSignUp } from "../auth/Auth";
 import { toast } from "react-toastify";
+import Header from "../components/Header";
 
 const SignUp = () => {
   const [credentials, setCredentials] = useState({
@@ -118,6 +119,7 @@ const SignUp = () => {
   };
   return (
     <>
+    <Header/>
       <div className="position-relative h-[97vh] md:px-2 px-4">
         <div className="lg:w-2/3 w-full mx-auto h-full flex items-center my-auto py-5">
           <div className="authForm">
