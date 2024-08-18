@@ -227,7 +227,7 @@ const UserOrder = () => {
                         </td> 
                        
                         {detail?.reviews?.length<1 && <td>
-                          <button onClick={()=> { setReviewAndRating(prev =>{ return{...prev, "order_id": detail.id, order_code: detail.order_id} } ); setIsOpen(true) }} className="text-[14px] text-primaryGreen hover:underline focus:underline mb-0 leading-tight">
+                          <button disabled={detail?.status?.toLowerCase() !=="delivered"} onClick={()=> { setReviewAndRating(prev =>{ return{...prev, "order_id": detail.id, order_code: detail.order_id} } ); setIsOpen(true) }} className="text-[14px] text-primaryGreen hover:underline focus:underline mb-0 leading-tight disabled:text-[#ccc] disabled:cursor-not-allowed">
                             Add Rating
                           </button>
                         </td>}
