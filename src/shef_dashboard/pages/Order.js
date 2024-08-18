@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../shef_dashboard/components/Header";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { handleChangeOrderStatus, handleGetOrders } from "../../services/order";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -40,7 +40,7 @@ export const Order = () => {
     
     fetchOrders();
     console.log("useEffect is running for fetching order");
-  }, [authToken, refetchOrder]);
+  }, [authToken, refetchOrder, userInfo.id]);
 
   // Default Settings API
   useEffect(()=> {
@@ -135,12 +135,12 @@ export const Order = () => {
             </div>
             <div className="grid grid-cols-12 gap-3">
               <div className="lg:col-span-4 md:col-span-6 col-span-12">
-                <input 
-                    type="date" 
-                    className="w-full"
-                    value={filterDate}
-                    onChange={handleDateChange}
-                  />
+                <input
+                  type="date"
+                  className="w-full"
+                  value={filterDate}
+                  onChange={handleDateChange}
+                />
               </div>
               <div className="lg:col-span-4 md:col-span-6 col-span-12 lg:block hidden"></div>
               <div className="lg:col-span-4 md:col-span-6 col-span-12">
@@ -263,7 +263,12 @@ export const Order = () => {
               */}
               <div>
                 <h3 className="text-xl font-semibold leading-tight uppercase pt-2 mb-3 mt-6 border-b pb-2">
-                  Active Orders ({ orderDetails?.filter(order => order.status !== "canceled")?.length})
+                  Active Orders (
+                  {
+                    orderDetails?.filter((order) => order.status !== "canceled")
+                      ?.length
+                  }
+                  )
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="text-left w-full menuTable border-0">
@@ -286,10 +291,16 @@ export const Order = () => {
                           // Calculate if the order can be cancelled or confirmed based on the timespan
                           const orderCreatedTime = moment(order.created_at);
                           const currentTime = moment();
-                          const timeSinceCreation = moment.duration(currentTime.diff(orderCreatedTime));
+                          const timeSinceCreation = moment.duration(
+                            currentTime.diff(orderCreatedTime)
+                          );
 
-                          const canCancel = timeSinceCreation.asMinutes() <= defaultSettings.cancellation_time_span;
-                          const canConfirm = timeSinceCreation.asMinutes() <= defaultSettings.confirmation_time_span;
+                          const canCancel =
+                            timeSinceCreation.asMinutes() <=
+                            defaultSettings?.cancellation_time_span;
+                          const canConfirm =
+                            timeSinceCreation.asMinutes() <=
+                            defaultSettings?.confirmation_time_span;
                           return (
                             <tr className="border-b" key={detail.id}>
                               <td>
@@ -357,31 +368,68 @@ export const Order = () => {
                                 </h4>
                               </td>
                               <td>
-                               <select
+                                <select
                                   className="text-sm font-medium text-headGray"
-                                  onChange={(e) => handleStatusChange(e, order.id)}
+                                  onChange={(e) =>
+                                    handleStatusChange(e, order.id)
+                                  }
                                   defaultValue={order.status}
                                 >
-                                  <option value="pending" hidden={true}>Pending</option>
-                                  <option value="accepted" hidden={order.status!=='pending' && !canConfirm }>
+                                  <option value="pending" hidden={true}>
+                                    Pending
+                                  </option>
+                                  <option
+                                    value="accepted"
+                                    hidden={
+                                      order.status !== "pending" && !canConfirm
+                                    }
+                                  >
                                     In Process
                                   </option>
-                                  <option value="delivered" hidden={order.status!=='accepted'}>
+                                  <option
+                                    value="delivered"
+                                    hidden={order.status !== "accepted"}
+                                  >
                                     Delivered
                                   </option>
-                                  <option value="canceled" hidden={order.status==='accepted' || order.status==='delivered' || !canCancel }>{/*when do you don't want to show cancel?*/}
+                                  <option
+                                    value="canceled"
+                                    hidden={
+                                      order.status === "accepted" ||
+                                      order.status === "delivered" ||
+                                      !canCancel
+                                    }
+                                  >
+                                    {/*when do you don't want to show cancel?*/}
                                     Cancelled
                                   </option>
                                 </select>
                               </td>
                             </tr>
-                          )})
-                        )}
+                          );
+                        })
+                      )}
+
+                      {orderDetails?.length < 1 && !isFetching && (
+                        <tr>
+                          <td colSpan="5" className="font-semibold text-headGray">No Order Found</td>
+                        </tr>
+                      )}
+                      {isFetching && (
+                        <tr>
+                          <td
+                            colSpan="8"
+                            className="text-cente font-semibold text-headGray"
+                          >
+                            Fetching Orders...
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
               </div>
-            </div> 
+            </div>
           </div>
           {/* <div className="mt-6 p-5 bg-white rounded-xl border border-borderClr">
             <div>
