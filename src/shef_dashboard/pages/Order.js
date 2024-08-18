@@ -9,7 +9,7 @@ import { handleGetDefaultSetting } from "../../services/default_setting";
 
 export const Order = () => {
   const { authToken } = useSelector((state) => state.user);
-  // const {userInfo} = useSelector(state => state.user);
+  const {userInfo} = useSelector(state => state.user);
   const [defaultSettings, setDefaultSettings] = useState([]);
   const [orderDetails, setOrderDetails] = useState([]);
   // Pending
@@ -27,7 +27,7 @@ export const Order = () => {
     const fetchOrders = async () => {
       try {
         setIsFetching(true);
-        const ordersRetrieved = await handleGetOrders(authToken);
+        const ordersRetrieved = await handleGetOrders(authToken, { chef_id: userInfo.id });
         // console.log("Order detail of shef ", ordersRetrieved, defaultSettings);
         setOrderDetails(ordersRetrieved);
         setAllOrders(ordersRetrieved);
@@ -168,7 +168,7 @@ export const Order = () => {
             </div>
 
             <div>
-              <h3 className="text-xl font-semibold leading-tight uppercase pt-2 mb-3 mt-6 border-b pb-2">
+              {/* <h3 className="text-xl font-semibold leading-tight uppercase pt-2 mb-3 mt-6 border-b pb-2">
                 Food item Count
               </h3>
               <div className="overflow-x-auto">
@@ -211,7 +211,6 @@ export const Order = () => {
                               <h4 className="text-[14px] mb-0 leading-tight">
                                 {detail.user_menu?.spice_level?.name}
                               </h4>
-                              {/*spice level id is only being sent*/}
                             </td>
                             <td>
                               <h4 className="text-[14px] mb-0 leading-tight">
@@ -243,13 +242,11 @@ export const Order = () => {
                           </tr>
                         ))
                       )}
-                    {/* If no order fetched or no matched found while searching */}
                     {orderDetails?.length < 1 && !isFetching && (
                       <tr>
                         <td>No Order Found</td>
                       </tr>
                     )}
-                    {/* When api is fetching */}
                     {isFetching && (
                       <tr >
                         <td
@@ -263,6 +260,7 @@ export const Order = () => {
                   </tbody>
                 </table>
               </div>
+              */}
               <div>
                 <h3 className="text-xl font-semibold leading-tight uppercase pt-2 mb-3 mt-6 border-b pb-2">
                   Active Orders ({ orderDetails?.filter(order => order.status !== "canceled")?.length})
@@ -383,7 +381,7 @@ export const Order = () => {
                   </table>
                 </div>
               </div>
-            </div>
+            </div> 
           </div>
           {/* <div className="mt-6 p-5 bg-white rounded-xl border border-borderClr">
             <div>
