@@ -107,6 +107,7 @@ export const MyMenu = () => {
     setCurrentStep(0);
     // reset chef menu with initial state
     setChefMenu(chefMenuInitialState);
+    setIsUpdateDish(false);
     // If it is true OnSubmit will handle update-menu API
     setIsUpdateDish(false);
   };
@@ -268,7 +269,9 @@ export const MyMenu = () => {
         return;
       }
     }
-    onSubmit();
+    if(isUpdateDish){
+      onSubmit();
+    }
     setCurrentStep(currentStep + 1);
   };
 
@@ -365,9 +368,11 @@ export const MyMenu = () => {
   const [isPending, setIsPending] = useState(false);
 
   // console.log("ChefMenu ", chefMenu);
+  // console.log("update state", isUpdateDish)
   const onSubmit = async (e) => {
     try {
       setIsPending(true);
+      toast.dismiss();
       if (isUpdateDish) {
         // Handle update api
         console.log("Update-menu is called");
@@ -378,7 +383,7 @@ export const MyMenu = () => {
         );
         // --- When req is successfull
         toast.success(updateMenu.message);
-        setIsUpdateDish(false);
+        // setIsUpdateDish(false);
       }
       // handle create menu api
       else {
@@ -386,7 +391,7 @@ export const MyMenu = () => {
         const response = await handleCreateMenu(authToken, chefMenu);
         toast.success(response.message);
         // to close after screen
-        closeStepFormModal();
+        // closeStepFormModal();
       }
       // refetch all dishes
       const updateDishes = await handleGetAllDishes(authToken);
