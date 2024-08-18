@@ -72,3 +72,16 @@ export const handleOrderReviewAndRating = async (token, payload) => {
     throw new Error(error?.response?.data?.message || error);
   }
 };
+
+// Get Pending ORders count for Chef
+export const handleGetPendingOrdersForChef = async (shef_id, token) => {
+  try {
+    const { data } = await api.get(`/api/pending-orders/${shef_id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return data;
+  } catch (error) {
+    throw new Error(error);
+    
+  }
+} 
