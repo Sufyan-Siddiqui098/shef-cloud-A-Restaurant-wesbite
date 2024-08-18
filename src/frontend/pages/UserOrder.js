@@ -239,10 +239,10 @@ const UserOrder = () => {
                           const canCancel = timeSinceCreation.asMinutes() <= defaultSettings.cancellation_time_span;
                           return (
                             <button
-                              disabled={!canCancel}
+                              disabled={!canCancel || detail?.status === "Canceled"}
                               onClick={(e) => handleStatusChange(e, detail.id)}
-                              style={!canCancel ? { color: '#ccc', cursor: 'not-allowed' } : {}}
-                              className="text-[14px] text-primary hover:underline focus:text mb-0 leading-tight"
+                              // style={!canCancel ? { color: '#ccc', cursor: 'not-allowed' } : {}}
+                              className="text-[14px] text-primary hover:underline focus:text mb-0 leading-tight disabled:text-[#ccc] disabled:cursor-not-allowed"
                             >
                               Cancel Order
                             </button>
