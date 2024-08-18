@@ -261,8 +261,8 @@ export const DishDetailSingle = () => {
                   >
                     {`${dish?.chef?.first_name} ${dish?.chef?.last_name}`}
                   </Link>
-
-                  {/* <span className="!text-headGray">rating</span>
+                  {/* Rating */}
+                  <span className="!text-headGray">rating</span>
 
                   <div className="inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]">
                     <svg
@@ -275,9 +275,11 @@ export const DishDetailSingle = () => {
                       <path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path>
                     </svg>
                     <h4 className="text-base leading-tight mb-0 font-semibold">
-                      4.5 <span className="text-[12px] font-normal">(30)</span>
+                      {/* 4.5  */}
+                      {dish?.average_rating ? parseFloat(dish.average_rating).toFixed(1): 0}
+                      <span className="text-[12px] font-normal"> ({dish?.total_reviews}) </span>
                     </h4>
-                  </div> */}
+                  </div>
                 </div>
 
                 {/* ---- Availibility ---- */}
@@ -441,7 +443,7 @@ export const DishDetailSingle = () => {
               <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3 mt-2">
                 {/* 1 Serving Box */}
                 <label
-                  className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio"
+                  className="flex items-center justify-between cursor-poiter border border-borderClr rounded-lg px-3 py-4 prtionRadio"
                   htmlFor="portion_1"
                 >
                   <div className="flex items-center gap-x-3 ">
@@ -547,7 +549,7 @@ export const DishDetailSingle = () => {
               <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-3 mt-2">
                 {/* 1 Spice Box */}
                 <label
-                  className="flex items-center justify-between cursor-pointer border border-borderClr rounded-lg px-3 py-4 prtionRadio"
+                  className="flex items-center justify-between cursor-poiter border border-borderClr rounded-lg px-3 py-4 prtionRadio"
                   htmlFor="spice_1"
                 >
                   <div className="flex items-center gap-x-3 ">
