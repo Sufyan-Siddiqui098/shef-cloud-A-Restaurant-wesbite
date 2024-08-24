@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../store/slice/user";
 import { toast } from "react-toastify";
 import Header from "../components/Header";
+import Modal from "react-modal";
+
 
 const SignIn = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -66,6 +68,21 @@ const SignIn = () => {
     },
     onError: (errorResponse) => console.log(errorResponse),
   });
+
+  // Forget Password Modal 
+  const [isOpen, setIsOpen] = useState(false);
+  const onRequestClose = () => {
+    setIsOpen(false);
+  };
+  const forgetPasswordSubmit = async(e) => {
+    e.preventDefault();
+    try {
+      console.log(e.target.email.value)
+    } catch (error) {
+      console.error(error)
+      toast.error(error.message)
+    }
+  }
 
   return (
     <>
@@ -142,7 +159,9 @@ const SignIn = () => {
                       placeholder="Password"
                     />
                     <div className="forgotTxt">
-                      Forgot your password? &nbsp;
+                     <button type="button" onClick={()=> setIsOpen(true)} className="hover:underline mr-2 "> Forgot your password? 
+                     </button>
+                     {/* &nbsp; */}
                       <Link className="font-semibold" to="/register">
                         Sign up
                       </Link>
@@ -167,6 +186,51 @@ const SignIn = () => {
           </div>
         </div>
       </div>
+
+      {/* Forget Password Modla  */}
+      <Modal
+        isOpen={isOpen}
+        onRequestClose={onRequestClose}
+        contentLabel="Reviews"
+        style={{content: {
+          height: "max-content",
+          top: "20%",
+          maxWidth: "max-content",
+          marginLeft: "auto",
+          marginRight: "auto"
+        }}}
+      >
+        <div className="">
+          {/* Modal content here */}
+          <div className="flex items-center justify-between border-b pb-3 gap-3">
+            <h2 className="text-lg font-semibold leading-tight mb-0">
+              Forget Your Password
+            </h2>
+            <button onClick={onRequestClose}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="rgba(0,0,0,1)"
+              >
+                <path d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z"></path>
+              </svg>
+            </button>
+          </div>
+    
+
+          <form onSubmit={forgetPasswordSubmit} className=" mt-8 " action="">
+            <p className="text-xs sm:text-base"> Enter your user account's email address to reset your password.</p>
+            <input className="my-2  mb-4" type="email" required name="email" placeholder="Enter your email address" />
+            <button 
+              type="submit"
+              className="my-6  bg-primary text-white text-lg w-full uppercase px-6 py-2 font-semibold rounded-lg disabled:opacity-60 mt-auto">
+                Confirm
+            </button>
+          </form>
+        </div>
+      </Modal>
     </>
   );
 };
