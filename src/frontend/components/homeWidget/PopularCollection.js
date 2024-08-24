@@ -90,7 +90,7 @@ const PopularCollection = () => {
                 <div className="md:col-span-3 col-span-12">
                   <div className="ex-collection-box h-full relative rounded-lg overflow-hidden">
                     <img
-                      src="./media/frontend/img/about/blog/740x442/blog-1.jpg"
+                      src="/media/frontend/img/about/blog/740x442/blog-1.jpg"
                       className="img-fluid full-width h-full object-cover"
                       alt="Dish"
                     />

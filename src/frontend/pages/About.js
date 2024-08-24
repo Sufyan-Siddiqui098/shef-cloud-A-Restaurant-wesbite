@@ -50,15 +50,15 @@ export const About = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="my-auto">
                                     <div className="histry-img mb-xs-20">
-                                        <img src="./media/frontend/img/about/blog/255x200/about-section-3.jpg" className="img-fluid full-width" alt="Histry" />
+                                        <img src="/media/frontend/img/about/blog/255x200/about-section-3.jpg" className="img-fluid full-width" alt="Histry" />
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 gap-4">
                                     <div className="histry-img">
-                                        <img src="./media/frontend/img/about/blog/255x200/about-section-1.jpg" className="img-fluid full-width" alt="Histry"/>
+                                        <img src="/media/frontend/img/about/blog/255x200/about-section-1.jpg" className="img-fluid full-width" alt="Histry"/>
                                     </div>
                                     <div className="histry-img">
-                                        <img src="./media/frontend/img/about/blog/255x200/about-section-2.jpg" className="img-fluid full-width" alt="Histry"/>
+                                        <img src="/media/frontend/img/about/blog/255x200/about-section-2.jpg" className="img-fluid full-width" alt="Histry"/>
                                     </div>
                                 </div>
                             </div>
@@ -79,7 +79,7 @@ export const About = () => {
                             <div className="how-it-works-box arrow-1">
                                 <div className="how-it-works-box-inner"> 
                                     <div className="icon-box">
-                                        <img src="./media/frontend/img/001-search.png" alt="icon"/>
+                                        <img src="/media/frontend/img/001-search.png" alt="icon"/>
                                         <span className="number-box">01</span>
                                     </div>
                                     <h6 className='font-semibold text-xl uppercase !mb-2'>Search</h6>
@@ -91,7 +91,7 @@ export const About = () => {
                             <div className="how-it-works-box arrow-2">
                                 <div className="how-it-works-box-inner"> 
                                     <div className="icon-box">
-                                        <img src="./media/frontend/img/004-shopping-bag.png" alt="icon"/>
+                                        <img src="/media/frontend/img/004-shopping-bag.png" alt="icon"/>
                                         <span className="number-box">02</span>
                                     </div>
                                     <h6 className='font-semibold text-xl uppercase !mb-2'>Select</h6>
@@ -103,7 +103,7 @@ export const About = () => {
                             <div className="how-it-works-box arrow-1">
                                 <div className="how-it-works-box-inner"> 
                                     <div className="icon-box">
-                                        <img src="./media/frontend/img/002-stopwatch.png" alt="icon"/>
+                                        <img src="/media/frontend/img/002-stopwatch.png" alt="icon"/>
                                         <span className="number-box">03</span>
                                     </div>
                                     <h6 className='font-semibold text-xl uppercase !mb-2'>Order</h6>
@@ -115,7 +115,7 @@ export const About = () => {
                             <div className="how-it-works-box">
                                 <div className="how-it-works-box-inner"> 
                                     <div className="icon-box">
-                                        <img src="./media/frontend/img/003-placeholder.png" alt="icon"/>
+                                        <img src="/media/frontend/img/003-placeholder.png" alt="icon"/>
                                         <span className="number-box">04</span>
                                     </div>
                                     <h6 className='font-semibold text-xl uppercase !mb-2'>Enjoy</h6>
