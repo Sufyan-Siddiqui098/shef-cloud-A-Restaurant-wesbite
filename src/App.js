@@ -79,7 +79,7 @@ function App() {
       <Route element={<AuthProtected/>}>
         <Route path="/checkout/:chefId" element={<Checkout />} />
         <Route path="/checkout-all" element={<CheckoutAll />} />
-        <Route path="/order-summary" element={<OrderSummary />} />
+        <Route path="/order-summary/:orderId" element={<OrderSummary />} />
         <Route path="/order" element={<UserOrder />} />
         <Route path="/profile" element={<UserProfile />} />
       </Route>
