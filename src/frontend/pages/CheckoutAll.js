@@ -215,33 +215,23 @@ export const CheckoutAll = () => {
     }, 0);
 
     // Sub total = chef-earning * quantity + platform_price * quantity
-    const sub_total = cartItem.reduce((accChef, chef) => {
-      const chefTotal = chef.menu.reduce((accMenu, menu) => {
-        const chef_earning_fee = menu.chef_earning_fee || 0;
-        const platformPercentageFee = (defaultSetting.platform_charge_percentage / 100) * chef_earning_fee;
-        const platform_price = platformPercentageFee > defaultSetting.platform_charge 
-          ? platformPercentageFee 
-          : defaultSetting.platform_charge;
-    
-        return (
-          accMenu +
-          chef_earning_fee * menu.quantity + 
-          platform_price * menu.quantity
-        );
-      }, 0);
-      return accChef + chefTotal;
-    }, 0);
-    // ---- OLDER
     // const sub_total = cartItem.reduce((accChef, chef) => {
     //   const chefTotal = chef.menu.reduce((accMenu, menu) => {
+    //     const chef_earning_fee = menu.chef_earning_fee || 0;
+    //     const platformPercentageFee = (defaultSetting.platform_charge_percentage / 100) * chef_earning_fee;
+    //     const platform_price = platformPercentageFee > defaultSetting.platform_charge 
+    //       ? platformPercentageFee 
+    //       : defaultSetting.platform_charge;
+    
     //     return (
     //       accMenu +
-    //       (menu.chef_earning_fee || 0) * menu.quantity +
-    //       (menu.platform_price || 0) * menu.quantity
+    //       chef_earning_fee * menu.quantity + 
+    //       platform_price * menu.quantity
     //     );
     //   }, 0);
     //   return accChef + chefTotal;
-    // }, 0);
+    // }, 0);  // NOt necessary for now
+    
 
     // Delivery
     const deliverPriceSum = cartItem.reduce((accChef, chef) => {
@@ -256,6 +246,35 @@ export const CheckoutAll = () => {
       }, 0);
       return accChef + chefTotal;
     }, 0);
+    
+
+    // Platform
+    // *********** In case if we need it ***********
+    const platformPriceSum = cartItem.reduce((accChef, chef) => {
+      const chefTotal = chef.menu.reduce((accMenu, menu) => {
+        const chef_earning_fee = menu.chef_earning_fee || 0;
+        const platformPercentageFee = (defaultSetting.platform_charge_percentage / 100) * chef_earning_fee;
+        const platform_price = platformPercentageFee > defaultSetting.platform_charge 
+          ? platformPercentageFee 
+          : defaultSetting.platform_charge;
+    
+        return accMenu + platform_price * menu.quantity;
+      }, 0);
+      return accChef + chefTotal;
+    }, 0);
+
+    // ---- OLDER
+    // const sub_total = cartItem.reduce((accChef, chef) => {
+    //   const chefTotal = chef.menu.reduce((accMenu, menu) => {
+    //     return (
+    //       accMenu +
+    //       (menu.chef_earning_fee || 0) * menu.quantity +
+    //       (menu.platform_price || 0) * menu.quantity
+    //     );
+    //   }, 0);
+    //   return accChef + chefTotal;
+    // }, 0);
+
     // ---- OLDER
     // const deliverPriceSum = cartItem.reduce((accChef, chef) => {
     //   const chefTotal = chef.menu.reduce((accMenu, menu) => {
@@ -264,20 +283,6 @@ export const CheckoutAll = () => {
     //   return accChef + chefTotal;
     // }, 0);
 
-    // Platform
-    // *********** In case if we need it ***********
-    // const platformPriceSum = cartItem.reduce((accChef, chef) => {
-    //   const chefTotal = chef.menu.reduce((accMenu, menu) => {
-    //     const chef_earning_fee = menu.chef_earning_fee || 0;
-    //     const platformPercentageFee = (defaultSetting.platform_charge_percentage / 100) * chef_earning_fee;
-    //     const platform_price = platformPercentageFee > defaultSetting.platform_charge 
-    //       ? platformPercentageFee 
-    //       : defaultSetting.platform_charge;
-    
-    //     return accMenu + platform_price * menu.quantity;
-    //   }, 0);
-    //   return accChef + chefTotal;
-    // }, 0);
     // --- Older
     // const platformPriceSum = cartItem.reduce((accChef, chef) => {
     //   const chefTotal = chef.menu.reduce((accMenu, menu) => {
@@ -286,16 +291,17 @@ export const CheckoutAll = () => {
     //   return accChef + chefTotal;
     // }, 0);
 
-    console.log("Summary amount is calculated for user");
+    // console.log("Summary amount is calculated for user");
     // user Summary
     setOrderSummaryForUser((prev) => ({
       ...prev,
       chef_earning_price: chef_earning_sum,
-      subTotal: sub_total,
+      // subTotal: sub_total,  
+      subTotal: chef_earning_sum,   // -- changing to hold only chef earning
       deliveryFee: deliverPriceSum,
-      // platformFee: platformPriceSum || 0,
-      // total: sub_total + deliverPriceSum + (platformPriceSum || 0) + (orderSummaryForUser?.shefTip || 0)
-      total: sub_total + deliverPriceSum + (orderSummaryForUser?.shefTip || 0),
+      platformFee: platformPriceSum || 0,
+      total: chef_earning_sum + deliverPriceSum + (platformPriceSum || 0) + (orderSummaryForUser?.shefTip || 0)
+      // total: sub_total + deliverPriceSum + (orderSummaryForUser?.shefTip || 0),  
     }));
   }, [cartItem, orderSummaryForUser.shefTip, defaultSetting]);
 
@@ -683,6 +689,7 @@ export const CheckoutAll = () => {
                     Delivery time <span className="text-primary">*</span>
                   </h4>
                   <input
+                    min={new Date().toISOString().slice(0, 16)}
                     required
                     className="border rounded-md w-full"
                     type="datetime-local"
