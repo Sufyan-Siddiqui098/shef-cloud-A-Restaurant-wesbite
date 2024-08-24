@@ -679,6 +679,7 @@ export const Checkout = () => {
                     Delivery time <span className="text-primary">*</span>
                   </h4>
                   <input
+                    min={new Date().toISOString().slice(0, 16)}
                     required
                     className="border rounded-md w-full"
                     type="datetime-local"
