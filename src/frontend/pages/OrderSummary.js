@@ -1,14 +1,44 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useRef, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import Header from '../components/Header'
+import { useSelector } from 'react-redux';
+import { handleGetSingleOrder } from '../../services/order';
+import { useReactToPrint } from 'react-to-print';
 
 export const OrderSummary = () => {
+    const [ order, setOrder ] = useState([]);
+    // Order id 
+    const { orderId } = useParams();
+    // from redux
+    const { authToken, userInfo } = useSelector((state) => state.user);
+
+    const receiptRef = useRef()
+    // TO print Receipt
+    const handlePrint = useReactToPrint({
+        content: () => receiptRef.current,
+      });
+
+    // Fetch order
+    useEffect(()=> {
+        const fetchSingleOrder = async() => {
+            try {
+                const fettchedOrder = await handleGetSingleOrder(orderId, authToken, {user_id: userInfo.id})
+                console.log("fetched order , ", fettchedOrder)
+                setOrder(fettchedOrder);
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+        fetchSingleOrder();
+        console.log("UseEffect for order summary ")
+    }, [orderId, authToken, userInfo ])
     return (
         <>
             <Header />
             <div className='container mx-auto'>
                 <div className="my-12">
-                    <div className="border border-borderClr !rounded-xl p-6">
+                    {/* <div className="border border-borderClr !rounded-xl p-6">
                         <div className="tracking-details p-relative text-center">
                             <h5 className="text-light-black fw-600">Guajillo Grilled Shrimps</h5>
                             <span className="text-light-white">Estimated Delivery time</span>
@@ -56,9 +86,9 @@ export const OrderSummary = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {/* <!-- recipt --> */}
-                    <div className="recipt-sec padding-20 mt-4 !rounded-xl">
+                    <div ref={receiptRef} className="recipt-sec padding-20 mt-4 !rounded-xl">
                         <div className="">
                             <div className="grid grid-cols-12 gap-6">
                                 <div className="md:col-span-6 col-span-12">
@@ -109,7 +139,7 @@ export const OrderSummary = () => {
                                         <h5 className="mb-3 border-b border-primary border-dashed pb-2 font-semibold text-xl uppercase text-secondary tracking-widest">
                                             Your Order 
                                             <span>
-                                                <Link className="fs-12">Print recipt</Link>
+                                                <Link onClick={handlePrint} className="fs-12">Print recipt</Link>
                                             </span>
                                         </h5>
                                         <p className="title text-light-white">
@@ -119,13 +149,13 @@ export const OrderSummary = () => {
                                     {/* Chef #1 Order */}
                                     <div className='bg-primaryLight p-4 rounded-lg mt-4'>
                                         <div className='flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg'>
-                                            <img src='./media/frontend/img/banner/female-chef.png' className='object-top rounded-full w-[30px] object-cover h-[30px]' alt='title' />
+                                            <img src='/media/frontend/img/banner/female-chef.png' className='object-top rounded-full w-[30px] object-cover h-[30px]' alt='title' />
                                             <Link to="/shef-detail" className='!underline !text-secondary text-base font-semibold'> Shef Swarnamali</Link>
                                         </div>
                                         {/* Order Box */}
                                         <div className='flex items-center justify-between border border-primary border-dashed rounded-lg p-2 gap-x-2 mt-4'>
                                             <div className='flex items-center gap-x-2 w-[65%]'>
-                                                <img src='./media/frontend/img/restaurants/255x104/order-2.jpg' className='object-top rounded-lg w-[60px] object-cover h-[60px]' alt='title' />
+                                                <img src='/media/frontend/img/restaurants/255x104/order-2.jpg' className='object-top rounded-lg w-[60px] object-cover h-[60px]' alt='title' />
                                                 <div>
                                                     <h3 className='mb-1 text-base font-semibold leading-tight'>Guajillo Grilled Shrimps </h3>
                                                     <h4 className='text-lg fontsemibold mb-0'>x $13.99</h4>
@@ -135,13 +165,13 @@ export const OrderSummary = () => {
                                         </div>
                                     </div>
                                     {/* Chef #2 Order */}
-                                    <div className='bg-primaryLight p-4 rounded-lg mt-4'>
+                                    {/* <div className='bg-primaryLight p-4 rounded-lg mt-4'>
                                         <div className='flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg'>
                                             <img src='./media/frontend/img/banner/chef-8.webp' className='object-top rounded-full w-[30px] object-cover h-[30px]' alt='title' />
                                             <Link to="/shef-detail" className='!underline !text-secondary text-base font-semibold'> Shef Carla</Link>
                                         </div>
                                         {/* Order Box */}
-                                        <div className='flex items-center justify-between border border-primary border-dashed rounded-lg p-2 gap-x-2 mt-4'>
+                                        {/* <div className='flex items-center justify-between border border-primary border-dashed rounded-lg p-2 gap-x-2 mt-4'>
                                             <div className='flex items-center gap-x-2 w-[65%]'>
                                                 <img src='./media/frontend/img/restaurants/255x104/order-1.jpg' className='object-top rounded-lg w-[60px] object-cover h-[60px]' alt='title' />
                                                 <div>
@@ -150,8 +180,8 @@ export const OrderSummary = () => {
                                                 </div>
                                             </div>
                                             <div className='text-lg font-semibold pr-2'> x2  </div>
-                                        </div>
-                                    </div>
+                                        </div> */}
+                                    {/*</div> */}
                                 </div>
                             </div>
                         </div>
