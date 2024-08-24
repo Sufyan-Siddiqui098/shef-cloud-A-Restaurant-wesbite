@@ -199,7 +199,7 @@ const UserOrder = () => {
                         </td>
                         <td>
                           <Link
-                            to="/order-summary"
+                            to={detail?.status?.toLowerCase()!=="canceled" ? `/order-summary/${detail.id}`: ""}
                             className="text-[14px] mb-0 leading-tight font-semibold"
                           >
                             {detail.dish_name}
