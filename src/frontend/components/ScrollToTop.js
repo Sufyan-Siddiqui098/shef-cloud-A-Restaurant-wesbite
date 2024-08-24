@@ -9,7 +9,6 @@ const scrollToTopRoutes = [
   "/become-a-chef",
   "/faqs",
   "/checkout*",
-  "/order-summary",
   "/privacy-policy",
   "/terms-of-servies",
   "/homemade-food-delivery",
