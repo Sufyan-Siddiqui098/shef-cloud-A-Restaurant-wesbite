@@ -3,13 +3,12 @@ import "../assets/css/main-style.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import { handleFacebookLogin, handleUserLogin } from "../auth/Auth";
+import { handleFacebookLogin, handleForgetPassword, handleUserLogin } from "../auth/Auth";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../store/slice/user";
 import { toast } from "react-toastify";
 import Header from "../components/Header";
 import Modal from "react-modal";
-
 
 const SignIn = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -69,20 +68,30 @@ const SignIn = () => {
     onError: (errorResponse) => console.log(errorResponse),
   });
 
-  // Forget Password Modal 
+  // Forget Password Modal
+  const [forgetPassword, setForgetPassword] = useState({
+    email: "",
+    password: "",
+    password_confirmation: "",
+  });
   const [isOpen, setIsOpen] = useState(false);
   const onRequestClose = () => {
     setIsOpen(false);
   };
-  const forgetPasswordSubmit = async(e) => {
+  const forgetPasswordSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log(e.target.email.value)
+      const response = await handleForgetPassword(forgetPassword);
+      if(response.message){
+        toast(response.message)
+        onRequestClose();
+      }
+      // console.log("reponse of forget password ", response);
     } catch (error) {
-      console.error(error)
-      toast.error(error.message)
+      console.error(error);
+      toast.error(error.message);
     }
-  }
+  };
 
   return (
     <>
@@ -159,9 +168,15 @@ const SignIn = () => {
                       placeholder="Password"
                     />
                     <div className="forgotTxt">
-                     <button type="button" onClick={()=> setIsOpen(true)} className="hover:underline mr-2 "> Forgot your password? 
-                     </button>
-                     {/* &nbsp; */}
+                      <button
+                        type="button"
+                        onClick={() => setIsOpen(true)}
+                        className="hover:underline mr-2 "
+                      >
+                        {" "}
+                        Forgot your password?
+                      </button>
+                      {/* &nbsp; */}
                       <Link className="font-semibold" to="/register">
                         Sign up
                       </Link>
@@ -192,19 +207,21 @@ const SignIn = () => {
         isOpen={isOpen}
         onRequestClose={onRequestClose}
         contentLabel="Reviews"
-        style={{content: {
-          height: "max-content",
-          top: "20%",
-          maxWidth: "max-content",
-          marginLeft: "auto",
-          marginRight: "auto"
-        }}}
+        style={{
+          content: {
+            height: "max-content",
+            top: "20%",
+            maxWidth: "max-content",
+            marginLeft: "auto",
+            marginRight: "auto",
+          },
+        }}
       >
         <div className="">
           {/* Modal content here */}
           <div className="flex items-center justify-between border-b pb-3 gap-3">
             <h2 className="text-lg font-semibold leading-tight mb-0">
-              Forget Your Password
+              Reset Your Password
             </h2>
             <button onClick={onRequestClose}>
               <svg
@@ -218,15 +235,69 @@ const SignIn = () => {
               </svg>
             </button>
           </div>
-    
 
           <form onSubmit={forgetPasswordSubmit} className=" mt-8 " action="">
-            <p className="text-xs sm:text-base"> Enter your user account's email address to reset your password.</p>
-            <input className="my-2  mb-4" type="email" required name="email" placeholder="Enter your email address" />
-            <button 
+            <p className="text-xs sm:text-base">
+              {" "}
+              Enter your user account's email address and new password.
+            </p>
+            <input
+              value={forgetPassword.email}
+              onChange={(e) =>
+                setForgetPassword((prev) => {
+                  return { ...prev, email: e.target.value };
+                })
+              }
+              className="my-1"
+              type="email"
+              required
+              name="email"
+              placeholder="Enter your email address"
+            />
+            <input
+              value={forgetPassword.password}
+              onChange={(e) =>
+                setForgetPassword((prev) => {
+                  return { ...prev, password: e.target.value };
+                })
+              }
+              minLength={8}
+              className="my-1"
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Enter new Password"
+            />
+            <input
+              value={forgetPassword.password_confirmation}
+              onChange={(e) =>
+                setForgetPassword((prev) => {
+                  return { ...prev, password_confirmation: e.target.value };
+                })
+              }
+              minLength={8}
+              className={`my-1 mb-4 ${
+                forgetPassword.password_confirmation?.length > 0 &&
+                forgetPassword.password?.length > 0 &&
+                forgetPassword.password_confirmation !== forgetPassword.password &&
+                "bg-red-100"
+              }`}
+              type="password"
+              name="password_confirmation"
+              id="password_confirmation"
+              placeholder="Confirm Password"
+            />
+            <button
+              disabled={
+                forgetPassword.email?.length < 1 ||
+                forgetPassword.password_confirmation?.length < 8 ||
+                forgetPassword.password?.length < 8 ||
+                forgetPassword.password_confirmation !== forgetPassword.password
+              }
               type="submit"
-              className="my-6  bg-primary text-white text-lg w-full uppercase px-6 py-2 font-semibold rounded-lg disabled:opacity-60 mt-auto">
-                Confirm
+              className="my-6  bg-primary text-white text-lg w-full uppercase px-6 py-2 font-semibold rounded-lg disabled:cursor-not-allowed disabled:opacity-60 mt-auto"
+            >
+              Confirm
             </button>
           </form>
         </div>
