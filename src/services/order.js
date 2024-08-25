@@ -26,6 +26,7 @@ export const handleCreateOrder = async (token, payload) => {
     throw new Error(err || error.message);
   }
 };
+// Get All Orders
 export const handleGetOrders = async (token,params) => {
   try {
     const { data } = await api.get("/api/order", {
@@ -37,6 +38,18 @@ export const handleGetOrders = async (token,params) => {
     console.error("Error While fetching orders\n", error);
   }
 };
+// Get Single Order
+export const handleGetSingleOrder = async (orderId, token, params) => {
+  try {
+    const { data } = await api.get(`/api/order/${orderId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params,
+    });
+    return data;
+  } catch (error) {
+    console.error("Error While fetching orders\n", error);
+  }
+}
 
 export const handleChangeOrderStatus = async (token, payload, id) => {
   try {

@@ -38,7 +38,7 @@ export const OrderSummary = () => {
             <Header />
             <div className='container mx-auto'>
                 <div className="my-12">
-                    {/* <div className="border border-borderClr !rounded-xl p-6">
+                    <div className="border border-borderClr !rounded-xl p-6">
                         <div className="tracking-details p-relative text-center">
                             <h5 className="text-light-black fw-600">Guajillo Grilled Shrimps</h5>
                             <span className="text-light-white">Estimated Delivery time</span>
@@ -86,7 +86,7 @@ export const OrderSummary = () => {
                                 </div>
                             </div>
                         </div>
-                    </div> */}
+                    </div>
                     {/* <!-- recipt --> */}
                     <div ref={receiptRef} className="recipt-sec padding-20 mt-4 !rounded-xl">
                         <div className="">
