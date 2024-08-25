@@ -86,6 +86,26 @@ export const handleUserSignUp = async (credentials) => {
   }
 };
 
+// Forget Password 
+export const handleForgetPassword = async (credentials) => {
+  try {
+    const { data } = await api.post("/api/reset-password", credentials);
+    return data;
+  } catch (error) {
+    console.log(error);
+    if (error.response) {
+      //Error Object
+      const errorObj = error.response.data.message;
+      // Error object's key OR keys
+      const errorObjKey = Object.keys(error.response.data.message)[0];
+      //Array of Error message - getting first message
+      throw new Error(errorObj[errorObjKey][0]);
+    }
+
+    throw new Error(error.message);
+  }
+} 
+
 // Become Chef - Register
 export const handleChefSignUp = async (credentials) => {
   try {
