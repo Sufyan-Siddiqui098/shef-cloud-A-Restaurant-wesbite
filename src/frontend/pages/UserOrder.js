@@ -51,7 +51,7 @@ const UserOrder = () => {
     const fetchOrders = async () => {
       try {
         const ordersRetrieved = await handleGetOrders(authToken, { user_id: userInfo.id });
-        // console.log("user/shef orders", ordersRetrieved);
+        console.log("user/shef orders", ordersRetrieved);
         // Flatten the nested order details into a single array of order details
         const mappedOrderDetails = ordersRetrieved.reduce((acc, order) => {
           const orderDetails = order.order_details.map((detail) => ({
@@ -64,6 +64,7 @@ const UserOrder = () => {
             reviews: order?.reviews,
             created_at:order?.created_at,
             status:order?.status? order?.status?.charAt(0).toUpperCase() + order?.status?.slice(1):'',
+            delivery_time: order?.delivery_time
             // serving_size: detail.user_menu.portion_type_id,//name is not available at this time  - removed
           }));
           return acc.concat(orderDetails);
@@ -159,7 +160,8 @@ const UserOrder = () => {
                   <thead>
                     <tr className="border-b">
                       <th className="w-[15%]">Order ID</th>
-                      <th className="w-[20%]">Dish Name</th>
+                      <th className="w-[20%] max-w-max">Dish Name</th>
+                      <th className="w-[10%]">Delivery Date/Day/Time</th>
                       <th className="w-[10%]">Quantity</th>
                       <th className="w-[10%]">Spice Level</th>
                       <th className="w-[10%]">Portion Size</th>
@@ -205,6 +207,29 @@ const UserOrder = () => {
                             {detail.dish_name}
                           </Link>
                         </td>
+                        {/* Delivery date time */}
+                        <td>
+                                <h4 className="text-[14px] mb-1 leading-tight">
+                                  -{" "}
+                                  {new Date(
+                                    detail.delivery_time
+                                  ).toLocaleDateString()}
+                                </h4>
+                                <h4 className="text-[14px] mb-1 leading-tight">
+                                  -{" "}
+                                  {new Date(
+                                    detail.delivery_time
+                                  ).toLocaleDateString("en-US", {
+                                    weekday: "long",
+                                  })}
+                                </h4>
+                                <h4 className="text-[14px] mb-1 leading-tight">
+                                  -{" "}
+                                  {new Date(
+                                    detail.delivery_time
+                                  ).toLocaleTimeString()}
+                                </h4>
+                              </td>
                         <td>
                           <h4 className="text-[14px] mb-0 leading-tight">
                             x{detail.quantity}
