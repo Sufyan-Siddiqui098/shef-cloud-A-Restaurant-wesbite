@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import { Link } from "react-router-dom";
-import { handleChangeOrderStatus, handleGetOrders, handleOrderReviewAndRating } from "../../services/order";
+import {
+  handleChangeOrderStatus,
+  handleGetOrders,
+  handleOrderReviewAndRating,
+} from "../../services/order";
 import { useSelector } from "react-redux";
 import Modal from "react-modal";
 import { toast } from "react-toastify";
@@ -22,9 +26,10 @@ const UserOrder = () => {
   //     portion_size: '',
   //     serving_size: '',
   // };
+  const [isFetching, setIsFetching] = useState(false);
   const [orderDetails, setOrderDetails] = useState([]);
   const handleStatusChange = (e, id) => {
-    const newStatus = 'canceled'
+    const newStatus = "canceled";
     const saveStatus = async () => {
       try {
         if (newStatus) {
@@ -36,7 +41,7 @@ const UserOrder = () => {
           console.log(ordersRetrieved);
           if (ordersRetrieved.success) {
             toast("Order Canceled!");
-            setRefetchOrder((prevState) => !prevState)
+            setRefetchOrder((prevState) => !prevState);
           }
         }
         // setOrderDetails(ordersRetrieved);
@@ -50,7 +55,10 @@ const UserOrder = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const ordersRetrieved = await handleGetOrders(authToken, { user_id: userInfo.id });
+        setIsFetching(true);
+        const ordersRetrieved = await handleGetOrders(authToken, {
+          user_id: userInfo.id,
+        });
         console.log("user/shef orders", ordersRetrieved);
         // Flatten the nested order details into a single array of order details
         const mappedOrderDetails = ordersRetrieved.reduce((acc, order) => {
@@ -62,9 +70,11 @@ const UserOrder = () => {
             spice_level: detail.user_menu.spice_level?.name,
             portion_size: detail.user_menu.portion_size,
             reviews: order?.reviews,
-            created_at:order?.created_at,
-            status:order?.status? order?.status?.charAt(0).toUpperCase() + order?.status?.slice(1):'',
-            delivery_time: order?.delivery_time
+            created_at: order?.created_at,
+            status: order?.status
+              ? order?.status?.charAt(0).toUpperCase() + order?.status?.slice(1)
+              : "",
+            delivery_time: order?.delivery_time,
             // serving_size: detail.user_menu.portion_type_id,//name is not available at this time  - removed
           }));
           return acc.concat(orderDetails);
@@ -73,22 +83,26 @@ const UserOrder = () => {
         setOrderDetails(mappedOrderDetails);
       } catch (error) {
         console.log("Error While Fetching Orders \n", error);
+      } finally {
+        setIsFetching(false);
       }
     };
-  
+
     fetchOrders();
     console.log("useEffect is running userorder");
-  }, [authToken,refetchOrder, userInfo.id]);
+  }, [authToken, refetchOrder, userInfo.id]);
 
   useEffect(() => {
     const getDefaultSettings = async () => {
       try {
-        const retrieveDefaultSettings = await handleGetDefaultSetting(authToken);
+        const retrieveDefaultSettings = await handleGetDefaultSetting(
+          authToken
+        );
         setDefaultSettings(retrieveDefaultSettings);
       } catch (error) {
         console.log("Error While Fetching Order Settings \n", error);
       }
-    }
+    };
     getDefaultSettings();
   }, [authToken]);
 
@@ -97,33 +111,37 @@ const UserOrder = () => {
     order_id: null,
     rating: 0,
     review: "",
-    order_code: null
+    order_code: null,
   });
   const [isOpen, setIsOpen] = useState(false);
   const onRequestClose = () => {
     setIsOpen(false);
-    setReviewAndRating({order_id: null, review: "", rating: 0, order_code: null})
+    setReviewAndRating({
+      order_id: null,
+      review: "",
+      rating: 0,
+      order_code: null,
+    });
   };
 
   // Rating & review submit
-  const ratingSubmit = async() => { 
+  const ratingSubmit = async () => {
     try {
-        const payload = {};
-        payload.order_id = reviewAndRating.order_id;
-        payload.rating = reviewAndRating.rating;
-        if(reviewAndRating.review)
-            payload.review = reviewAndRating.review
-        console.log("Paylod is ", payload)
-        const respons = await handleOrderReviewAndRating(authToken, payload);
-        console.log("order reviews and rating ", respons)
-        // setReviewAndRating({order_id: null, review: "", rating: 0})
-        toast.success("Rating Submitted")
-        onRequestClose();
+      const payload = {};
+      payload.order_id = reviewAndRating.order_id;
+      payload.rating = reviewAndRating.rating;
+      if (reviewAndRating.review) payload.review = reviewAndRating.review;
+      console.log("Paylod is ", payload);
+      const respons = await handleOrderReviewAndRating(authToken, payload);
+      console.log("order reviews and rating ", respons);
+      // setReviewAndRating({order_id: null, review: "", rating: 0})
+      toast.success("Rating Submitted");
+      onRequestClose();
     } catch (error) {
-        console.log("SOmething went wrong while rating order \n", error.message)
-        toast.error(error.message || "Something went wrong while Rating")
+      console.log("SOmething went wrong while rating order \n", error.message);
+      toast.error(error.message || "Something went wrong while Rating");
     }
-  }
+  };
 
   return (
     <>
@@ -201,7 +219,11 @@ const UserOrder = () => {
                         </td>
                         <td>
                           <Link
-                            to={detail?.status?.toLowerCase()!=="canceled" ? `/order-summary/${detail.id}`: ""}
+                            to={
+                              detail?.status?.toLowerCase() !== "canceled"
+                                ? `/order-summary/${detail.id}`
+                                : ""
+                            }
                             className="text-[14px] mb-0 leading-tight font-semibold"
                           >
                             {detail.dish_name}
@@ -209,27 +231,28 @@ const UserOrder = () => {
                         </td>
                         {/* Delivery date time */}
                         <td>
-                                <h4 className="text-[14px] mb-1 leading-tight">
-                                  -{" "}
-                                  {new Date(
-                                    detail.delivery_time
-                                  ).toLocaleDateString()}
-                                </h4>
-                                <h4 className="text-[14px] mb-1 leading-tight">
-                                  -{" "}
-                                  {new Date(
-                                    detail.delivery_time
-                                  ).toLocaleDateString("en-US", {
-                                    weekday: "long",
-                                  })}
-                                </h4>
-                                <h4 className="text-[14px] mb-1 leading-tight">
-                                  -{" "}
-                                  {new Date(
-                                    detail.delivery_time
-                                  ).toLocaleTimeString()}
-                                </h4>
-                              </td>
+                          <h4 className="text-[14px] mb-1 leading-tight">
+                            -{" "}
+                            {new Date(
+                              detail.delivery_time
+                            ).toLocaleDateString()}
+                          </h4>
+                          <h4 className="text-[14px] mb-1 leading-tight">
+                            -{" "}
+                            {new Date(detail.delivery_time).toLocaleDateString(
+                              "en-US",
+                              {
+                                weekday: "long",
+                              }
+                            )}
+                          </h4>
+                          <h4 className="text-[14px] mb-1 leading-tight">
+                            -{" "}
+                            {new Date(
+                              detail.delivery_time
+                            ).toLocaleTimeString()}
+                          </h4>
+                        </td>
                         <td>
                           <h4 className="text-[14px] mb-0 leading-tight">
                             x{detail.quantity}
@@ -245,38 +268,75 @@ const UserOrder = () => {
                             {detail.portion_size}
                           </h4>
                         </td>
-                        
+
                         <td>
-                          <h4 className='text-[14px] mb-0 leading-tight'>
+                          <h4 className="text-[14px] mb-0 leading-tight">
                             {detail.status}
                           </h4>
-                        </td> 
-                       
-                        {detail?.reviews?.length<1 && <td>
-                          <button disabled={detail?.status?.toLowerCase() !=="delivered"} onClick={()=> { setReviewAndRating(prev =>{ return{...prev, "order_id": detail.id, order_code: detail.order_id} } ); setIsOpen(true) }} className="text-[14px] text-primaryGreen hover:underline focus:underline mb-0 leading-tight disabled:text-[#ccc] disabled:cursor-not-allowed">
-                            Add Rating
-                          </button>
-                        </td>}
-                        <td>
-                        {(() => {
-                          const orderCreatedTime = moment(detail.created_at);
-                          const currentTime = moment();
-                          const timeSinceCreation = moment.duration(currentTime.diff(orderCreatedTime));
-                          const canCancel = timeSinceCreation.asMinutes() <= defaultSettings.cancellation_time_span;
-                          return (
+                        </td>
+
+                        {detail?.reviews?.length < 1 && (
+                          <td>
                             <button
-                              disabled={!canCancel || detail?.status === "Canceled"}
-                              onClick={(e) => handleStatusChange(e, detail.id)}
-                              // style={!canCancel ? { color: '#ccc', cursor: 'not-allowed' } : {}}
-                              className="text-[14px] text-primary hover:underline focus:text mb-0 leading-tight disabled:text-[#ccc] disabled:cursor-not-allowed"
+                              disabled={
+                                detail?.status?.toLowerCase() !== "delivered"
+                              }
+                              onClick={() => {
+                                setReviewAndRating((prev) => {
+                                  return {
+                                    ...prev,
+                                    order_id: detail.id,
+                                    order_code: detail.order_id,
+                                  };
+                                });
+                                setIsOpen(true);
+                              }}
+                              className="text-[14px] text-primaryGreen hover:underline focus:underline mb-0 leading-tight disabled:text-[#ccc] disabled:cursor-not-allowed"
                             >
-                              Cancel Order
+                              Add Rating
                             </button>
-                          );
-                        })()}
+                          </td>
+                        )}
+                        <td>
+                          {(() => {
+                            const orderCreatedTime = moment(detail.created_at);
+                            const currentTime = moment();
+                            const timeSinceCreation = moment.duration(
+                              currentTime.diff(orderCreatedTime)
+                            );
+                            const canCancel =
+                              timeSinceCreation.asMinutes() <=
+                              defaultSettings.cancellation_time_span;
+                            return (
+                              <button
+                                disabled={
+                                  !canCancel || detail?.status === "Canceled"
+                                }
+                                onClick={(e) =>
+                                  handleStatusChange(e, detail.id)
+                                }
+                                // style={!canCancel ? { color: '#ccc', cursor: 'not-allowed' } : {}}
+                                className="text-[14px] text-primary hover:underline focus:text mb-0 leading-tight disabled:text-[#ccc] disabled:cursor-not-allowed"
+                              >
+                                Cancel Order
+                              </button>
+                            );
+                          })()}
                         </td>
                       </tr>
                     ))}
+                    {/* Fetching orderr */}
+                    {isFetching && (
+                      <tr className="mt-2 font-semibold text-headGray">
+                        <td colSpan={4}>Fetching Orders...</td>
+                      </tr>
+                    )}
+                    {/* No orders  */}
+                    {!isFetching && orderDetails?.length < 1 && (
+                      <tr className="mt-2 font-semibold text-headGray">
+                        <td colSpan={4}>No Orders</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -390,6 +450,16 @@ const UserOrder = () => {
         isOpen={isOpen}
         onRequestClose={onRequestClose}
         contentLabel="Reviews"
+        style={{
+          content: {
+            height: "max-content",
+            top: "20%",
+            minWidth: "max-content",
+            maxWidth: "500px",
+            marginLeft: "auto",
+            marginRight: "auto",
+          },
+        }}
       >
         <div className="flex flex-col  h-ful">
           {/* Modal content here */}
@@ -412,7 +482,9 @@ const UserOrder = () => {
 
           <div>
             {/* Order Code  */}
-            <p className="my-4 text-primaryGreen "><strong>Order Code :</strong> #{reviewAndRating.order_code}</p>
+            <p className="my-4 text-primaryGreen ">
+              <strong>Order Code :</strong> #{reviewAndRating.order_code}
+            </p>
 
             <h3 className="mb-3 text-lg text-gray my-2 font-semibold">
               Add Reviews
@@ -424,16 +496,18 @@ const UserOrder = () => {
               placeholder="Write Review Here"
               maxLength={500}
               value={reviewAndRating.review || ""}
-              onChange={(e) =>setReviewAndRating((prev) => {
-                return { ...prev, review: e.target.value };
-              })}
+              onChange={(e) =>
+                setReviewAndRating((prev) => {
+                  return { ...prev, review: e.target.value };
+                })
+              }
             />
             {/* Rating */}
             <div className="mt-3 mb-5">
               <h5 className="my-1 text-lg text-gray font-semibold">
                 Rating : ( {reviewAndRating.rating} )
               </h5>
-              <div className="flex gap-1">
+              <div className="flex gap-1 mt-2">
                 {[...Array(5)].map((_, index) => {
                   const currentRate = index + 1;
                   return (
@@ -455,10 +529,10 @@ const UserOrder = () => {
                         width="18"
                         height="18"
                         fill={
-                          currentRate <= reviewAndRating.rating ? "#FF9529" : ""
+                          currentRate <= reviewAndRating.rating ? "#FF9529" : "none"
                         }
                       >
-                        <path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path>
+                        <path stroke={currentRate <= reviewAndRating.rating ? "": "gray"} strokeWidth={1} d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path>
                       </svg>
                     </label>
                   );
@@ -467,7 +541,10 @@ const UserOrder = () => {
             </div>
           </div>
 
-          <button onClick={ratingSubmit} className="my-6 bg-primary text-white text-lg w-full uppercase px-6 py-2 font-semibold rounded-lg disabled:opacity-60 mt-auto">
+          <button
+            onClick={ratingSubmit}
+            className="my-6 w-max bg-primary text-white text-lg uppercase px-6 py-2 font-semibold rounded-lg disabled:opacity-60"
+          >
             Submit
           </button>
         </div>
