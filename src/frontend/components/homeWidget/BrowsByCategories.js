@@ -27,15 +27,15 @@ const BrowsByCategories = () => {
     <>
       <div className="point_3Banner">
         <div className="container mx-auto">
-          <div className="md:py-16 py-10 text-center lg:px-0 px-3">
-            <div className="text-center mb-8">
+          <div className="md:py-12 py-10 text-center lg:px-0 px-3">
+            <div className="text-center mb-6">
               <h1 className="font-semibold text-3xl uppercase tracking-wider tracking-widest">
                 Browse by cuisine
               </h1>
               <div className="w-[60px] h-[2px] bg-primary my-4 mx-auto"></div>
-              <h3 className="alexBrush text-3xl capitalize text-headGray">
+              {/* <h3 className="alexBrush text-3xl capitalize text-headGray">
                 Delivered to Your Door
-              </h3>
+              </h3> */}
             </div>
             <Swiper
               // slidesPerView={2}

@@ -287,7 +287,7 @@ const MenuModal = ({
         <div>
           {activeTab === 1 && (
             <div>
-              <div className="bg-grayBg rounded-lg p-3 ">
+              {/* <div className="bg-grayBg rounded-lg p-3 ">
                 <h3 className="text-base font-semibold mb-2 leading-tight">
                   Base portion size
                 </h3>
@@ -329,7 +329,7 @@ const MenuModal = ({
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               <div className="flex md:flex-row flex-col md:items-center items-start justify-between gap-2 mt-6">
                 <div>
@@ -422,11 +422,11 @@ const MenuModal = ({
                     .99
                   </p>
                 </div>
-                <div className="md:w-[20%] w-[45%] flex items-center justify-start border border-headGray rounded-lg px-2">
-                  <span className="text-lg font-semibold mr-1 w-[10%]">Rs</span>
+                <div className="md:w-[20%] w-[45%] min-w-[100px] flex items-center justify-start border border-headGray rounded-lg px-2">
+                  <span className="text-lg font-semibold mr-2 w-[10%]">Rs</span>
                   <input
                     required
-                    className="text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]"
+                    className="text-start border-0 bg-transparent text-base px-1 pl-2 focus:border-0 w-[90%] max-w-[100px]"
                     placeholder=""
                     ref={inputRefPrice}
                     type="number"
@@ -583,11 +583,11 @@ const MenuModal = ({
                     .99
                   </p>
                 </div>
-                <div className="md:w-[20%] w-[45%] flex items-center justify-start border border-headGray rounded-lg px-2">
-                  <span className="text-lg font-semibold mr-1 w-[10%]">Rs</span>
+                <div className="md:w-[20%] w-[45%] min-w-[100px] flex items-center justify-start border border-headGray rounded-lg px-2">
+                  <span className="text-lg font-semibold mr-2 w-[10%]">Rs</span>
                   <input
                     required
-                    className="text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]"
+                    className="text-start border-0 bg-transparent text-base px-1 pl-2 focus:border-0 w-[90%] max-w-[100px]"
                     placeholder=""
                     ref={inputRefPrice}
                     type="number"
@@ -717,11 +717,11 @@ const MenuModal = ({
                     .99
                   </p>
                 </div>
-                <div className="md:w-[20%] w-[45%] flex items-center justify-start border border-headGray rounded-lg px-2">
-                  <span className="text-lg font-semibold mr-1 w-[10%]">Rs</span>
+                <div className="md:w-[20%] w-[45%] min-w-[100px] flex items-center justify-start border border-headGray rounded-lg px-2">
+                  <span className="text-lg font-semibold mr-2 w-[10%]">Rs</span>
                   <input
                     required
-                    className="text-start border-0 bg-transparent text-base px-1 focus:border-0 w-[90%]"
+                    className="text-start border-0 bg-transparent text-base px-1 pl-2 focus:border-0 w-[90%] max-w-[100px]"
                     placeholder=""
                     ref={inputRefPrice}
                     type="number"
