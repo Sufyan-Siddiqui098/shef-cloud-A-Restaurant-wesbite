@@ -265,7 +265,7 @@ export const Order = () => {
                 <h3 className="text-xl font-semibold leading-tight uppercase pt-2 mb-3 mt-6 border-b pb-2">
                   Active Orders (
                   {
-                    orderDetails?.filter((order) => order.status !== "canceled")
+                    orderDetails?.filter((order) => order.status !== "canceled" && order?.order_details?.length>0)
                       ?.length
                   }
                   )
