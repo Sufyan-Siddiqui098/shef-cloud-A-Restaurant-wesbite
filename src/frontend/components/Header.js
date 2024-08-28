@@ -200,7 +200,7 @@ const Header = () => {
                                                                             <li className=''>
                                                                                 <NavLink to="/become-a-chef" className='!inline-flex !items-center gap-x-2'>
                                                                                     <img src="/media/frontend/img/chef-icon.svg" className='w-[16px]' alt="Become a Chef" />
-                                                                                    <div className='text-[16px] text-secondary hover:text-primary font-medium'>Become a Chef</div>
+                                                                                    <div className='text-[16px] text-secondary hover:text-primary font-medium'>Become a Shef</div>
                                                                                 </NavLink>
                                                                             </li>
                                                                             {/* <li className=''>
