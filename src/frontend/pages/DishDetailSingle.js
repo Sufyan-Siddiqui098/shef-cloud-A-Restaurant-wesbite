@@ -177,7 +177,7 @@ export const DishDetailSingle = () => {
         </div>
         <div className="mt-8 border p-4 rounded-xl">
           <div className="grid grid-cols-12 gap-6">
-            <div className="lg:col-span-5 col-span-12">
+            <div className="lg:col-span-4 col-span-12">
               <div className="relative h-full">
                 {/* <div className="absolute left-2 top-2 cursor-pointer">
                   <svg
@@ -200,13 +200,13 @@ export const DishDetailSingle = () => {
                       ? dish.logo
                       : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
                   }
-                  className="img-fluid object-cover h-full max-h-[400px] w-full rounded-xl"
+                  className="img-fluid object-cover h-full max-h-[300px] w-full rounded-xl"
                   alt="product-img"
                 />
                 {/* <img src={(dish.logo && isValidURL(dish.logo))? dish.logo : "/media/frontend/img/restaurants/255x104/order-1.jpg"} className="img-fluid object-cover h-full max-h-[400px] w-full rounded-xl" alt="product-img" /> */}
               </div>
             </div>
-            <div className="lg:col-span-7 col-span-12">
+            <div className="lg:col-span-8 col-span-12">
               <div className="md:py-4 py-0">
                 <div className="flex md:flex-row flex-col md:items-center text-start justify-between gap-2">
                   <h2 className="md:text-3xl text-2xl text-secondary font-semibold leading-tight md:mb-2 mb-0">

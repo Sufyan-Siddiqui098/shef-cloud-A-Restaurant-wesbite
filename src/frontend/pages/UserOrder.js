@@ -270,7 +270,7 @@ const UserOrder = () => {
                         </td>
 
                         <td>
-                          <h4 className="text-[14px] mb-0 leading-tight">
+                          <h4 className={`${detail?.status?.toLowerCase() ==="canceled" && "text-primary"} ${detail?.status?.toLowerCase() ==="accepted" && "text-orange-500"} ${detail?.status?.toLowerCase() ==="delivered" && "text-green-700"} text-[14px] mb-0 leading-tight`}>
                             {detail.status}
                           </h4>
                         </td>
