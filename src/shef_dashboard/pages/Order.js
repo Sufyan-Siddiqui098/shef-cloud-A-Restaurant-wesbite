@@ -387,8 +387,22 @@ export const Order = () => {
                                     In Process
                                   </option>
                                   <option
+                                    value="preparing"
+                                    hidden={
+                                      order.status !== "accepted"}
+                                  >
+                                    Preparing
+                                  </option>
+                                  <option
+                                    value="delivering"
+                                    hidden={
+                                      order.status !== "preparing"}
+                                  >
+                                    Delivering
+                                  </option>
+                                  <option
                                     value="delivered"
-                                    hidden={order.status !== "accepted"}
+                                    hidden={order.status !== "delivering"}
                                   >
                                     Delivered
                                   </option>
