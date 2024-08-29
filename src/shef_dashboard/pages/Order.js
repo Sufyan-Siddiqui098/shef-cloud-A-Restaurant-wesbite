@@ -384,14 +384,14 @@ export const Order = () => {
                                       order.status !== "pending" && !canConfirm
                                     }
                                   >
-                                    In Process
+                                    Accepted
                                   </option>
                                   <option
                                     value="preparing"
                                     hidden={
                                       order.status !== "accepted"}
                                   >
-                                    Preparing
+                                    In Process
                                   </option>
                                   <option
                                     value="delivering"
