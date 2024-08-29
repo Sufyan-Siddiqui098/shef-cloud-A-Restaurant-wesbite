@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { handleGetHeatingInstruction } from '../../../services/shef';
 import { handleGetCitites } from '../../../services/region';
@@ -92,11 +92,17 @@ const   MoreInformationScreen = ({  instruction_template_id, reheating_instructi
         updateFields({ packaging: value })
     }
 
+    // TO Scroll to top
+    const topRef = useRef();
+    useEffect(()=>{
+       topRef.current.scrollIntoView({ behavior: 'smooth' });
+    },[])
+
     return (
         <div>
             <div className='container mx-auto'>
                 <div className='lg:w-2/3 sm:w-4/5 mx-auto'>
-                    <h2 className='text-2xl font-semibold border-b mb-8 pb-2'>More Information</h2>
+                    <h2 ref={topRef} className='text-2xl font-semibold border-b mb-8 pb-2'>More Information</h2>
                     <div className=''>
                         <h3 className='text-lg font-semibold mb-1 leading-tight'>Heating instructions</h3>
                         <p className='text-[12px]'>

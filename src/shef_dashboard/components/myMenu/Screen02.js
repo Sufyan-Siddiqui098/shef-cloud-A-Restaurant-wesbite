@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 const DescScreen = ({
     description,
     item_limit,
@@ -19,6 +19,11 @@ const DescScreen = ({
             }
             updateFields({ limit_item_availibility: e.target.value })
         }
+        // TO scroll up
+        const descriptionRef = useRef()
+        useEffect(()=>{
+            descriptionRef.current.focus()
+        }, [])
     return (
         <div>
             <div className='container mx-auto'>
@@ -28,6 +33,7 @@ const DescScreen = ({
                         <h3 className='text-lg font-semibold mb-1 leading-tight'>Description</h3>
                         <p className='text-[12px]'>Dish Description: Tell customers about your dish.</p>
                         <textarea 
+                            ref={descriptionRef}
                             className='h-[130px]' value={description} 
                             onChange={(e) => {
                                 const newDescription = e.target.value.slice(0, 400);  // Limit to 400 characters
