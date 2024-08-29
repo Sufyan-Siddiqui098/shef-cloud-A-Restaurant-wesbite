@@ -108,7 +108,7 @@ const SignIn = () => {
                     <div className="w-[40px] h-[2px] bg-primary mx-auto my-3"></div>
                     <div className="formSocial py-3">
                       {/* Facebook */}
-                      <Link onClick={handleFacebookLogin}>
+                      {/* <Link onClick={handleFacebookLogin}>
                         <div className="link">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -120,7 +120,7 @@ const SignIn = () => {
                             <path d="M14 13.5H16.5L17.5 9.5H14V7.5C14 6.47062 14 5.5 16 5.5H17.5V2.1401C17.1743 2.09685 15.943 2 14.6429 2C11.9284 2 10 3.65686 10 6.69971V9.5H7V13.5H10V22H14V13.5Z"></path>
                           </svg>
                         </div>
-                      </Link>
+                      </Link> */}
                       {/* Google */}
                       <Link onClick={handleGoogleLogin}>
                         <div className="link">
@@ -177,8 +177,8 @@ const SignIn = () => {
                         Forgot your password?
                       </button>
                       {/* &nbsp; */}
-                      <Link className="font-semibold" to="/register">
-                        Sign up
+                      <Link className="font-semibold block" to="/register">
+                        Customer Sign up
                       </Link>
                     </div>
                     <button
@@ -211,7 +211,8 @@ const SignIn = () => {
           content: {
             height: "max-content",
             top: "20%",
-            maxWidth: "max-content",
+            // minWidth: "max-content",
+            maxWidth: "500px",
             marginLeft: "auto",
             marginRight: "auto",
           },
@@ -262,6 +263,7 @@ const SignIn = () => {
                 })
               }
               minLength={8}
+              required
               className="my-1"
               type="password"
               name="password"
@@ -276,6 +278,7 @@ const SignIn = () => {
                 })
               }
               minLength={8}
+              required
               className={`my-1 mb-4 ${
                 forgetPassword.password_confirmation?.length > 0 &&
                 forgetPassword.password?.length > 0 &&
@@ -290,12 +293,10 @@ const SignIn = () => {
             <button
               disabled={
                 forgetPassword.email?.length < 1 ||
-                forgetPassword.password_confirmation?.length < 8 ||
-                forgetPassword.password?.length < 8 ||
                 forgetPassword.password_confirmation !== forgetPassword.password
               }
               type="submit"
-              className="my-6  bg-primary text-white text-lg w-full uppercase px-6 py-2 font-semibold rounded-lg disabled:cursor-not-allowed disabled:opacity-60 mt-auto"
+              className="my-6 w-max bg-primary text-white text-lg uppercase px-6 py-2 font-semibold rounded-lg disabled:cursor-not-allowed disabled:opacity-60 mt-auto"
             >
               Confirm
             </button>
