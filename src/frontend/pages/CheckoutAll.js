@@ -586,7 +586,7 @@ export const CheckoutAll = () => {
                     )}
 
                   <h4 className="text-base font-semibold mb-1">
-                    Address <span className="text-primary">*</span>
+                    Street Address <span className="text-primary">*</span>
                   </h4>
                   <input
                     required
@@ -596,7 +596,7 @@ export const CheckoutAll = () => {
                     onChange={(e) =>
                       updateOrderDeliveryAddress({ address: e.target.value })
                     }
-                    placeholder="Apartment, suite, unit, building, floor, etc."
+                    placeholder="Street Address"
                   />
                   <h4 className="text-base font-semibold mb-1 mt-3">
                     Address Line 2 
@@ -653,10 +653,11 @@ export const CheckoutAll = () => {
                 </div>
                 <div className="border-b border-t pt-5 border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
-                    Delivery Instruction <span className="text-primary">*</span>
+                    Delivery Instruction 
+                    {/* <span className="text-primary">*</span> */}
                   </h4>
                   <textarea
-                    required
+                    // required
                     className="border rounded-md w-full h-[100px]"
                     value={orderDeliveryAddress.delivery_instruction}
                     onChange={(e) =>

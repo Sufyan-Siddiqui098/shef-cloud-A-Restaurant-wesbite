@@ -118,18 +118,23 @@ export const Checkout = () => {
         );
       }
 
+      // discounted amount
+      const { discounted_amount } = discountResponse.original;
+
       // If promo code is present  --- Set discount_price here
       if (discountResponse?.original?.success) {
         toast.success(
-          discountResponse?.original?.success || "Discount is applied"
+          `${parseFloat(discounted_amount)?.toLocaleString("en-PK", {
+            style: "currency",
+            currency: "PKR",
+          })} ` + (discountResponse?.original?.success || "Discount is applied")
         );
-        // discounted amount
-        const { discounted_amount } = discountResponse.original;
+
         // calculate discount on total amount
         const discountedTotal = order.total_price - discounted_amount;
         // -- Update discount_price & total
         updateOrder({
-          discount_price: discounted_amount,
+          discount_price: parseFloat(discounted_amount),
           total_price: discountedTotal,
         });
       }
@@ -291,7 +296,8 @@ export const Checkout = () => {
 
     // Calculate the total order price
     // const total = sub_total + order.tip_price + deliverPriceSum;
-    const total = sub_total + order.tip_price + deliverPriceSum + platformPriceSum;
+    const total =
+      sub_total + order.tip_price + deliverPriceSum + platformPriceSum;
 
     // --- Promo code payload
     setPromoCode((prev) => ({
@@ -318,7 +324,7 @@ export const Checkout = () => {
     cartItem.forEach((chef) => {
       if (chef.id === parseInt(chefId)) {
         chef.menu.forEach((menu) => {
-          // --- Delivery Price - Default Setting 
+          // --- Delivery Price - Default Setting
           const deliveryPercentageFee =
             (defaultSetting.delivery_charge_percentage / 100) *
             menu.chef_earning_fee;
@@ -328,7 +334,7 @@ export const Checkout = () => {
               ? deliveryPercentageFee
               : defaultSetting.delivery_charge;
 
-          // ---- Platform Price - Default Setting 
+          // ---- Platform Price - Default Setting
           const platformPercentageFee =
             (defaultSetting.platform_charge_percentage / 100) *
             menu.chef_earning_fee;
@@ -348,13 +354,15 @@ export const Checkout = () => {
             //     ? menu.platform_percentage
             //     : (menu.platform_price / menu.chef_earning_fee) * 100) || 0,
             // platform_price: menu.platform_price,
-            platform_percentage: (platform_price / menu.chef_earning_fee) * 100 || 0,
+            platform_percentage:
+              (platform_price / menu.chef_earning_fee) * 100 || 0,
             platform_price: platform_price,
             // delivery_percentage:
             //   (menu.delivery_percentage
             //     ? menu.delivery_percentage
             //     : (menu.delivery_price / menu.chef_earning_fee) * 100) || 0,
-            delivery_percentage: (delivery_price / menu.chef_earning_fee) * 100 || 0,
+            delivery_percentage:
+              (delivery_price / menu.chef_earning_fee) * 100 || 0,
             // delivery_price: menu.delivery_price,
             delivery_price: delivery_price,
             chef_price: menu.chef_earning_fee,
@@ -542,7 +550,7 @@ export const Checkout = () => {
                     )}
 
                   <h4 className="text-base font-semibold mb-1">
-                    Address <span className="text-primary">*</span>
+                    Street Address <span className="text-primary">*</span>
                   </h4>
                   <input
                     required
@@ -552,10 +560,10 @@ export const Checkout = () => {
                     onChange={(e) =>
                       updateOrderDeliveryAddress({ address: e.target.value })
                     }
-                    placeholder="Apartment, suite, unit, building, floor, etc."
+                    placeholder="Street Address"
                   />
                   <h4 className="text-base font-semibold mb-1 mt-3">
-                    Address Line 2 
+                    Address Line 2
                   </h4>
                   <input
                     className="border rounded-md w-full "
@@ -643,10 +651,10 @@ export const Checkout = () => {
                 </div>
                 <div className="border-b border-t pt-5 border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
-                    Delivery Instruction <span className="text-primary">*</span>
+                    Delivery Instruction
+                    {/* <span className="text-primary">*</span> */}
                   </h4>
                   <textarea
-                    required
                     className="border rounded-md w-full h-[100px]"
                     value={orderDeliveryAddress.delivery_instruction}
                     onChange={(e) =>
@@ -1107,7 +1115,7 @@ export const Checkout = () => {
                 </h4>
               </div>
               {/* Discount */}
-              {order?.discount_price > 0 && (
+              {/* {order?.discount_price > 0 && ( */}
                 <div className="flex justify-between gap-2 mb-1">
                   <h3 className="text-lg font-medium mb-0">Discount</h3>
                   <h4 className="text-lg font-medium mb-0">
@@ -1117,7 +1125,7 @@ export const Checkout = () => {
                     })}
                   </h4>
                 </div>
-              )}
+              {/* )} */}
               <div className="flex justify-between gap-2 mb-1 bg-primaryLight py-2 px-3 rounded-md">
                 <h3 className="text-lg font-bold mb-0">Total</h3>
                 {/* <h4 className='text-lg font-bold mb-0'>$61.06</h4> */}
