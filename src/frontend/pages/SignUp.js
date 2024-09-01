@@ -175,6 +175,7 @@ const SignUp = () => {
                     </div>
                     <input
                       className="mb-3"
+                      minLength={8}
                       value={credentials.password}
                       onChange={handleChange}
                       name="password"
