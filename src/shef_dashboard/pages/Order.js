@@ -28,7 +28,7 @@ export const Order = () => {
       try {
         setIsFetching(true);
         const ordersRetrieved = await handleGetOrders(authToken, { chef_id: userInfo.id });
-        // console.log("Order detail of shef ", ordersRetrieved, defaultSettings);
+        // console.log("Order detail of shef ", ordersRetrieved);
         setOrderDetails(ordersRetrieved);
         setAllOrders(ordersRetrieved);
       } catch (error) {
@@ -102,7 +102,7 @@ export const Order = () => {
           );
           console.log(ordersRetrieved);
           if (ordersRetrieved.success) {
-            toast("Order Status Updated!");
+            toast.success("Order Status Updated!");
             setRefetchOrder((prevState) => !prevState)
           }
         }
@@ -369,7 +369,7 @@ export const Order = () => {
                               </td>
                               <td>
                                 <select
-                                  className="text-sm font-medium text-headGray"
+                                  className="text-sm font-medium text-headGray w-max"
                                   onChange={(e) =>
                                     handleStatusChange(e, order.id)
                                   }
@@ -381,7 +381,7 @@ export const Order = () => {
                                   <option
                                     value="accepted"
                                     hidden={
-                                      order.status !== "pending" && !canConfirm
+                                      order.status !== "pending" || !canConfirm
                                     }
                                   >
                                     Accepted
@@ -398,7 +398,7 @@ export const Order = () => {
                                     hidden={
                                       order.status !== "preparing"}
                                   >
-                                    Delivering
+                                    Ready to Deliver
                                   </option>
                                   <option
                                     value="delivered"
@@ -407,10 +407,13 @@ export const Order = () => {
                                     Delivered
                                   </option>
                                   <option
+                                    className="text-primary"
                                     value="canceled"
                                     hidden={
                                       order.status === "accepted" ||
-                                      order.status === "delivered" ||
+                                      order.status === "delivered" || 
+                                      order.status === "delivering" ||
+                                      order.status === "preparing" ||
                                       !canCancel
                                     }
                                   >
@@ -445,7 +448,7 @@ export const Order = () => {
               </div>
             </div>
           </div>
-          {/* <div className="mt-6 p-5 bg-white rounded-xl border border-borderClr">
+          <div className="mt-6 p-5 bg-white rounded-xl border border-borderClr">
             <div>
               <h3 className="text-xl font-semibold leading-tight uppercase mb-3 border-b pb-2">
                 Refunded Order (0)
@@ -501,7 +504,7 @@ export const Order = () => {
                 </table>
               </div>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     </>
