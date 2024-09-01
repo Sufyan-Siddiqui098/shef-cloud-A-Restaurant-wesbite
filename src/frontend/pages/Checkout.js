@@ -15,7 +15,12 @@ import { handleGetDefaultSetting } from "../../services/default_setting";
 
 export const Checkout = () => {
   // User Info - redux store
-  const { userInfo } = useSelector((state) => state.user);
+  const { userInfo, authToken } = useSelector((state) => state.user);
+  // Cart Item from Redux
+  const { cartItem } = useSelector((state) => state.cart);
+
+  // Chef id - from url parameter
+  const { chefId } = useParams();
 
   // Chef Tip
   const [activeButton, setActiveButton] = useState(null);
@@ -84,7 +89,34 @@ export const Checkout = () => {
   );
   // Order States - End
 
-  const { authToken } = useSelector((state) => state.user);
+  // ---- On submit
+  const [isPending, setIsPending] = useState(false);
+  // ---- Promo Code
+  const [promoCode, setPromoCode] = useState({
+    code: "", // promo code
+    order_total: 0, // Total of order,
+    menus: [], // array with menu.id (i.e. user_menu_id) & menu.quantity
+  });
+  // Default Setting
+  const [defaultSetting, setDefaultSetting] = useState("");
+
+  // ---- Address breakdonw in UI - streetAddress, buildingName, aptNumber, floor
+  const [addressForUser, setAddressForUser] = useState({
+    streetAddress: "",
+    buildingName: "",
+    floor: "",
+    apartmentNumber: "",
+  });
+
+//  =========================
+//    STATE UPDATER START
+//  =========================
+  // update address for UI/User - breakdown address
+  const updateAddressForUser = (field) => {
+    setAddressForUser((prev) => {
+      return { ...prev, ...field };
+    });
+  };
 
   // Update Fields States - (Order, OrderDeliveryAddress, OrderDetail)
   const updateOrder = (field) => {
@@ -97,13 +129,10 @@ export const Checkout = () => {
       return { ...prev, ...field };
     });
   };
+//  =========================
+//    STATE UPDATER END
+//  =========================
 
-  // ---- Promo Code
-  const [promoCode, setPromoCode] = useState({
-    code: "", // promo code
-    order_total: 0, // Total of order,
-    menus: [], // array with menu.id (i.e. user_menu_id) & menu.quantity
-  });
   // Promo code - Submit
   const handlePromoCodeSubmit = async (e) => {
     try {
@@ -143,24 +172,6 @@ export const Checkout = () => {
     }
   };
 
-  // Use effect to set the initial delivery address from the last order address
-  useEffect(() => {
-    //--- Existing address after first order
-    if (userInfo.last_order_address?.order_delivery_address) {
-      const lastOrderAddress =
-        userInfo.last_order_address.order_delivery_address;
-      setOrderDeliveryAddress((prevAddress) => ({
-        ...prevAddress,
-        address: lastOrderAddress?.address || "",
-        line2: lastOrderAddress?.line2 || "",
-        city: lastOrderAddress?.city || "",
-        postal_code: lastOrderAddress?.postal_code || "",
-        state: lastOrderAddress?.state || "",
-      }));
-    }
-
-    // eslint-disable-next-line
-  }, []);
   // Calculate and update tip_price
   const calculateTip = (percent) => {
     const tip_amount = parseFloat(
@@ -169,8 +180,7 @@ export const Checkout = () => {
     updateOrder({ tip_price: tip_amount });
   };
 
-  // Default Setting
-  const [defaultSetting, setDefaultSetting] = useState("");
+  // Default setting api call
   useEffect(() => {
     const fetchDefaultSetting = async () => {
       try {
@@ -187,8 +197,35 @@ export const Checkout = () => {
     fetchDefaultSetting();
   }, [authToken]);
 
-  // Chef id - from url parameter
-  const { chefId } = useParams();
+  // Use effect to set the initial delivery address from the last order address
+  useEffect(() => {
+    //--- Existing address after first order
+    if (userInfo.last_order_address?.order_delivery_address) {
+      const lastOrderAddress =
+        userInfo.last_order_address.order_delivery_address;
+      setOrderDeliveryAddress((prevAddress) => ({
+        ...prevAddress,
+        address: lastOrderAddress?.address || "",
+        line2: lastOrderAddress?.line2 || "",
+        city: lastOrderAddress?.city || "",
+        postal_code: lastOrderAddress?.postal_code || "",
+        state: lastOrderAddress?.state || "",
+      }));
+
+      // Address for UI - (street, bulding, floor, apt no )
+      const addressArray = lastOrderAddress?.address
+        ?.split(",")
+        .map((part) => part.trim());
+      setAddressForUser({
+        streetAddress: addressArray[0] || "",
+        buildingName: addressArray[1] || "",
+        floor: addressArray[2] || "",
+        apartmentNumber: addressArray[3] || "",
+      });
+    }
+
+    // eslint-disable-next-line
+  }, []);
 
   // longitude & latitude
   useEffect(() => {
@@ -211,8 +248,6 @@ export const Checkout = () => {
     }
   }, []);
 
-  // Cart Item from Redux
-  const { cartItem } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
   // increment/decrement Quantity - Update directly in redux-store
@@ -393,17 +428,21 @@ export const Checkout = () => {
     //eslint-disable-next-line
   }, [cartItem, order.tip_price, defaultSetting]);
 
-  // ---- On submit
-  const [isPending, setIsPending] = useState(false);
-
   const navigate = useNavigate();
   //--- On Submit Function
   const onSubmit = async (e) => {
     try {
       e.preventDefault();
       setIsPending(true);
+
       const payload = order;
       payload.orderDeliveryAddress = orderDeliveryAddress;
+
+      // Concetanate address - (street, building, floor, apt no )
+      const { streetAddress, apartmentNumber, buildingName, floor } =
+        addressForUser;
+      payload.orderDeliveryAddress.address = `${streetAddress}, ${buildingName}, ${floor}, ${apartmentNumber}`;
+
       payload.orderDetails = orderDetails;
       console.log("Pyalod is ", payload);
       const response = await handleCreateOrder(authToken, payload);
@@ -549,31 +588,80 @@ export const Checkout = () => {
                       </button>
                     )}
 
+                  {/* Address Fields Updated */}
                   <h4 className="text-base font-semibold mb-1">
+                    Building Name
+                    {/* <span className="text-primary">*</span> */}
+                  </h4>
+                  <input
+                    // required
+                    className="border rounded-md w-full"
+                    name=""
+                    value={addressForUser.buildingName}
+                    onChange={(e) =>
+                      updateAddressForUser({ buildingName: e.target.value })
+                    }
+                    placeholder="Building Name"
+                  />
+                  {/* Apartment and floor */}
+                  <div className="grid grid-cols-2 gap-2 w-full">
+                    <div>
+                      <h4 className="text-base font-semibold mb-1 mt-3">
+                        Apt. No
+                        {/* <span className="text-primary">*</span> */}
+                      </h4>
+                      <input
+                        // required
+                        className="border rounded-md w-full"
+                        name=""
+                        value={addressForUser.apartmentNumber}
+                        onChange={(e) =>
+                          updateAddressForUser({
+                            apartmentNumber: e.target.value,
+                          })
+                        }
+                        placeholder="Apartment No"
+                      />
+                    </div>
+
+                    <div>
+                      <h4 className="text-base font-semibold mb-1 mt-3">
+                        Floor
+                        {/* <span className="text-primary">*</span> */}
+                      </h4>
+                      <input
+                        // required
+                        className="border rounded-md w-full"
+                        name=""
+                        value={addressForUser.floor}
+                        onChange={(e) =>
+                          updateAddressForUser({
+                            floor: e.target.value,
+                          })
+                        }
+                        placeholder="Floor"
+                      />
+                    </div>
+                  </div>
+
+                  <h4 className="text-base font-semibold mb-1 mt-3">
                     Street Address <span className="text-primary">*</span>
                   </h4>
                   <input
                     required
                     className="border rounded-md w-full"
                     name=""
-                    value={orderDeliveryAddress.address}
+                    // value={orderDeliveryAddress.address}
+                    // onChange={(e) =>
+                    //   updateOrderDeliveryAddress({ address: e.target.value })
+                    // }
+                    value={addressForUser.streetAddress}
                     onChange={(e) =>
-                      updateOrderDeliveryAddress({ address: e.target.value })
+                      updateAddressForUser({ streetAddress: e.target.value })
                     }
                     placeholder="Street Address"
                   />
-                  <h4 className="text-base font-semibold mb-1 mt-3">
-                    Address Line 2
-                  </h4>
-                  <input
-                    className="border rounded-md w-full "
-                    name=""
-                    value={orderDeliveryAddress.line2}
-                    onChange={(e) =>
-                      updateOrderDeliveryAddress({ line2: e.target.value })
-                    }
-                    placeholder="Apartment, suite, unit, building, floor, etc."
-                  />
+
                   <h4 className="text-base font-semibold mb-1 mt-3">
                     City <span className="text-primary">*</span>
                   </h4>
@@ -1116,15 +1204,15 @@ export const Checkout = () => {
               </div>
               {/* Discount */}
               {/* {order?.discount_price > 0 && ( */}
-                <div className="flex justify-between gap-2 mb-1">
-                  <h3 className="text-lg font-medium mb-0">Discount</h3>
-                  <h4 className="text-lg font-medium mb-0">
-                    {order.discount_price.toLocaleString("en-PK", {
-                      style: "currency",
-                      currency: "PKR",
-                    })}
-                  </h4>
-                </div>
+              <div className="flex justify-between gap-2 mb-1">
+                <h3 className="text-lg font-medium mb-0">Discount</h3>
+                <h4 className="text-lg font-medium mb-0">
+                  {order.discount_price.toLocaleString("en-PK", {
+                    style: "currency",
+                    currency: "PKR",
+                  })}
+                </h4>
+              </div>
               {/* )} */}
               <div className="flex justify-between gap-2 mb-1 bg-primaryLight py-2 px-3 rounded-md">
                 <h3 className="text-lg font-bold mb-0">Total</h3>

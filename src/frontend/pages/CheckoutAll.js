@@ -18,28 +18,6 @@ export const CheckoutAll = () => {
   const { userInfo, authToken } = useSelector((state) => state.user);
   const { cartItem } = useSelector((state) => state.cart);
 
-  // default setting 
-  const [defaultSetting, setDefaultSetting] = useState("");
-
-  useEffect(()=> {
-    const fetchDefaultSetting = async () => {
-      try {
-        const default_setting_response = await handleGetDefaultSetting(authToken);
-        // console.log("default setting response", default_setting_response);
-        setDefaultSetting(default_setting_response);
-      } catch (error) {
-        console.error("Error while fethcing default setting ");
-      }
-    };
-
-    fetchDefaultSetting();
-  }, [authToken])
-
-  // to navigate
-  const navigate = useNavigate();
-  // dispatch
-  const dispatch = useDispatch();
-
   //--- START - Initial values for States
   const orderInitial = {
     chef_id: 1,
@@ -62,19 +40,6 @@ export const CheckoutAll = () => {
     chef_earning_price: 0,
     total_price: 0,
   };
-  // const orderDetailInitial = [
-  //   {
-  //     name: "", // user menu name
-  //     user_menu_id: 1,
-  //     unit_price: 0,
-  //     quantity: 0,
-  //     platform_percentage: 0,
-  //     platform_price: 0,
-  //     delivery_percentage: 0,
-  //     delivery_price: 0,
-  //     chef_price: 0,
-  //   },
-  // ];
   const orderDeliveryAddressInitial = {
     address: "",
     line2: "",
@@ -97,7 +62,7 @@ export const CheckoutAll = () => {
   const [orderDeliveryAddress, setOrderDeliveryAddress] = useState(
     orderDeliveryAddressInitial
   );
-  // Summary price
+  // Summary price for UI
   const [orderSummaryForUser, setOrderSummaryForUser] = useState({
     chef_earning_price: 0,
     subTotal: 0,
@@ -106,6 +71,23 @@ export const CheckoutAll = () => {
     total: 0,
     shefTip: 0,
   });
+
+  // ---- Address breakdonw in UI - streetAddress, buildingName, aptNumber, floor
+  const [addressForUser, setAddressForUser] = useState({
+    streetAddress: "",
+    buildingName: "",
+    floor: "",
+    apartmentNumber: "",
+  });
+
+  // default setting
+  const [defaultSetting, setDefaultSetting] = useState("");
+
+  // to navigate
+  const navigate = useNavigate();
+  // dispatch
+  const dispatch = useDispatch();
+
   // isFetching - is api is in pending state
   const [isPending, setIsPending] = useState(false);
   const [isOpen, setIsOpen] = useState(false); // Modal for existing addresses
@@ -130,18 +112,6 @@ export const CheckoutAll = () => {
     setIsOpen(false);
   };
 
-  // State updater - Update Fields States - (Order, OrderDeliveryAddress)
-  const updateOrder = (field) => {
-    setOrder((prev) => {
-      return { ...prev, ...field };
-    });
-  };
-  const updateOrderDeliveryAddress = (field) => {
-    setOrderDeliveryAddress((prev) => {
-      return { ...prev, ...field };
-    });
-  };
-
   // Active Chef tip button to highligh chef-tip
   const [activeChefTip, setActiveChefTip] = useState(0);
   const handleChefTip = (tip_percent) => {
@@ -157,6 +127,48 @@ export const CheckoutAll = () => {
     //Calculate and update tip_price
     // calculateTip(percent);
   };
+
+  //  =========================
+  //    STATE UPDATER START
+  //  =========================
+  // Update address for user/UI - breakdown address
+  const updateAddressForUser = (field) => {
+    setAddressForUser((prev) => {
+      return { ...prev, ...field };
+    });
+  };
+
+  // State updater - Update Fields States - (Order, OrderDeliveryAddress)
+  const updateOrder = (field) => {
+    setOrder((prev) => {
+      return { ...prev, ...field };
+    });
+  };
+  const updateOrderDeliveryAddress = (field) => {
+    setOrderDeliveryAddress((prev) => {
+      return { ...prev, ...field };
+    });
+  };
+  //  =========================
+  //    STATE UPDATER END
+  //  =========================
+
+  // default setting api call
+  useEffect(() => {
+    const fetchDefaultSetting = async () => {
+      try {
+        const default_setting_response = await handleGetDefaultSetting(
+          authToken
+        );
+        // console.log("default setting response", default_setting_response);
+        setDefaultSetting(default_setting_response);
+      } catch (error) {
+        console.error("Error while fethcing default setting ");
+      }
+    };
+
+    fetchDefaultSetting();
+  }, [authToken]);
 
   // longitude & latitude
   useEffect(() => {
@@ -179,7 +191,7 @@ export const CheckoutAll = () => {
     }
   }, []);
 
-  // Use effect to set the initial delivery address from the last order address
+  // Set the initial delivery address from the last order address
   useEffect(() => {
     //--- Existing address after first order
     if (userInfo.last_order_address?.order_delivery_address) {
@@ -193,6 +205,17 @@ export const CheckoutAll = () => {
         postal_code: lastOrderAddress?.postal_code || "",
         state: lastOrderAddress?.state || "",
       }));
+
+      // Address for UI - (street, bulding, floor, apt no )
+      const addressArray = lastOrderAddress?.address
+        ?.split(",")
+        .map((part) => part.trim());
+      setAddressForUser({
+        streetAddress: addressArray[0] || "",
+        buildingName: addressArray[1] || "",
+        floor: addressArray[2] || "",
+        apartmentNumber: addressArray[3] || "",
+      });
     }
 
     // Fetch city from localStorage
@@ -219,45 +242,47 @@ export const CheckoutAll = () => {
     //   const chefTotal = chef.menu.reduce((accMenu, menu) => {
     //     const chef_earning_fee = menu.chef_earning_fee || 0;
     //     const platformPercentageFee = (defaultSetting.platform_charge_percentage / 100) * chef_earning_fee;
-    //     const platform_price = platformPercentageFee > defaultSetting.platform_charge 
-    //       ? platformPercentageFee 
+    //     const platform_price = platformPercentageFee > defaultSetting.platform_charge
+    //       ? platformPercentageFee
     //       : defaultSetting.platform_charge;
-    
+
     //     return (
     //       accMenu +
-    //       chef_earning_fee * menu.quantity + 
+    //       chef_earning_fee * menu.quantity +
     //       platform_price * menu.quantity
     //     );
     //   }, 0);
     //   return accChef + chefTotal;
     // }, 0);  // NOt necessary for now
-    
 
     // Delivery
     const deliverPriceSum = cartItem.reduce((accChef, chef) => {
       const chefTotal = chef.menu.reduce((accMenu, menu) => {
         const chef_earning_fee = menu.chef_earning_fee || 0;
-        const deliveryPercentageFee = (defaultSetting.delivery_charge_percentage / 100) * chef_earning_fee;
-        const delivery_price = deliveryPercentageFee > defaultSetting.delivery_charge 
-          ? deliveryPercentageFee 
-          : defaultSetting.delivery_charge;
-    
+        const deliveryPercentageFee =
+          (defaultSetting.delivery_charge_percentage / 100) * chef_earning_fee;
+        const delivery_price =
+          deliveryPercentageFee > defaultSetting.delivery_charge
+            ? deliveryPercentageFee
+            : defaultSetting.delivery_charge;
+
         return accMenu + delivery_price * menu.quantity;
       }, 0);
       return accChef + chefTotal;
     }, 0);
-    
 
     // Platform
     // *********** In case if we need it ***********
     const platformPriceSum = cartItem.reduce((accChef, chef) => {
       const chefTotal = chef.menu.reduce((accMenu, menu) => {
         const chef_earning_fee = menu.chef_earning_fee || 0;
-        const platformPercentageFee = (defaultSetting.platform_charge_percentage / 100) * chef_earning_fee;
-        const platform_price = platformPercentageFee > defaultSetting.platform_charge 
-          ? platformPercentageFee 
-          : defaultSetting.platform_charge;
-    
+        const platformPercentageFee =
+          (defaultSetting.platform_charge_percentage / 100) * chef_earning_fee;
+        const platform_price =
+          platformPercentageFee > defaultSetting.platform_charge
+            ? platformPercentageFee
+            : defaultSetting.platform_charge;
+
         return accMenu + platform_price * menu.quantity;
       }, 0);
       return accChef + chefTotal;
@@ -296,12 +321,16 @@ export const CheckoutAll = () => {
     setOrderSummaryForUser((prev) => ({
       ...prev,
       chef_earning_price: chef_earning_sum,
-      // subTotal: sub_total,  
-      subTotal: chef_earning_sum,   // -- changing to hold only chef earning
+      // subTotal: sub_total,
+      subTotal: chef_earning_sum, // -- changing to hold only chef earning
       deliveryFee: deliverPriceSum,
       platformFee: platformPriceSum || 0,
-      total: chef_earning_sum + deliverPriceSum + (platformPriceSum || 0) + (orderSummaryForUser?.shefTip || 0)
-      // total: sub_total + deliverPriceSum + (orderSummaryForUser?.shefTip || 0),  
+      total:
+        chef_earning_sum +
+        deliverPriceSum +
+        (platformPriceSum || 0) +
+        (orderSummaryForUser?.shefTip || 0),
+      // total: sub_total + deliverPriceSum + (orderSummaryForUser?.shefTip || 0),
     }));
   }, [cartItem, orderSummaryForUser.shefTip, defaultSetting]);
 
@@ -369,7 +398,7 @@ export const CheckoutAll = () => {
       // Calculate chef_earning_fee for each item
       chefEarningSum += chef_earning_fee * quantity;
       // Calculate sub_total = chef_earning_fee * quantity;
-      sub_total += chef_earning_fee * quantity ;
+      sub_total += chef_earning_fee * quantity;
       // Calculate DeliveryPrice
       deliverPriceSum += delivery_price * quantity;
 
@@ -396,34 +425,36 @@ export const CheckoutAll = () => {
       total_price: total,
       // updated
       orderDetails: chef.menu.map((menu) => {
-        // --- Delivery Price - Default Setting 
+        // --- Delivery Price - Default Setting
         const deliveryPercentageFee =
           (defaultSetting.delivery_charge_percentage / 100) *
           menu.chef_earning_fee;
-    
+
         const delivery_price =
           deliveryPercentageFee > defaultSetting.delivery_charge
             ? deliveryPercentageFee
             : defaultSetting.delivery_charge;
-    
-        // ---- Platform Price - Default Setting 
+
+        // ---- Platform Price - Default Setting
         const platformPercentageFee =
           (defaultSetting.platform_charge_percentage / 100) *
           menu.chef_earning_fee;
-    
+
         const platform_price =
           platformPercentageFee > defaultSetting.platform_charge
             ? platformPercentageFee
             : defaultSetting.platform_charge;
-    
+
         return {
           name: menu.name,
           user_menu_id: menu.id,
           unit_price: menu.unit_price,
           quantity: menu.quantity,
-          platform_percentage: (platform_price / menu.chef_earning_fee) * 100 || 0,
+          platform_percentage:
+            (platform_price / menu.chef_earning_fee) * 100 || 0,
           platform_price: platform_price, // Updated with computed platform price
-          delivery_percentage: (delivery_price / menu.chef_earning_fee) * 100 || 0,
+          delivery_percentage:
+            (delivery_price / menu.chef_earning_fee) * 100 || 0,
           delivery_price: delivery_price, // Updated with computed delivery price
           chef_price: menu.chef_earning_fee,
         };
@@ -448,11 +479,15 @@ export const CheckoutAll = () => {
     };
 
     const payload = { ...orderPayload, orderDeliveryAddress };
+    // Concetanate address - (street, building, floor, apt no )
+    const { streetAddress, apartmentNumber, buildingName, floor } =
+      addressForUser;
+    payload.orderDeliveryAddress.address = `${streetAddress}, ${buildingName}, ${floor}, ${apartmentNumber}`;
     console.log("Payload is ", payload);
     // Api Call
     try {
       const response = await handleCreateOrder(authToken, payload);
-      console.log("checkout all response ", response);
+      // console.log("checkout all response ", response);
       toast.success(`Order of Chef ${chef?.first_name} is confirmed`, {
         theme: "colored",
       });
@@ -585,31 +620,80 @@ export const CheckoutAll = () => {
                       </button>
                     )}
 
+                  {/* Address Fields Updated */}
                   <h4 className="text-base font-semibold mb-1">
+                    Building Name
+                    {/* <span className="text-primary">*</span> */}
+                  </h4>
+                  <input
+                    // required
+                    className="border rounded-md w-full"
+                    name=""
+                    value={addressForUser.buildingName}
+                    onChange={(e) =>
+                      updateAddressForUser({ buildingName: e.target.value })
+                    }
+                    placeholder="Building Name"
+                  />
+                  {/* Apartment and floor */}
+                  <div className="grid grid-cols-2 gap-2 w-full">
+                    <div>
+                      <h4 className="text-base font-semibold mb-1 mt-3">
+                        Apt. No
+                        {/* <span className="text-primary">*</span> */}
+                      </h4>
+                      <input
+                        // required
+                        className="border rounded-md w-full"
+                        name=""
+                        value={addressForUser.apartmentNumber}
+                        onChange={(e) =>
+                          updateAddressForUser({
+                            apartmentNumber: e.target.value,
+                          })
+                        }
+                        placeholder="Apartment No"
+                      />
+                    </div>
+
+                    <div>
+                      <h4 className="text-base font-semibold mb-1 mt-3">
+                        Floor
+                        {/* <span className="text-primary">*</span> */}
+                      </h4>
+                      <input
+                        // required
+                        className="border rounded-md w-full"
+                        name=""
+                        value={addressForUser.floor}
+                        onChange={(e) =>
+                          updateAddressForUser({
+                            floor: e.target.value,
+                          })
+                        }
+                        placeholder="Floor"
+                      />
+                    </div>
+                  </div>
+
+                  <h4 className="text-base font-semibold mb-1 mt-3">
                     Street Address <span className="text-primary">*</span>
                   </h4>
                   <input
                     required
                     className="border rounded-md w-full"
                     name=""
-                    value={orderDeliveryAddress.address}
+                    // value={orderDeliveryAddress.address}
+                    // onChange={(e) =>
+                    //   updateOrderDeliveryAddress({ address: e.target.value })
+                    // }
+                    value={addressForUser.streetAddress}
                     onChange={(e) =>
-                      updateOrderDeliveryAddress({ address: e.target.value })
+                      updateAddressForUser({ streetAddress: e.target.value })
                     }
                     placeholder="Street Address"
                   />
-                  <h4 className="text-base font-semibold mb-1 mt-3">
-                    Address Line 2 
-                  </h4>
-                  <input
-                    className="border rounded-md w-full "
-                    name=""
-                    value={orderDeliveryAddress.line2}
-                    onChange={(e) =>
-                      updateOrderDeliveryAddress({ line2: e.target.value })
-                    }
-                    placeholder="Apartment, suite, unit, building, floor, etc."
-                  />
+
                   <h4 className="text-base font-semibold mb-1 mt-3">
                     City <span className="text-primary">*</span>
                   </h4>
@@ -653,7 +737,7 @@ export const CheckoutAll = () => {
                 </div>
                 <div className="border-b border-t pt-5 border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
-                    Delivery Instruction 
+                    Delivery Instruction
                     {/* <span className="text-primary">*</span> */}
                   </h4>
                   <textarea
