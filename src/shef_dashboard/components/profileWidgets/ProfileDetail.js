@@ -9,7 +9,7 @@ export const ProfileDetail = () => {
             <div className='p-5 rounded-xl border border-borderClr mb-6'>
                 <div className='flex md:flex-row flex-col items-center gap-4'>
                     <img 
-                        src={userInfo?.profile_pic && isValidURL(userInfo?.profile_pic) ?
+                        src={userInfo?.profile_pic ?
                          userInfo.profile_pic :  
                          "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                          } 

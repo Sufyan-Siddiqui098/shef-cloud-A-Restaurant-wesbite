@@ -387,7 +387,7 @@ const Header = () => {
                                             <div className="user-details p-relative">
                                                 <NavLink className="text-light-white fw-500">
                                                     {/* <img src={userInfo.profile_pic ? userInfo.profile_pic : "/media/frontend/img/user-1.png"} className="rounded-circle e" alt="userimg" /> <span className=''>{userInfo.first_name}</span> */}
-                                                    <img src={(userInfo.profile_pic && isValidURL(userInfo.profile_pic)) ? userInfo.profile_pic : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} className="rounded-full w-8 h-8 object-cover" alt="userimg" /> <span className=''>{userInfo.first_name}</span>
+                                                    <img src={(userInfo.profile_pic) ? userInfo.profile_pic : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} className="rounded-full w-8 h-8 object-cover" alt="userimg" /> <span className=''>{userInfo.first_name}</span>
                                                 </NavLink>
                                                 <div className="user-dropdown">
                                                     <ul className='w-full'>

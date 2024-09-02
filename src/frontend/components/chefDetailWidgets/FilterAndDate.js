@@ -263,7 +263,7 @@ const FilterAndDate = ({ chefAndDishes }) => {
                         {/* <img src={(dish.logo && isValidURL(dish.logo)) ? dish.logo : "/media/frontend/img/restaurants/255x104/order-1.jpg"} className="img-fluid  full-width h-24 max-h-24 object-cover" alt="product-img" /> */}
                         <img
                           src={
-                            dish.logo && isValidURL(dish.logo)
+                            dish.logo 
                               ? dish.logo
                               : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
                           }
@@ -734,8 +734,7 @@ const FilterAndDate = ({ chefAndDishes }) => {
                             <div className="flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg">
                               <img
                                 src={
-                                  chef?.profile_pic &&
-                                  isValidURL(chef?.profile_pic)
+                                  chef?.profile_pic
                                     ? chef.profile_pic
                                     : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                                 }
@@ -759,7 +758,7 @@ const FilterAndDate = ({ chefAndDishes }) => {
                             /> */}
                                 <img
                                   src={
-                                    menu.logo && isValidURL(menu.logo)
+                                    menu.logo 
                                       ? menu.logo
                                       : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
                                   }

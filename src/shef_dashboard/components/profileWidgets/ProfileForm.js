@@ -228,7 +228,7 @@ export const ProfileForm = () => {
                 onClick={handleCoverBoxClick}
               >
                 {/* selectedImage */}
-                {profileData.cover_pic && isValidURL(profileData.cover_pic) ? (
+                {profileData.cover_pic ? (
                   <img
                     src={profileData.cover_pic}
                     alt="Cover"
@@ -260,8 +260,7 @@ export const ProfileForm = () => {
                 onClick={handleBoxClick}
               >
                 {/* selectedImage */}
-                {profileData.profile_pic &&
-                isValidURL(profileData.profile_pic) ? (
+                {profileData.profile_pic  ? (
                   <img
                     src={profileData.profile_pic}
                     alt="Profile"
