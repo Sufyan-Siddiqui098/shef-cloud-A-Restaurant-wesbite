@@ -74,7 +74,7 @@ const BrowsByCategories = () => {
                         {/* <img src="./media/frontend/img/restaurants/160x160/bcuisine-1.jpg" className="img-fluid w-full h-[160px] object-cover rounded-lg" alt="categories"/> */}
                         <img
                           src={
-                            category.image && isValidURL(category.image)
+                            category.image 
                               ? category.image
                               : "https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg"
                           }

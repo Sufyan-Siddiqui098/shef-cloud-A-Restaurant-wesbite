@@ -515,7 +515,7 @@ export const MyMenu = () => {
                           {/* Temporary image url */}
                           <img
                             src={
-                              dish.logo && isValidURL(dish.logo)
+                              dish.logo 
                                 ? dish.logo
                                 : "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019"
                             }

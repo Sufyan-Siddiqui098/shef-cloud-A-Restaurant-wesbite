@@ -120,8 +120,7 @@ export const UserProfile = () => {
                   onClick={handleBoxClick}
                 >
                   {/* selectedImage */}
-                  {profileData.profile_pic &&
-                  isValidURL(profileData.profile_pic) ? (
+                  {profileData.profile_pic  ? (
                     <img
                       src={profileData.profile_pic}
                       alt="Profile"
