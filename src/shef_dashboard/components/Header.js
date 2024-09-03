@@ -35,6 +35,7 @@ export const Header = () => {
         );
         setPendingOrderCount(pendingOrderResponse);
         if (pendingOrderResponse > 0) {
+          toast.dismiss();
           toast(`You have ${pendingOrderResponse} Pending Orders`);
         }
         console.log("response of pending order ", pendingOrderResponse);
