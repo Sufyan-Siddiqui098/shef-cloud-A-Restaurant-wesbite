@@ -132,7 +132,7 @@ const PopularCollection = () => {
                           /> */}
                           <img
                             src={
-                              dish.logo
+                              dish.logo && isValidURL(dish.logo)
                                 ? dish.logo
                                 : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
                             }
@@ -152,7 +152,8 @@ const PopularCollection = () => {
                               /> */}
                               <img
                                 src={
-                                  dish.chef?.profile_pic 
+                                  dish.chef?.profile_pic &&
+                                  isValidURL(dish.chef.profile_pic)
                                     ? dish.chef.profile_pic
                                     : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                                 }

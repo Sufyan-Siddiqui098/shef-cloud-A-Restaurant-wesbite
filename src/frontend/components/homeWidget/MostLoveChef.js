@@ -70,7 +70,7 @@ const MostLoveChef = () => {
                       <div className="md:col-span-5 col-span-12 relative">
                         <img
                           src={
-                            chef.profile_pic
+                            chef.profile_pic && isValidURL(chef.profile_pic)
                               ? chef.profile_pic
                               : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                           }
@@ -133,7 +133,7 @@ const MostLoveChef = () => {
                               <Link to={`/dish-detail-single/${dish.id}`}>
                                 <img
                                   src={
-                                    dish.logo 
+                                    dish.logo && isValidURL(dish.logo)
                                       ? dish.logo
                                       : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
                                   }
