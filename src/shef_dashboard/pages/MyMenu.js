@@ -45,6 +45,10 @@ export const MyMenu = () => {
     is_friday: 0,
     is_saturday: 0,
     is_sunday: 0,
+    // New added
+    availability_slot_start: "",
+    availability_slot_end: "",
+    // -- 
     limit_item_availibility: "", // Optional
     limit_start: "", // Optional - YYYY-MM-DD
     limit_end: "", // Optional - YYYY-MM-DD
@@ -207,6 +211,12 @@ export const MyMenu = () => {
           "If 'Limit Item Availability' is set, 'limit start' and 'limit end' are required."
         );
         return; // Prevent step increment if "limit_item_availability" has missing dependencies
+      }
+
+      // availablity slot
+      if(chefMenu.availability_slot_start ==="" || chefMenu.availability_slot_end === "" || !chefMenu.availability_slot_end || !chefMenu.availability_slot_start){
+        toast.error("Please Select Availablity Slot");
+        return;
       }
     }
     // Screen 3
