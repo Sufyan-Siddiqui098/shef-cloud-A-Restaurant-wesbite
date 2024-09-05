@@ -549,7 +549,7 @@ export const CheckoutAll = () => {
         </div>
         <div className="lg:text-start text-center">
           <h1 className="font-semibold text-3xl uppercase text-secondary tracking-widest">
-            All Chechout
+            All Checkout
           </h1>
           <div className="w-[60px] h-[2px] bg-primary my-4 lg:mx-0 mx-auto"></div>
         </div>
@@ -560,55 +560,61 @@ export const CheckoutAll = () => {
                 <h2 className="font-semibold text-xl uppercase text-secondary tracking-widest">
                   Delivery information
                 </h2>
-                <div className="border-b border-primary border-dashed pb-5 mb-4">
-                  <h4 className="text-base font-semibold mb-1">
-                    Phone <span className="text-primary">*</span>
-                  </h4>
-                  <input
-                    required
-                    className="border rounded-md w-1/2"
-                    name=""
-                    value={order.phone}
-                    onChange={(e) => {
-                      updateOrder({ phone: e.target.value });
-                      updateOrderDeliveryAddress({ phone: e.target.value });
-                    }}
-                    placeholder="Enter Phone"
-                  />
+                {/* Name Phone and Email */}
+                <div className="grid grid-cols-2 gap-2 pb-3 mb-3 bg-slate-50 px-3 pt-5 rounded">
+                  <div className=" relative">
+                    <h4 className="text-sm font-semibold mb-1 bg-white absolute -top-2 left-2 px-1 z-20">
+                      Name <span className="text-primary">*</span>
+                    </h4>
+                    <input
+                      required
+                      className="border rounded-md w-full"
+                      name=""
+                      value={order.name}
+                      onChange={(e) => {
+                        updateOrder({ name: e.target.value });
+                        updateOrderDeliveryAddress({ name: e.target.value });
+                      }}
+                      placeholder="Enter Name"
+                    />
+                  </div>
+                  <div className=" relative">
+                    <input
+                      required
+                      className="border rounded-md"
+                      name=""
+                      value={order.phone}
+                      onChange={(e) => {
+                        updateOrder({ phone: e.target.value });
+                        updateOrderDeliveryAddress({ phone: e.target.value });
+                      }}
+                      placeholder="Enter Phone"
+                    />
+                    <h4 className="text-sm font-semibold mb- bg-white absolute -top-2 left-2 px-1 z-20">
+                      Phone <span className="text-primary">*</span>
+                    </h4>
+                  </div>
+
+                  <div className=" relative mt-2 col-span-2">
+                    <h4 className="text-sm font-semibold mb-1 bg-white absolute -top-2 left-2 px-1 z-20">
+                      Email <span className="text-primary">*</span>
+                    </h4>
+                    <input
+                      required
+                      className="border rounded-md w-full"
+                      name=""
+                      value={order.email}
+                      onChange={(e) => {
+                        updateOrder({ email: e.target.value });
+                      }}
+                      placeholder="Enter Email"
+                    />
+                  </div>
                 </div>
-                <div className="border-b border-primary border-dashed pb-5 mb-4">
-                  <h4 className="text-base font-semibold mb-1">
-                    Name <span className="text-primary">*</span>
-                  </h4>
-                  <input
-                    required
-                    className="border rounded-md w-full"
-                    name=""
-                    value={order.name}
-                    onChange={(e) => {
-                      updateOrder({ name: e.target.value });
-                      updateOrderDeliveryAddress({ name: e.target.value });
-                    }}
-                    placeholder="Enter Name"
-                  />
-                </div>
-                <div className="border-b border-primary border-dashed pb-5 mb-4">
-                  <h4 className="text-base font-semibold mb-1">
-                    Email <span className="text-primary">*</span>
-                  </h4>
-                  <input
-                    required
-                    className="border rounded-md w-full"
-                    name=""
-                    value={order.email}
-                    onChange={(e) => {
-                      updateOrder({ email: e.target.value });
-                    }}
-                    placeholder="Enter Email"
-                  />
-                </div>
+
+                <div className="border-b mb-3 border-primary border-dashed"></div>
                 {/* Address */}
-                <div className="border- border-primary border-dashed pb- mb-4 rounded bg-slate-50 px-3 pt-2 pb-6">
+                <div className="border- border-primary border-dashed pb- mb-4 bg-slate-50 px-3 py-4">
                   {userInfo.user_addresses &&
                     userInfo.user_addresses.length > 0 && (
                       <button
@@ -621,24 +627,26 @@ export const CheckoutAll = () => {
                     )}
 
                   {/* Address Fields Updated */}
-                  <h4 className="text-base font-semibold mb-1">
-                    Building Name
-                    {/* <span className="text-primary">*</span> */}
-                  </h4>
-                  <input
-                    // required
-                    className="border rounded-md w-full"
-                    name=""
-                    value={addressForUser.buildingName}
-                    onChange={(e) =>
-                      updateAddressForUser({ buildingName: e.target.value })
-                    }
-                    placeholder="Building Name"
-                  />
+                  <div className="relative">
+                    <h4 className="text-sm font-semibold mb-1 bg-white absolute -top-2 left-2 px-1 z-20">
+                      Building Name
+                      {/* <span className="text-primary">*</span> */}
+                    </h4>
+                    <input
+                      // required
+                      className="border rounded-md w-full"
+                      name=""
+                      value={addressForUser.buildingName}
+                      onChange={(e) =>
+                        updateAddressForUser({ buildingName: e.target.value })
+                      }
+                      placeholder="Building Name"
+                    />
+                  </div>
                   {/* Apartment and floor */}
-                  <div className="grid grid-cols-2 gap-2 w-full">
-                    <div>
-                      <h4 className="text-base font-semibold mb-1 mt-3">
+                  <div className="grid grid-cols-2 gap-2 w-full mt-4">
+                    <div className="relative">
+                      <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
                         Apt. No
                         {/* <span className="text-primary">*</span> */}
                       </h4>
@@ -656,8 +664,8 @@ export const CheckoutAll = () => {
                       />
                     </div>
 
-                    <div>
-                      <h4 className="text-base font-semibold mb-1 mt-3">
+                    <div className="relative">
+                      <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
                         Floor
                         {/* <span className="text-primary">*</span> */}
                       </h4>
@@ -676,37 +684,41 @@ export const CheckoutAll = () => {
                     </div>
                   </div>
 
-                  <h4 className="text-base font-semibold mb-1 mt-3">
-                    Street Address <span className="text-primary">*</span>
-                  </h4>
-                  <input
-                    required
-                    className="border rounded-md w-full"
-                    name=""
-                    // value={orderDeliveryAddress.address}
-                    // onChange={(e) =>
-                    //   updateOrderDeliveryAddress({ address: e.target.value })
-                    // }
-                    value={addressForUser.streetAddress}
-                    onChange={(e) =>
-                      updateAddressForUser({ streetAddress: e.target.value })
-                    }
-                    placeholder="Street Address"
-                  />
+                  <div className="relative mb-1 mt-5">
+                    <h4 className="text-sm font-semibold  bg-white absolute -top-2 left-2 px-1 z-20">
+                      Street Address <span className="text-primary">*</span>
+                    </h4>
+                    <input
+                      required
+                      className="border rounded-md w-full"
+                      name=""
+                      // value={orderDeliveryAddress.address}
+                      // onChange={(e) =>
+                      //   updateOrderDeliveryAddress({ address: e.target.value })
+                      // }
+                      value={addressForUser.streetAddress}
+                      onChange={(e) =>
+                        updateAddressForUser({ streetAddress: e.target.value })
+                      }
+                      placeholder="Street Address"
+                    />
+                  </div>
 
-                  <h4 className="text-base font-semibold mb-1 mt-3">
-                    City <span className="text-primary">*</span>
-                  </h4>
-                  <input
-                    required
-                    className="border rounded-md w-full"
-                    name=""
-                    value={orderDeliveryAddress.city}
-                    onChange={(e) =>
-                      updateOrderDeliveryAddress({ city: e.target.value })
-                    }
-                    placeholder="City"
-                  />
+                  <div className="relative mb-1 mt-4">
+                    <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                      City <span className="text-primary">*</span>
+                    </h4>
+                    <input
+                      required
+                      className="border rounded-md w-full"
+                      name=""
+                      value={orderDeliveryAddress.city}
+                      onChange={(e) =>
+                        updateOrderDeliveryAddress({ city: e.target.value })
+                      }
+                      placeholder="City"
+                    />
+                  </div>
                   {/* ---- UNNECESSARY ----  */}
                   {/* <h4 className="text-base font-semibold mb-1 mt-3">
                     Postal Code
@@ -735,22 +747,25 @@ export const CheckoutAll = () => {
                     placeholder="State"
                   /> */}
                 </div>
-                <div className="border-b border-t pt-5 border-primary border-dashed pb-5 mb-4">
-                  <h4 className="text-base font-semibold mb-1">
-                    Delivery Instruction
-                    {/* <span className="text-primary">*</span> */}
-                  </h4>
-                  <textarea
-                    // required
-                    className="border rounded-md w-full h-[100px]"
-                    value={orderDeliveryAddress.delivery_instruction}
-                    onChange={(e) =>
-                      updateOrderDeliveryAddress({
-                        delivery_instruction: e.target.value,
-                      })
-                    }
-                    placeholder="Type Query..."
-                  ></textarea>
+
+                 <div className="border-b border-t pt-5 pb-3 border-primary border-dashed mb-4">
+                  <div className="relative">
+                    <h4 className="text-sm font-semibold  bg-white absolute -top-2 left-2 px-1 z-20">
+                      Delivery Instruction
+                      {/* <span className="text-primary">*</span> */}
+                    </h4>
+                    <textarea
+                      className="border pt-3 rounded-md w-full h-[100px]"
+                      value={orderDeliveryAddress.delivery_instruction}
+                      onChange={(e) =>
+                        updateOrderDeliveryAddress({
+                          delivery_instruction: e.target.value,
+                        })
+                      }
+                      placeholder="Type Query..."
+                    />
+
+                  </div>
                 </div>
                 {/* <div className="border-b border-primary border-dashed pb-5 mb-4">
                   <h4 className="text-base font-semibold mb-1">
@@ -769,14 +784,14 @@ export const CheckoutAll = () => {
                     placeholder="Delivery Notes "
                   ></textarea>
                 </div> */}
-                <div className="border-b border-primary border-dashed pb-5 mb-4">
-                  <h4 className="text-base font-semibold mb-1">
+                <div className="border-b border-primary border-dashed pb-4 mb-4 relative">
+                  <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
                     Delivery time <span className="text-primary">*</span>
                   </h4>
                   <input
                     min={new Date().toISOString().slice(0, 16)}
                     required
-                    className="border rounded-md w-full"
+                    className="border rounded-md w-full pt-3"
                     type="datetime-local"
                     name=""
                     value={order.delivery_time}
@@ -807,7 +822,7 @@ export const CheckoutAll = () => {
                     </button>
                   </div>
                 </div> */}
-                <div className="mt-8 border-b border-primary border-dashed pb-2">
+                <div className="mt-6 border-b border-primary border-dashed pb-2">
                   <div className="flex items-center justify-between">
                     <h2 className="font-semibold text-xl uppercase text-secondary tracking-widest">
                       Tip Shef:
@@ -878,7 +893,7 @@ export const CheckoutAll = () => {
                   </div>
                 </div>
                 {/* Recurring & terms-privacy links */}
-                <div className="mt-8">
+                <div className="mt-5">
                   {/* <h2 className="font-semibold text-2xl uppercase text-secondary tracking-widest">
                     Make it a recurring order and save!
                   </h2> */}
@@ -927,7 +942,7 @@ export const CheckoutAll = () => {
                 </div>
               </div>
               {/* Payment Details */}
-              <div className="border border-primary border-dashed rounded-lg p-4 mt-8">
+              <div className="border border-primary border-dashed rounded-lg p-4 mt-5">
                 <h2 className="font-semibold text-xl uppercase text-secondary tracking-widest">
                   Payment details
                 </h2>
