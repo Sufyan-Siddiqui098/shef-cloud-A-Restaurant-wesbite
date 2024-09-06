@@ -98,9 +98,9 @@ const CategorizeDishes = () => {
                       <div className="flex items-center gap-x-3 bg-white absolute bottom-[-40px] p-2 w-[90%] left-[50%] translate-x-[-50%] rounded-lg shadow-lg">
                         <img
                           src={
-                            dish.user?.profile_pice &&
-                            isValidURL(dish.user?.profile_pice)
-                              ? dish.user.profile_pice
+                            dish.user?.profile_pic &&
+                            isValidURL(dish.user?.profile_pic)
+                              ? dish.user.profile_pic
                               : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                           }
                           className="img-fluid object-cover h-[60px] w-[60px] object-top rounded-lg"
