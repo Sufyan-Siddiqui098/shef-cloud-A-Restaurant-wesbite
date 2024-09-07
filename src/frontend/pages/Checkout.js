@@ -136,9 +136,9 @@ export const Checkout = () => {
   // Promo code - Submit
   const handlePromoCodeSubmit = async (e) => {
     try {
-      console.log("Promo code payload ", promoCode);
+      // console.log("Promo code payload ", promoCode);
       const discountResponse = await handleCheckDiscount(authToken, promoCode);
-      console.log("respons of promo code ", discountResponse);
+      // console.log("respons of promo code ", discountResponse);
       // If no promo code is present
       if (discountResponse?.original?.error) {
         toast.error(
@@ -187,7 +187,7 @@ export const Checkout = () => {
         const default_setting_response = await handleGetDefaultSetting(
           authToken
         );
-        console.log("default setting response", default_setting_response);
+        // console.log("default setting response", default_setting_response);
         setDefaultSetting(default_setting_response);
       } catch (error) {
         console.error("Error while fethcing default setting ");
@@ -288,23 +288,23 @@ export const Checkout = () => {
 
           // ---- Delivery Price
           const deliveryPercentageFee =
-            (defaultSetting.delivery_charge_percentage / 100) *
+            (defaultSetting?.delivery_charge_percentage / 100) *
             chef_earning_fee;
 
           const delivery_price =
-            deliveryPercentageFee > defaultSetting.delivery_charge
+            deliveryPercentageFee > defaultSetting?.delivery_charge
               ? deliveryPercentageFee
-              : defaultSetting.delivery_charge;
+              : defaultSetting?.delivery_charge;
 
           // ---- Platform Price
           const platformPercentageFee =
-            (defaultSetting.platform_charge_percentage / 100) *
+            (defaultSetting?.platform_charge_percentage / 100) *
             chef_earning_fee;
 
           const platform_price =
-            platformPercentageFee > defaultSetting.platform_charge
+            platformPercentageFee > defaultSetting?.platform_charge
               ? platformPercentageFee
-              : defaultSetting.platform_charge;
+              : defaultSetting?.platform_charge;
 
           // Calculate chef_earning_fee for each item
           chefEarningSum += chef_earning_fee * quantity;
@@ -361,23 +361,23 @@ export const Checkout = () => {
         chef.menu.forEach((menu) => {
           // --- Delivery Price - Default Setting
           const deliveryPercentageFee =
-            (defaultSetting.delivery_charge_percentage / 100) *
+            (defaultSetting?.delivery_charge_percentage / 100) *
             menu.chef_earning_fee;
 
           const delivery_price =
-            deliveryPercentageFee > defaultSetting.delivery_charge
+            deliveryPercentageFee > defaultSetting?.delivery_charge
               ? deliveryPercentageFee
-              : defaultSetting.delivery_charge;
+              : defaultSetting?.delivery_charge;
 
           // ---- Platform Price - Default Setting
           const platformPercentageFee =
-            (defaultSetting.platform_charge_percentage / 100) *
+            (defaultSetting?.platform_charge_percentage / 100) *
             menu.chef_earning_fee;
 
           const platform_price =
-            platformPercentageFee > defaultSetting.platform_charge
+            platformPercentageFee > defaultSetting?.platform_charge
               ? platformPercentageFee
-              : defaultSetting.platform_charge;
+              : defaultSetting?.platform_charge;
 
           // ---- Menu Detail for create-order api
           menuDetails.push({
@@ -420,9 +420,9 @@ export const Checkout = () => {
     }));
     // console.log("PromoCode required data from menu ", promoCodeMenu)
 
-    console.log("delivery data", orderDeliveryAddress);
-    console.log("Order Detail ", menuDetails);
-    console.log("Order  ", order);
+    // console.log("delivery data", orderDeliveryAddress);
+    // console.log("Order Detail ", menuDetails);
+    // console.log("Order  ", order);
 
     // console.log("UseEffect for cart updation is running .. CartItem", cartItem);
     //eslint-disable-next-line
@@ -494,6 +494,147 @@ export const Checkout = () => {
     //modal close
     setIsOpen(false);
   };
+
+  const [availableDays, setAvailableDays] = useState([]);
+  // delivery time modal
+  const [deliveryTimeModal, setDeliveryTimeModal] = useState(false);
+  const onDeliveryModalClose = () => {
+    setDeliveryTimeModal(false);
+  };
+  // Selected date for Delivery modal
+  const [selectedDeliveryDate, setSelectedDeliveryDate] = useState("");
+  // handle Delivery Date
+  const SelectDeliveryDate = (obj) => {
+    // console.log("date is ", obj);
+    setSelectedDeliveryDate(obj);
+  };
+
+  // Dliver Date and time Confirm
+  const saveDeliveryDateTime = () => {
+    if (!selectedDeliveryDate.date || !selectedDeliveryDate.deliveryTime) {
+      toast.error("Please select the date and time");
+      return;
+    }
+    // else
+    const dateObj = new Date(selectedDeliveryDate.date);
+
+    // Extract the year, month, and day from the date object
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed, so add 1
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    // Combine them into the desired format
+    const formattedDate = `${year}-${month}-${day}`;
+    const dateTimeValue = `${formattedDate}T${selectedDeliveryDate.deliveryTime}`;
+    // console.log(" Complete date to be saved is  ", dateTimeValue);
+    updateOrder({ delivery_time: dateTimeValue });
+    setDeliveryTimeModal(false);
+  };
+
+  // Function to convert 24-hour time to 12-hour format
+  function convertTo12Hour(time24) {
+    if(!time24) return;
+    let [hours, minutes] = time24.split(":");
+    hours = parseInt(hours);
+
+    // Handle the edge case for "24:00"
+    if (hours === 24) {
+      hours = 0;
+    }
+
+    const suffix = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12 || 12;
+
+    return `${hours}:${minutes} ${suffix}`;
+  }
+
+  useEffect(() => {
+    const getAvailableDays = (dish) => {
+      return {
+        monday: dish.is_monday,
+        tuesday: dish.is_tuesday,
+        wednesday: dish.is_wednesday,
+        thursday: dish.is_thursday,
+        friday: dish.is_friday,
+        saturday: dish.is_saturday,
+        sunday: dish.is_sunday,
+      };
+    };
+
+    const getCommonAvailableDays = (dishes) => {
+      return dishes.reduce(
+        (commonDays, dish) => {
+          const dishDays = getAvailableDays(dish);
+          Object.keys(commonDays).forEach((day) => {
+            commonDays[day] = commonDays[day] && dishDays[day];
+          });
+          return commonDays;
+        },
+        {
+          monday: 1,
+          tuesday: 1,
+          wednesday: 1,
+          thursday: 1,
+          friday: 1,
+          saturday: 1,
+          sunday: 1,
+        }
+      );
+    };
+
+    const getTimeRange = (dish) => {
+      return {
+        start: dish.availability_slot_start || "00:00", // Provide a default time if not specified
+        end: dish.availability_slot_end || "23:59",
+      };
+    };
+
+    const getCommonTimeRange = (dishes) => {
+      const timeRanges = dishes.map((dish) => getTimeRange(dish));
+
+      const commonTimeRange = timeRanges.reduce((commonRange, range) => {
+        if (commonRange.start < range.start) commonRange.start = range.start;
+        if (commonRange.end > range.end) commonRange.end = range.end;
+        return commonRange;
+      });
+
+      return commonTimeRange;
+    };
+
+    const getNext7AvailableDays = (commonDays, commonTimeRange) => {
+      const availableDates = [];
+      let i = 0;
+
+      while (availableDates.length < 7 && i < 14) {
+        // Loop through the next 14 days, assuming at least 4 days will match
+        const date = new Date();
+        date.setDate(date.getDate() + i);
+        const day = date
+          .toLocaleString("en-us", { weekday: "long" })
+          .toLowerCase();
+
+        if (commonDays[day]) {
+          availableDates.push({
+            date,
+            timeRange: commonTimeRange,
+          });
+        }
+
+        i++;
+      }
+
+      return availableDates;
+    };
+
+    const dishes = cartItem?.filter((chef) => chef.id === parseInt(chefId));
+
+    // console.log("complete cart ", cartItem);
+    console.log("dishes to be passed ", dishes[0].menu);
+    const commonDays = getCommonAvailableDays(dishes[0].menu);
+    const commonTimeRange = getCommonTimeRange(dishes[0].menu);
+    const next7Days = getNext7AvailableDays(commonDays, commonTimeRange);
+    console.log("next seven days ", next7Days);
+    setAvailableDays(next7Days);
+  }, [cartItem, chefId]);
 
   return (
     <>
@@ -766,7 +907,6 @@ export const Checkout = () => {
                       }
                       placeholder="Type Query..."
                     />
-
                   </div>
                 </div>
                 {/* <div className="border-b border-primary border-dashed pb-5 mb-4">
@@ -786,22 +926,33 @@ export const Checkout = () => {
                     placeholder="Delivery Notes "
                   ></textarea>
                 </div> */}
-                <div className="border-b border-primary border-dashed pb-4 mb-4 relative">
-                  <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
-                    Delivery time <span className="text-primary">*</span>
-                  </h4>
-                  <input
-                    min={new Date().toISOString().slice(0, 16)}
-                    required
-                    className="border rounded-md w-full pt-3"
-                    type="datetime-local"
-                    name=""
-                    value={order.delivery_time}
-                    onChange={(e) =>
-                      updateOrder({ delivery_time: e.target.value })
-                    }
-                    placeholder=""
-                  />
+                <div className="border-b border-primary border-dashed pb-4 mb-4 ">
+                  {/* <button
+                    type="button"
+                    onClick={() => setDeliveryTimeModal(true)}
+                    className="text-primary hover:underline block ml-auto"
+                  >
+                    Select Delivery Time
+                  </button> */}
+                  <div className="relative">
+                    <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                      Delivery time <span className="text-primary">*</span>
+                    </h4>
+                    <input
+                      min={new Date().toISOString().slice(0, 16)}
+                      required
+                      className="border rounded-md w-full pt-3"
+                      type="datetime-local"
+                      name=""
+                      value={order.delivery_time}
+                      onClick={()=>setDeliveryTimeModal(true)}
+                      // onChange={(e) =>
+                      //   updateOrder({ delivery_time: e.target.value })
+                      // }
+                      readOnly
+                      placeholder=""
+                    />
+                  </div>
                 </div>
                 {/* ------ Promo Code ------ */}
                 <div className="border-b border-primary border-dashed pb-4 mb-4 relative">
@@ -1245,6 +1396,7 @@ export const Checkout = () => {
         </div>
       </div>
 
+      {/* Existing Adress modal */}
       <Modal
         isOpen={isOpen}
         onRequestClose={onRequestClose}
@@ -1318,6 +1470,120 @@ export const Checkout = () => {
             </ul>
           </div>
         )}
+      </Modal>
+
+      {/* Select time for delivery  */}
+      <Modal
+        isOpen={deliveryTimeModal}
+        onRequestClose={onDeliveryModalClose}
+        contentLabel="Delivery Time"
+        style={{
+          content: {
+            height: "max-content",
+            top: "10%",
+            // minWidth: "max-content",
+            maxWidth: "600px",
+            marginLeft: "auto",
+            marginRight: "auto",
+          },
+        }}
+      >
+        {/* Modal content here */}
+        <div className="flex items-center justify-between border-b pb-3 gap-3">
+          <h2 className="text-lg font-semibold leading-tight mb-0">
+            Select Delivery Time
+          </h2>
+          <button onClick={onDeliveryModalClose}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              fill="rgba(0,0,0,1)"
+            >
+              <path d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div>
+          <p className="my-3 text-lg text-headGray">
+            <strong> Delivery Time : </strong>{" "}
+            {selectedDeliveryDate?.date?.toDateString()} {" "}
+            {convertTo12Hour(selectedDeliveryDate?.deliveryTime)}
+          </p>
+          {/* Delivery date and time */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 w-full gap-1 my-2">
+            {/* No matched days/time found */}
+            {availableDays?.length < 1 && (
+              <>
+                <h3 className="col-span-2 sm:col-span-3 opacity-70 text-xl font-semibold text-center">
+                  No Matching Days
+                </h3>
+                <p className="text-sm text-gray-500 col-span-2 sm:col-span-3">
+                  Thank you for adding items to your menu. Please note that some
+                  of the items are not available at the same day and time. To
+                  ensure availability, we kindly ask you to place separate
+                  orders for items with different availability times. We
+                  appreciate your understanding!
+                </p>
+              </>
+            )}
+            {/* Map the matched days */}
+            {availableDays?.map((obj, index) => (
+              <label
+                key={index}
+                className={`flex items-center justify-between cursor-pointer border rounded-md px-2 py-5 ${
+                  selectedDeliveryDate?.date?.toDateString() === obj?.date?.toDateString() && "border-blue-500"
+                } `}
+                onClick={() => SelectDeliveryDate(obj)}
+              >
+                <div className="flex flex-col items-center w-full">
+                  <span className="text-lg font-semibold mb-1">
+                    {obj.date.toDateString()}
+                  </span>
+                  <span className="text-sm">
+                    {obj.timeRange?.start + " - " + obj.timeRange?.end}
+                  </span>
+                </div>
+                {/* <input
+                  type="radio"
+                  className="form-radio w-[16px] h-[16px] hidden"
+                /> */}
+              </label>
+            ))}
+          </div>
+
+          <label className={`${!selectedDeliveryDate?.date && "hidden"} mt-4`} htmlFor="time">
+            <strong className="text-base my-3 block">Select Date :</strong>
+            <input
+              disabled={selectedDeliveryDate === ""}
+              onChange={(e) =>
+                setSelectedDeliveryDate((prev) => ({
+                  ...prev,
+                  deliveryTime: e.target.value,
+                }))
+              }
+              value={selectedDeliveryDate.deliveryTime || ""}
+              type="time"
+              id="time"
+              name="delivery_time"
+              className="disabled:opacity-55"
+              min={selectedDeliveryDate?.timeRange?.start}
+              max={selectedDeliveryDate?.timeRange?.end}
+            />
+          </label>
+          <button
+            onClick={saveDeliveryDateTime}
+            disabled={
+              !selectedDeliveryDate.deliveryTime ||
+              selectedDeliveryDate?.deliveryTime === ""
+            }
+            className="bg-primary py-2 px-4 font-semibold tracking-wide block rounded text-white mt-4 ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Submit
+          </button>
+        </div>
       </Modal>
     </>
   );
