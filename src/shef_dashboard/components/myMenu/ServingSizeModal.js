@@ -841,7 +841,7 @@ const MenuModal = ({
                           chef_earning_fee >
                         defaultSetting.platform_charge
                           ? defaultSetting.platform_charge_percentage
-                          : defaultSetting.platform_charge *
+                          : defaultSetting.platform_charge /
                             chef_earning_fee *
                             100}
                         %
