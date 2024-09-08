@@ -66,7 +66,31 @@ export const Checkout = () => {
     },
   ];
   const orderDeliveryAddressInitial = {
-    address: "",
+    address: {
+      home: {
+        house_no: "",
+        street_address: "",
+        city: "",
+        addition_direction: "",
+      },
+      office: {
+        department: "",
+        floor: "",
+        company: "",
+        building_no: "",
+        street_address: "",
+        city: "",
+        addition_direction: "",
+      },
+      apartment: {
+        name: "",
+        apartment_no: "",
+        floor: "",
+        street_address: "",
+        city: "",
+        addition_direction: "",
+      },
+    },
     line2: "",
     latitude: "",
     longitude: "",
@@ -100,23 +124,9 @@ export const Checkout = () => {
   // Default Setting
   const [defaultSetting, setDefaultSetting] = useState("");
 
-  // ---- Address breakdonw in UI - streetAddress, buildingName, aptNumber, floor
-  const [addressForUser, setAddressForUser] = useState({
-    streetAddress: "",
-    buildingName: "",
-    floor: "",
-    apartmentNumber: "",
-  });
-
   //  =========================
   //    STATE UPDATER START
   //  =========================
-  // update address for UI/User - breakdown address
-  const updateAddressForUser = (field) => {
-    setAddressForUser((prev) => {
-      return { ...prev, ...field };
-    });
-  };
 
   // Update Fields States - (Order, OrderDeliveryAddress, OrderDetail)
   const updateOrder = (field) => {
@@ -129,6 +139,7 @@ export const Checkout = () => {
       return { ...prev, ...field };
     });
   };
+  // console.log("order address ", orderDeliveryAddress);
   //  =========================
   //    STATE UPDATER END
   //  =========================
@@ -203,25 +214,49 @@ export const Checkout = () => {
     if (userInfo.last_order_address?.order_delivery_address) {
       const lastOrderAddress =
         userInfo.last_order_address.order_delivery_address;
-      setOrderDeliveryAddress((prevAddress) => ({
-        ...prevAddress,
-        address: lastOrderAddress?.address || "",
-        line2: lastOrderAddress?.line2 || "",
-        city: lastOrderAddress?.city || "",
-        postal_code: lastOrderAddress?.postal_code || "",
-        state: lastOrderAddress?.state || "",
-      }));
-
-      // Address for UI - (street, bulding, floor, apt no )
-      const addressArray = lastOrderAddress?.address
-        ?.split(",")
-        .map((part) => part.trim());
-      setAddressForUser({
-        streetAddress: addressArray[0] || "",
-        buildingName: addressArray[1] || "",
-        floor: addressArray[2] || "",
-        apartmentNumber: addressArray[3] || "",
+      console.log("exiting addresss useEffect ", lastOrderAddress);
+      updateOrderDeliveryAddress({
+        address: {
+          home: {
+            house_no: lastOrderAddress?.address?.home?.house_no || "",
+            street_address:
+              lastOrderAddress?.address?.home?.street_address || "",
+            city: lastOrderAddress?.address?.home?.city || "",
+            addition_direction:
+              lastOrderAddress?.address?.home?.addition_direction || "",
+          },
+          office: {
+            department: lastOrderAddress?.address?.office?.department || "",
+            floor: lastOrderAddress?.address?.office?.floor || "",
+            company: lastOrderAddress?.address?.office?.company || "",
+            building_no: lastOrderAddress?.address?.office?.building_no || "",
+            street_address:
+              lastOrderAddress?.address?.office?.street_address || "",
+            city: lastOrderAddress?.address?.office?.city || "",
+            addition_direction:
+              lastOrderAddress?.address?.office?.addition_direction || "",
+          },
+          apartment: {
+            name: lastOrderAddress?.address?.apartment?.name || "",
+            apartment_no:
+              lastOrderAddress?.address?.apartment?.apartment_no || "",
+            floor: lastOrderAddress?.address?.apartment?.floor || "",
+            street_address:
+              lastOrderAddress?.address?.apartment?.street_address || "",
+            city: lastOrderAddress?.address?.apartment?.city || "",
+            addition_direction:
+              lastOrderAddress?.address?.apartment?.addition_direction || "",
+          },
+        },
       });
+      // setOrderDeliveryAddress((prevAddress) => ({
+      //   ...prevAddress,
+      //   address: lastOrderAddress?.address || "",
+      //   line2: lastOrderAddress?.line2 || "",
+      //   city: lastOrderAddress?.city || "",
+      //   postal_code: lastOrderAddress?.postal_code || "",
+      //   state: lastOrderAddress?.state || "",
+      // }));
     }
 
     // eslint-disable-next-line
@@ -437,12 +472,6 @@ export const Checkout = () => {
 
       const payload = order;
       payload.orderDeliveryAddress = orderDeliveryAddress;
-
-      // Concetanate address - (street, building, floor, apt no )
-      const { streetAddress, apartmentNumber, buildingName, floor } =
-        addressForUser;
-      payload.orderDeliveryAddress.address = `${streetAddress}, ${buildingName}, ${floor}, ${apartmentNumber}`;
-
       payload.orderDetails = orderDetails;
       console.log("Pyalod is ", payload);
       const response = await handleCreateOrder(authToken, payload);
@@ -495,6 +524,7 @@ export const Checkout = () => {
     setIsOpen(false);
   };
 
+  //----- matched days/time
   const [availableDays, setAvailableDays] = useState([]);
   // delivery time modal
   const [deliveryTimeModal, setDeliveryTimeModal] = useState(false);
@@ -532,7 +562,7 @@ export const Checkout = () => {
 
   // Function to convert 24-hour time to 12-hour format
   function convertTo12Hour(time24) {
-    if(!time24) return;
+    if (!time24) return;
     let [hours, minutes] = time24.split(":");
     hours = parseInt(hours);
 
@@ -546,7 +576,7 @@ export const Checkout = () => {
 
     return `${hours}:${minutes} ${suffix}`;
   }
-
+  // Fetch available days and time - show day/time that matched to user
   useEffect(() => {
     const getAvailableDays = (dish) => {
       return {
@@ -635,6 +665,18 @@ export const Checkout = () => {
     console.log("next seven days ", next7Days);
     setAvailableDays(next7Days);
   }, [cartItem, chefId]);
+
+  const [addressPlace, setAddressPlace] = useState("home");
+  const changeAddressPlace = (placeName) => {
+    if (placeName === "home") {
+      // reset office & buiding
+    } else if (placeName === "office") {
+      // reset home & buiding
+    } else if (placeName === "building") {
+      // reset home & office
+    }
+    setAddressPlace(placeName);
+  };
 
   return (
     <>
@@ -735,66 +777,548 @@ export const Checkout = () => {
                         Select Existing Address
                       </button>
                     )}
-
-                  {/* Address Fields Updated */}
-                  <div className="relative">
-                    <h4 className="text-sm font-semibold mb-1 bg-white absolute -top-2 left-2 px-1 z-20">
-                      Building Name
-                      {/* <span className="text-primary">*</span> */}
-                    </h4>
-                    <input
-                      // required
-                      className="border rounded-md w-full"
-                      name=""
-                      value={addressForUser.buildingName}
-                      onChange={(e) =>
-                        updateAddressForUser({ buildingName: e.target.value })
-                      }
-                      placeholder="Building Name"
-                    />
-                  </div>
-                  {/* Apartment and floor */}
-                  <div className="grid grid-cols-2 gap-2 w-full mt-4">
-                    <div className="relative">
-                      <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
-                        Apt. No
-                        {/* <span className="text-primary">*</span> */}
-                      </h4>
-                      <input
-                        // required
-                        className="border rounded-md w-full"
-                        name=""
-                        value={addressForUser.apartmentNumber}
-                        onChange={(e) =>
-                          updateAddressForUser({
-                            apartmentNumber: e.target.value,
-                          })
-                        }
-                        placeholder="Apartment No"
-                      />
+                  {/* 3 different Addresses */}
+                  <div className="grid grid-cols-3 gap-2 mb-5 w- mx-auto">
+                    {/* Home */}
+                    <div
+                      onClick={() => changeAddressPlace("home")}
+                      className={`${
+                        addressPlace === "home" &&
+                        "bg-primary text-white fill-white"
+                      } transition cursor-pointer hover:bg-red-300 border rounded-full h-10 flex justify-center gap-1  items-center p-1 px-2 text-base`}
+                    >
+                      Home
+                      <svg
+                        aria-hidden="true"
+                        focusable="false"
+                        className="fill-inherit"
+                        // width="25"
+                        height="25"
+                        viewBox="0 0 16 17"
+                        xmlns="http://www.w3.org/2000/svg"
+                        data-testid="home-label"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M8.72825 2.56995C8.30463 2.22335 7.69542 2.22335 7.2718 2.56995L2.02509 6.86271C1.70451 7.125 1.65726 7.59752 1.91955 7.9181C2.18185 8.23869 2.65437 8.28594 2.97495 8.02364L3.25002 7.79859V12.4428C3.25002 13.1332 3.80966 13.6928 4.50002 13.6928H6.85002C7.07093 13.6928 7.25002 13.5137 7.25002 13.2928V10.4428C7.25002 10.1667 7.50002 9.69281 8.00002 9.69281C8.50002 9.69281 8.75002 10.1667 8.75002 10.4428V13.2928C8.75002 13.5137 8.9291 13.6928 9.15002 13.6928H11.5C12.1904 13.6928 12.75 13.1332 12.75 12.4428V7.79858L13.0251 8.02364C13.3457 8.28594 13.8182 8.23869 14.0805 7.9181C14.3428 7.59752 14.2955 7.125 13.975 6.86271L8.72825 2.56995ZM11.25 6.5713L8.00002 3.91222L4.75002 6.57132V11.9928C4.75002 12.1033 4.83956 12.1928 4.95002 12.1928H5.55002C5.66047 12.1928 5.75002 12.1033 5.75002 11.9928V10.1928C5.75002 9.08824 6.89545 8.19281 8.00002 8.19281C9.10458 8.19281 10.25 9.08824 10.25 10.1928V11.9928C10.25 12.1033 10.3396 12.1928 10.45 12.1928H11.05C11.1605 12.1928 11.25 12.1033 11.25 11.9928V6.5713Z"
+                        ></path>
+                      </svg>
                     </div>
-
-                    <div className="relative">
-                      <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
-                        Floor
-                        {/* <span className="text-primary">*</span> */}
-                      </h4>
-                      <input
-                        // required
-                        className="border rounded-md w-full"
-                        name=""
-                        value={addressForUser.floor}
-                        onChange={(e) =>
-                          updateAddressForUser({
-                            floor: e.target.value,
-                          })
-                        }
-                        placeholder="Floor"
-                      />
+                    {/* Office */}
+                    <div
+                      onClick={() => changeAddressPlace("office")}
+                      className={`${
+                        addressPlace === "office" &&
+                        "bg-primary text-white fill-white"
+                      } transition cursor-pointer hover:bg-red-300 border rounded-full h-10 flex justify-center gap-1  items-center p-1 px-2`}
+                    >
+                      Office
+                      <svg
+                        aria-hidden="true"
+                        focusable="false"
+                        className="fill-inherit"
+                        height="25"
+                        viewBox="0 0 16 16"
+                        xmlns="http://www.w3.org/2000/svg"
+                        data-testid="work-label"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M5 5L3 5C2.44772 5 2 5.44772 2 6V12C2 12.5523 2.44772 13 3 13H13C13.5523 13 14 12.5523 14 12V6C14 5.44772 13.5523 5 13 5H11C11 3.89543 10.1046 3 9 3H7C5.89543 3 5 3.89543 5 5ZM9 4.5H7C6.72386 4.5 6.5 4.72386 6.5 5L9.5 5C9.5 4.72386 9.27614 4.5 9 4.5ZM3.5 6.5V9H12.5V6.5H3.5ZM3.5 11.5V10.5H12.5V11.5H3.5Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    {/* Buiding/Apartment */}
+                    <div
+                      onClick={() => changeAddressPlace("apartment")}
+                      className={`${
+                        addressPlace === "apartment" &&
+                        "bg-primary text-white fill-white"
+                      } transition cursor-pointer hover:bg-red-300 border rounded-full h-10 flex justify-center gap-1  items-center p-1 px-2`}
+                    >
+                      Apartment
+                      <svg
+                        fill="white"
+                        className="fill-inherit"
+                        height="25"
+                        viewBox="0 0 50 50"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                        <g
+                          id="SVGRepo_tracerCarrier"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></g>
+                        <g id="SVGRepo_iconCarrier">
+                          <path d="M9 0C7.355469 0 6 1.355469 6 3L6 50L44 50L44 3C44 1.355469 42.644531 0 41 0 Z M 9 2L41 2C41.554688 2 42 2.445313 42 3L42 48L38 48L38 36L27 36L27 48L8 48L8 3C8 2.445313 8.445313 2 9 2 Z M 12 6L12 14L23 14L23 6 Z M 27 6L27 14L38 14L38 6 Z M 14 8L21 8L21 12L14 12 Z M 29 8L36 8L36 12L29 12 Z M 12 16L12 24L23 24L23 16 Z M 27 16L27 24L38 24L38 16 Z M 14 18L21 18L21 22L14 22 Z M 29 18L36 18L36 22L29 22 Z M 12 26L12 34L23 34L23 26 Z M 27 26L27 34L38 34L38 26 Z M 14 28L21 28L21 32L14 32 Z M 29 28L36 28L36 32L29 32 Z M 12 36L12 44L23 44L23 36 Z M 14 38L21 38L21 42L14 42 Z M 29 38L36 38L36 48L29 48Z"></path>
+                        </g>
+                      </svg>
                     </div>
                   </div>
+                  {/* Home specific input field for delivery address */}
+                  {addressPlace === "home" && (
+                    <>
+                      <div className="relative mb-1 mt-5">
+                        <h4 className="text-sm font-semibold  bg-white absolute -top-2 left-2 px-1 z-20">
+                          Street Address <span className="text-primary">*</span>
+                        </h4>
+                        <input
+                          required
+                          className="border rounded-md w-full"
+                          name=""
+                          value={
+                            orderDeliveryAddress.address.home.street_address
+                          }
+                          onChange={(e) =>
+                            updateOrderDeliveryAddress({
+                              address: {
+                                ...orderDeliveryAddress.address,
+                                home: {
+                                  ...orderDeliveryAddress.address.home,
+                                  street_address: e.target.value,
+                                },
+                              },
+                            })
+                          }
+                          placeholder="Street Address"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 mt-5 gap-2">
+                        <div className="relative mb-1 mt">
+                          <h4 className="text-sm font-semibold  bg-white absolute -top-2 left-2 px-1 z-20">
+                            House Number <span className="text-primary">*</span>
+                          </h4>
+                          <input
+                            required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={orderDeliveryAddress.address.home.house_no}
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  home: {
+                                    ...orderDeliveryAddress.address.home,
+                                    house_no: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="House no. "
+                          />
+                        </div>
+                        <div className="relative mb-1 mt">
+                          <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                            City <span className="text-primary">*</span>
+                          </h4>
+                          <input
+                            required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={orderDeliveryAddress.address.home.city}
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  home: {
+                                    ...orderDeliveryAddress.address.home,
+                                    city: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="City"
+                          />
+                        </div>
+                      </div>
+                      <div className="relative mb-1 mt-4">
+                        <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                          Additional Direction
+                        </h4>
+                        <input
+                          required
+                          className="border rounded-md w-full"
+                          name=""
+                          value={
+                            orderDeliveryAddress.address.home.addition_direction
+                          }
+                          onChange={(e) =>
+                            updateOrderDeliveryAddress({
+                              address: {
+                                ...orderDeliveryAddress.address,
+                                home: {
+                                  ...orderDeliveryAddress.address.home,
+                                  addition_direction: e.target.value,
+                                },
+                              },
+                            })
+                          }
+                          placeholder="Additional direction"
+                        />
+                      </div>
+                    </>
+                  )}
 
-                  <div className="relative mb-1 mt-5">
+                  {/* Office specific input fields for delivery address */}
+                  {addressPlace === "office" && (
+                    <>
+                      <div className="grid grid-cols-2 gap-2 gap-y-3 w-full mt-4">
+                        <div className="relative">
+                          <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                            Office Dept
+                            <span className="text-primary"> *</span>
+                          </h4>
+                          <input
+                            // required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={
+                              orderDeliveryAddress.address.office.department
+                            }
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  office: {
+                                    ...orderDeliveryAddress.address.office,
+                                    department: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="Office department"
+                          />
+                        </div>
+
+                        <div className="relative">
+                          <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                            Floor
+                            <span className="text-primary"> *</span>
+                          </h4>
+                          <input
+                            // required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={orderDeliveryAddress.address.office.floor}
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  office: {
+                                    ...orderDeliveryAddress.address.office,
+                                    floor: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="Floor"
+                          />
+                        </div>
+
+                        <div className="relative">
+                          <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                            Company
+                            <span className="text-primary"> *</span>
+                          </h4>
+                          <input
+                            // required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={orderDeliveryAddress.address.office.company}
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  office: {
+                                    ...orderDeliveryAddress.address.office,
+                                    company: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="Company "
+                          />
+                        </div>
+
+                        <div className="relative">
+                          <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                            Building no.
+                            <span className="text-primary"> *</span>
+                          </h4>
+                          <input
+                            // required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={
+                              orderDeliveryAddress.address.office.building_no
+                            }
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  office: {
+                                    ...orderDeliveryAddress.address.office,
+                                    building_no: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="Building no. "
+                          />
+                        </div>
+                      </div>
+                      {/* Street, city, additional direction */}
+                      <div className="grid grid-cols-2 gap-2 gap-y-3 mt-4 ">
+                        {/* Street for office */}
+                        <div className="relative">
+                          <h4 className="text-sm font-semibold  bg-white absolute -top-2 left-2 px-1 z-20">
+                            Street Address{" "}
+                            <span className="text-primary">*</span>
+                          </h4>
+                          <input
+                            required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={
+                              orderDeliveryAddress.address.office.street_address
+                            }
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  office: {
+                                    ...orderDeliveryAddress.address.office,
+                                    street_address: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="Street Address"
+                          />
+                        </div>
+                        {/* City for office */}
+                        <div className="relative">
+                          <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                            City <span className="text-primary">*</span>
+                          </h4>
+                          <input
+                            required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={orderDeliveryAddress.address.office.city}
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  office: {
+                                    ...orderDeliveryAddress.address.office,
+                                    city: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="City"
+                          />
+                        </div>
+                      </div>
+                      {/* Additional direction for office */}
+                      <div className="relative mb-1 mt-4">
+                        <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                          Additional Direction
+                        </h4>
+                        <input
+                          required
+                          className="border rounded-md w-full"
+                          name=""
+                          value={
+                            orderDeliveryAddress.address.office
+                              .addition_direction
+                          }
+                          onChange={(e) =>
+                            updateOrderDeliveryAddress({
+                              address: {
+                                ...orderDeliveryAddress.address,
+                                office: {
+                                  ...orderDeliveryAddress.address.office,
+                                  addition_direction: e.target.value,
+                                },
+                              },
+                            })
+                          }
+                          placeholder="Additional direction"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Building specific input fields for delivery address */}
+                  {addressPlace === "apartment" && (
+                    <>
+                      {/* Address, Apartment no, floor */}
+                      <div className="grid grid-cols-2 gap-2 gap-y-3 w-full mt-4">
+                        {/* Address Fields Updated */}
+                        <div className="relative">
+                          <h4 className="text-sm font-semibold mb-1 bg-white absolute -top-2 left-2 px-1 z-20">
+                            Apartment Name
+                            <span className="text-primary"> *</span>
+                          </h4>
+                          <input
+                            // required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={orderDeliveryAddress.address.apartment.name}
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  apartment: {
+                                    ...orderDeliveryAddress.address.apartment,
+                                    name: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="Building Name"
+                          />
+                        </div>
+                        <div className="relative">
+                          <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                            Apt. No
+                            <span className="text-primary"> *</span>
+                          </h4>
+                          <input
+                            // required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={
+                              orderDeliveryAddress.address.apartment
+                                .apartment_no
+                            }
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  apartment: {
+                                    ...orderDeliveryAddress.address.apartment,
+                                    apartment_no: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="Apartment No"
+                          />
+                        </div>
+                        {/* Floor */}
+                        <div className="relative">
+                          <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                            Floor <span className="text-primary">*</span>
+                          </h4>
+                          <input
+                            // required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={orderDeliveryAddress.address.apartment.floor}
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  apartment: {
+                                    ...orderDeliveryAddress.address.apartment,
+                                    floor: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="Floor"
+                          />
+                        </div>
+                        {/* City */}
+                        <div className="relative">
+                          <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                            City <span className="text-primary">*</span>
+                          </h4>
+                          <input
+                            required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={orderDeliveryAddress.address.apartment.city}
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  apartment: {
+                                    ...orderDeliveryAddress.address.apartment,
+                                    city: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="City"
+                          />
+                        </div>
+                        {/* Street  */}
+                        <div className="relative col-span-2">
+                          <h4 className="text-sm font-semibold  bg-white absolute -top-2 left-2 px-1 z-20">
+                            Street Address{" "}
+                            <span className="text-primary">*</span>
+                          </h4>
+                          <input
+                            required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={
+                              orderDeliveryAddress.address.apartment
+                                .street_address
+                            }
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  apartment: {
+                                    ...orderDeliveryAddress.address.apartment,
+                                    street_address: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="Street Address"
+                          />
+                        </div>
+                        {/* Additional direction */}
+                        <div className="relative col-span-2 mt-1">
+                          <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                            Additional Direction
+                          </h4>
+                          <input
+                            required
+                            className="border rounded-md w-full"
+                            name=""
+                            value={
+                              orderDeliveryAddress.address.apartment
+                                .addition_direction
+                            }
+                            onChange={(e) =>
+                              updateOrderDeliveryAddress({
+                                address: {
+                                  ...orderDeliveryAddress.address,
+                                  apartment: {
+                                    ...orderDeliveryAddress.address.apartment,
+                                    addition_direction: e.target.value,
+                                  },
+                                },
+                              })
+                            }
+                            placeholder="Additional direction"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* <div className="relative mb-1 mt-5">
                     <h4 className="text-sm font-semibold  bg-white absolute -top-2 left-2 px-1 z-20">
                       Street Address <span className="text-primary">*</span>
                     </h4>
@@ -828,7 +1352,8 @@ export const Checkout = () => {
                       }
                       placeholder="City"
                     />
-                  </div>
+                  </div> */}
+
                   {/* Not required */}
                   {/* <h4 className="text-base font-semibold mb-1 mt-3">
                     Postal Code 
@@ -945,7 +1470,7 @@ export const Checkout = () => {
                       type="datetime-local"
                       name=""
                       value={order.delivery_time}
-                      onClick={()=>setDeliveryTimeModal(true)}
+                      onClick={() => setDeliveryTimeModal(true)}
                       // onChange={(e) =>
                       //   updateOrder({ delivery_time: e.target.value })
                       // }
@@ -1509,7 +2034,7 @@ export const Checkout = () => {
         <div>
           <p className="my-3 text-lg text-headGray">
             <strong> Delivery Time : </strong>{" "}
-            {selectedDeliveryDate?.date?.toDateString()} {" "}
+            {selectedDeliveryDate?.date?.toDateString()}{" "}
             {convertTo12Hour(selectedDeliveryDate?.deliveryTime)}
           </p>
           {/* Delivery date and time */}
@@ -1534,7 +2059,8 @@ export const Checkout = () => {
               <label
                 key={index}
                 className={`flex items-center justify-between cursor-pointer border rounded-md px-2 py-5 ${
-                  selectedDeliveryDate?.date?.toDateString() === obj?.date?.toDateString() && "border-blue-500"
+                  selectedDeliveryDate?.date?.toDateString() ===
+                    obj?.date?.toDateString() && "border-blue-500"
                 } `}
                 onClick={() => SelectDeliveryDate(obj)}
               >
@@ -1554,7 +2080,10 @@ export const Checkout = () => {
             ))}
           </div>
 
-          <label className={`${!selectedDeliveryDate?.date && "hidden"} mt-4`} htmlFor="time">
+          <label
+            className={`${!selectedDeliveryDate?.date && "hidden"} mt-4`}
+            htmlFor="time"
+          >
             <strong className="text-base my-3 block">Select Date :</strong>
             <input
               disabled={selectedDeliveryDate === ""}
