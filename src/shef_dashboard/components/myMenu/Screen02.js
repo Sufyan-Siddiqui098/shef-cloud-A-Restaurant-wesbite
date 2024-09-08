@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import Select from 'react-select';
+
 const DescScreen = ({
   description,
   item_limit,
@@ -9,8 +11,7 @@ const DescScreen = ({
   is_friday,
   is_saturday,
   is_sunday,
-  availability_slot_start,
-  availability_slot_end,
+  availability_slot,  // new added to hold availability time of menu in array
   limit_item_availibility,
   limit_start,
   limit_end,
@@ -33,29 +34,38 @@ const DescScreen = ({
     {
       start: "09:00",
       end: "12:00",
+      value: `${convertTo12Hour("09:00")} - ${convertTo12Hour("12:00")}`,
+      label:`${convertTo12Hour("09:00")} - ${convertTo12Hour("12:00")}`
     },
     {
       start: "12:00",
       end: "15:00",
+      value: `${convertTo12Hour("12:00")} - ${convertTo12Hour("15:00")}`,
+      label: `${convertTo12Hour("12:00")} - ${convertTo12Hour("15:00")}`
     },
     {
       start: "15:00",
       end: "18:00",
+      value: `${convertTo12Hour("15:00")} - ${convertTo12Hour("18:00")}`,
+      label: `${convertTo12Hour("15:00")} - ${convertTo12Hour("18:00")}`
     },
     {
       start: "18:00",
       end: "21:00",
+      value: `${convertTo12Hour("18:00")} - ${convertTo12Hour("21:00")}`,
+      label: `${convertTo12Hour("18:00")} - ${convertTo12Hour("21:00")}`
     },
     {
       start: "21:00",
       end: "24:00",
+      value: `${convertTo12Hour("21:00")} - ${convertTo12Hour("24:00")}`,
+      label: `${convertTo12Hour("21:00")} - ${convertTo12Hour("24:00")}`
     },
   ]);
 
-  const[selectedSlot, setSelectedSlot] = useState({
-    start: availability_slot_start,
-    end: availability_slot_end
-  })
+  
+
+  const [selectedAvailabilitySlot, setSelectedAvailabilitySlot] = useState([])
 
   // Function to convert 24-hour time to 12-hour format
   function convertTo12Hour(time24) {
@@ -73,28 +83,27 @@ const DescScreen = ({
     return `${hours}:${minutes} ${suffix}`;
   }
 
-  // onChange event handler for avialblity time slot
-  const handleTimeSlotChange = (e) => {
-    if (e.target.value !== "") {
-      const selectedTime = JSON.parse(e.target.value);
-      // console.log("sleected time ", selectedTime)
-      setSelectedSlot({
-        start: selectedTime.start,
-        end: selectedTime.end
-      })
-      updateFields({
-        availability_slot_start: selectedTime.start,
-        availability_slot_end: selectedTime.end,
-      });
-    } else {
-      // console.log("set to emtpy")
-      setSelectedSlot({
-        start: "",
-        end: ""
-      })
-      updateFields({ availability_slot_start: "", availability_slot_end: "" });
+
+  const handleAvailabilitySlotChnage = (selectedValue) => {
+    const availability = []
+    selectedValue?.forEach(slot => {
+      availability.push({start: slot.start, end: slot.end})
+    });
+    // console.log("Selected availability time ", selectedValue, availability)
+    setSelectedAvailabilitySlot(selectedValue)
+    updateFields({ availability_slot: availability })
+  }
+
+
+  // Already added availability fetch
+  useEffect(()=> {
+    if(availability_slot && availability_slot?.length>0){
+        const matchedAvailablity = timeSlot.filter((slot) => availability_slot.some((selectedAvailability) => selectedAvailability.start === slot.start));
+        setSelectedAvailabilitySlot(matchedAvailablity)
+        // console.log("already present availability ", matchedAvailablity)
     }
-  };
+  }, [timeSlot])
+
   return (
     <div>
       <div className="container mx-auto">
@@ -206,7 +215,13 @@ const DescScreen = ({
               value={item_limit === "0" || item_limit === 0 ? "" : item_limit}
               onChange={(e) => {
                 const value = parseInt(e.target.value, 10);
-                  updateFields({ item_limit: isNaN(value) ? "" : (value>-1 && value<=100) ? value : item_limit });
+                updateFields({
+                  item_limit: isNaN(value)
+                    ? ""
+                    : value > -1 && value <= 100
+                    ? value
+                    : item_limit,
+                });
               }}
               placeholder="1 / 100"
             />
@@ -345,15 +360,32 @@ const DescScreen = ({
             <h3 className="text-lg font-semibold mb-1 leading-tight mt-3 py-2">
               Availability Slot
             </h3>
-            <div className="flex gap-2 flex-wrap">
-              <select value={JSON.stringify(selectedSlot)} onChange={handleTimeSlotChange} id="selectOption">
+            <div className=" ">
+              {/* <select value={JSON.stringify(selectedSlot)} onChange={handleTimeSlotChange} id="selectOption">
                 <option value="">Dish Available Time</option>
                 {timeSlot.map((time, index) => (
                   <option key={index} value={JSON.stringify(time)}>
                     {convertTo12Hour(time.start)} - {convertTo12Hour(time.end)}
                   </option>
                 ))}
-              </select>
+              </select> */}
+              <Select
+                isMulti
+                options={timeSlot}
+                value={selectedAvailabilitySlot}
+                onChange={handleAvailabilitySlotChnage}
+                placeholder="+ Select Availability time"
+              />
+              <ul className="mt-2">
+                {selectedAvailabilitySlot.map((option) => (
+                  <li
+                    className="bg-secondary text-white inline-block rounded-[4px] px-2 mr-2"
+                    key={option.value}
+                  >
+                    {option.label}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
           <div className="mt-7 mb-5 border-b"></div>
