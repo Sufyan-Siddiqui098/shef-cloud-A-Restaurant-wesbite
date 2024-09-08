@@ -99,7 +99,7 @@ const MenuModal = ({
   // });
 
   // Default setting state
-  const [defaultSetting, setDefaultSetting] = useState('')
+  const [defaultSetting, setDefaultSetting] = useState("");
 
   // calculate delivery_price & platform_price
   const calculate = (price) => {
@@ -110,7 +110,6 @@ const MenuModal = ({
     // const platformCost = parseFloat(
     //   (price * (platformRate.platform_percentage / 100)).toFixed(2)
     // );
-
     // Update Delivery price & platform_price in Chef-Menu
     // ---- Hide it send the 0 in api developer said
     // updateFields({ delivery_price: deliveryCost });
@@ -122,7 +121,7 @@ const MenuModal = ({
       try {
         // const platformRateResponse = await handleGetPlatformRate(authToken);
         // console.log("Platform rates", platformRateResponse);
-  
+
         // if (
         //   platformRateResponse &&
         //   platformRateResponse.delivery_percentage !== undefined &&
@@ -133,14 +132,16 @@ const MenuModal = ({
         // } else {
         //   console.warn("Unexpected platform rate response structure", platformRateResponse);
         // }
-        const default_setting_response = await handleGetDefaultSetting(authToken);
-        setDefaultSetting(default_setting_response)
+        const default_setting_response = await handleGetDefaultSetting(
+          authToken
+        );
+        setDefaultSetting(default_setting_response);
         // setPlatformRate
       } catch (error) {
         console.error("Error while fetching platform rate:", error);
       }
     };
-  
+
     fetchPlatformRate();
   }, [authToken]);
 
@@ -155,7 +156,7 @@ const MenuModal = ({
         console.error("Error while fetching Portion Type:", error);
       }
     };
-  
+
     fetchPortionTypes();
   }, [authToken]);
 
@@ -837,13 +838,19 @@ const MenuModal = ({
                       Shef collects{" "}
                       <span className="text-[#fca5a5] font-semibold">
                         {/* {platformRate.platform_percentage}% */}
-                        {(defaultSetting.platform_charge_percentage / 100) *
-                          chef_earning_fee >
-                        defaultSetting.platform_charge
-                          ? defaultSetting.platform_charge_percentage
-                          : defaultSetting.platform_charge /
-                            chef_earning_fee *
-                            100}
+                        {chef_earning_fee !== "" || chef_earning_fee > 0
+                          ? (defaultSetting.platform_charge_percentage / 100) *
+                              chef_earning_fee >
+                            defaultSetting.platform_charge
+                            ? defaultSetting.platform_charge_percentage?.toFixed(
+                                2
+                              )
+                            : (
+                                (defaultSetting.platform_charge /
+                                  chef_earning_fee) *
+                                100
+                              )?.toFixed(2)
+                          : 0}
                         %
                       </span>{" "}
                       to cover marketing, customer support and software
@@ -873,12 +880,17 @@ const MenuModal = ({
                           (platformRate.delivery_percentage / 100) *
                           chef_earning_fee
                         ).toFixed(2)} */}
-                        {(defaultSetting.delivery_charge_percentage / 100) *
-                          chef_earning_fee >
-                        defaultSetting.delivery_charge
+                        {chef_earning_fee !== "" || chef_earning_fee > 0
                           ? (defaultSetting.delivery_charge_percentage / 100) *
-                            chef_earning_fee
-                          : defaultSetting.delivery_charge}
+                              chef_earning_fee >
+                            defaultSetting.delivery_charge
+                            ? (
+                                (defaultSetting.delivery_charge_percentage /
+                                  100) *
+                                chef_earning_fee
+                              )?.toFixed(2)
+                            : defaultSetting.delivery_charge?.toFixed(2)
+                          : (0).toFixed(2)}
                       </span>{" "}
                       goes towards operations and delivery costs.
                     </span>
