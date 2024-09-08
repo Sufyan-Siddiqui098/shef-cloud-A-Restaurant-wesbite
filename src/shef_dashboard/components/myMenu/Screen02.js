@@ -201,11 +201,12 @@ const DescScreen = ({
             <input
               type="number"
               min={0}
+              max={100}
               className="w-1/2"
               value={item_limit === "0" || item_limit === 0 ? "" : item_limit}
               onChange={(e) => {
                 const value = parseInt(e.target.value, 10);
-                updateFields({ item_limit: isNaN(value) ? "" : value>-1? value: "" });
+                  updateFields({ item_limit: isNaN(value) ? "" : (value>-1 && value<=100) ? value : item_limit });
               }}
               placeholder="1 / 100"
             />
