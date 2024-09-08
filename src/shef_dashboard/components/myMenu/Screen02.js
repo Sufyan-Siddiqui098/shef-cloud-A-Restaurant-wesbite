@@ -200,11 +200,12 @@ const DescScreen = ({
             </p>
             <input
               type="number"
+              min={0}
               className="w-1/2"
               value={item_limit === "0" || item_limit === 0 ? "" : item_limit}
               onChange={(e) => {
                 const value = parseInt(e.target.value, 10);
-                updateFields({ item_limit: isNaN(value) ? "" : value });
+                updateFields({ item_limit: isNaN(value) ? "" : value>-1? value: "" });
               }}
               placeholder="1 / 100"
             />
@@ -346,8 +347,8 @@ const DescScreen = ({
             <div className="flex gap-2 flex-wrap">
               <select value={JSON.stringify(selectedSlot)} onChange={handleTimeSlotChange} id="selectOption">
                 <option value="">Dish Available Time</option>
-                {timeSlot.map((time) => (
-                  <option value={JSON.stringify(time)}>
+                {timeSlot.map((time, index) => (
+                  <option key={index} value={JSON.stringify(time)}>
                     {convertTo12Hour(time.start)} - {convertTo12Hour(time.end)}
                   </option>
                 ))}
