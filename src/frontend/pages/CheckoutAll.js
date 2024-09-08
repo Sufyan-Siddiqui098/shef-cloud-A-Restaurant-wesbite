@@ -41,31 +41,23 @@ export const CheckoutAll = () => {
     total_price: 0,
   };
   const orderDeliveryAddressInitial = {
-    address: {
-      home: {
-        house_no: "",
-        street_address: "",
-        city: "",
-        addition_direction: "",
-      },
-      office: {
-        department: "",
-        floor: "",
-        company: "",
-        building_no: "",
-        street_address: "",
-        city: "",
-        addition_direction: "",
-      },
-      apartment: {
-        name: "",
-        apartment_no: "",
-        floor: "",
-        street_address: "",
-        city: "",
-        addition_direction: "",
-      },
-    },
+    home_house_no: "",
+    home_street_address: "",
+    home_city: "",
+    home_addition_direction: "",
+    office_department: "",
+    office_floor: "",
+    office_company: "",
+    office_building_no: "",
+    office_street_address: "",
+    office_city: "",
+    office_addition_direction: "",
+    apartment_name: "",
+    apartment_apartment_no: "",
+    apartment_floor: "",
+    apartment_street_address: "",
+    apartment_city: "",
+    apartment_addition_direction: "",
     line2: "",
     latitude: "",
     longitude: "",
@@ -219,47 +211,25 @@ export const CheckoutAll = () => {
         userInfo.last_order_address.order_delivery_address;
       console.log("exiting addresss useEffect ", lastOrderAddress);
       updateOrderDeliveryAddress({
-        address: {
-          home: {
-            house_no: lastOrderAddress?.address?.home?.house_no || "",
-            street_address:
-              lastOrderAddress?.address?.home?.street_address || "",
-            city: lastOrderAddress?.address?.home?.city || "",
-            addition_direction:
-              lastOrderAddress?.address?.home?.addition_direction || "",
-          },
-          office: {
-            department: lastOrderAddress?.address?.office?.department || "",
-            floor: lastOrderAddress?.address?.office?.floor || "",
-            company: lastOrderAddress?.address?.office?.company || "",
-            building_no: lastOrderAddress?.address?.office?.building_no || "",
-            street_address:
-              lastOrderAddress?.address?.office?.street_address || "",
-            city: lastOrderAddress?.address?.office?.city || "",
-            addition_direction:
-              lastOrderAddress?.address?.office?.addition_direction || "",
-          },
-          apartment: {
-            name: lastOrderAddress?.address?.apartment?.name || "",
-            apartment_no:
-              lastOrderAddress?.address?.apartment?.apartment_no || "",
-            floor: lastOrderAddress?.address?.apartment?.floor || "",
-            street_address:
-              lastOrderAddress?.address?.apartment?.street_address || "",
-            city: lastOrderAddress?.address?.apartment?.city || "",
-            addition_direction:
-              lastOrderAddress?.address?.apartment?.addition_direction || "",
-          },
-        },
+        home_house_no: lastOrderAddress?.home_house_no || "",
+        home_street_address: lastOrderAddress?.home_street_address || "",
+        home_city: lastOrderAddress?.home_city || "",
+        home_addition_direction: lastOrderAddress?.home_addition_direction || "",
+        office_department: lastOrderAddress?.office_department || "",
+        office_floor: lastOrderAddress?.office_floor || "",
+        office_company: lastOrderAddress?.office_company || "",
+        office_building_no: lastOrderAddress?.office_building_no || "",
+        office_street_address: lastOrderAddress?.office_street_address || "",
+        office_city: lastOrderAddress?.office_city || "",
+        office_addition_direction: lastOrderAddress?.office_addition_direction || "",
+        apartment_name: lastOrderAddress?.apartment_name || "",
+        apartment_apartment_no: lastOrderAddress?.apartment_apartment_no || "",
+        apartment_floor: lastOrderAddress?.apartment_floor || "",
+        apartment_street_address: lastOrderAddress?.apartment_street_address || "",
+        apartment_city: lastOrderAddress?.apartment_city || "",
+        apartment_addition_direction: lastOrderAddress?.apartment_addition_direction || "",
       });
-      // setOrderDeliveryAddress((prevAddress) => ({
-      //   ...prevAddress,
-      //   address: lastOrderAddress?.address || "",
-      //   line2: lastOrderAddress?.line2 || "",
-      //   city: lastOrderAddress?.city || "",
-      //   postal_code: lastOrderAddress?.postal_code || "",
-      //   state: lastOrderAddress?.state || "",
-      // }));
+     
     }
 
     // Fetch city from localStorage
@@ -730,17 +700,11 @@ export const CheckoutAll = () => {
                           className="border rounded-md w-full"
                           name=""
                           value={
-                            orderDeliveryAddress.address.home.street_address
+                            orderDeliveryAddress.home_street_address
                           }
                           onChange={(e) =>
                             updateOrderDeliveryAddress({
-                              address: {
-                                ...orderDeliveryAddress.address,
-                                home: {
-                                  ...orderDeliveryAddress.address.home,
-                                  street_address: e.target.value,
-                                },
-                              },
+                              home_street_address: e.target.value
                             })
                           }
                           placeholder="Street Address"
@@ -755,16 +719,10 @@ export const CheckoutAll = () => {
                             required
                             className="border rounded-md w-full"
                             name=""
-                            value={orderDeliveryAddress.address.home.house_no}
+                            value={orderDeliveryAddress.home_house_no}
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  home: {
-                                    ...orderDeliveryAddress.address.home,
-                                    house_no: e.target.value,
-                                  },
-                                },
+                                home_house_no: e.target.value
                               })
                             }
                             placeholder="House no. "
@@ -778,16 +736,10 @@ export const CheckoutAll = () => {
                             required
                             className="border rounded-md w-full"
                             name=""
-                            value={orderDeliveryAddress.address.home.city}
+                            value={orderDeliveryAddress.home_city}
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  home: {
-                                    ...orderDeliveryAddress.address.home,
-                                    city: e.target.value,
-                                  },
-                                },
+                                home_city: e.target.value
                               })
                             }
                             placeholder="City"
@@ -799,21 +751,14 @@ export const CheckoutAll = () => {
                           Additional Direction
                         </h4>
                         <input
-                          required
                           className="border rounded-md w-full"
                           name=""
                           value={
-                            orderDeliveryAddress.address.home.addition_direction
+                            orderDeliveryAddress.home_addition_direction
                           }
                           onChange={(e) =>
                             updateOrderDeliveryAddress({
-                              address: {
-                                ...orderDeliveryAddress.address,
-                                home: {
-                                  ...orderDeliveryAddress.address.home,
-                                  addition_direction: e.target.value,
-                                },
-                              },
+                              home_addition_direction: e.target.value
                             })
                           }
                           placeholder="Additional direction"
@@ -832,21 +777,15 @@ export const CheckoutAll = () => {
                             <span className="text-primary"> *</span>
                           </h4>
                           <input
-                            // required
+                            required
                             className="border rounded-md w-full"
                             name=""
                             value={
-                              orderDeliveryAddress.address.office.department
+                              orderDeliveryAddress.office_department
                             }
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  office: {
-                                    ...orderDeliveryAddress.address.office,
-                                    department: e.target.value,
-                                  },
-                                },
+                                office_department: e.target.value
                               })
                             }
                             placeholder="Office department"
@@ -859,19 +798,13 @@ export const CheckoutAll = () => {
                             <span className="text-primary"> *</span>
                           </h4>
                           <input
-                            // required
+                            required
                             className="border rounded-md w-full"
                             name=""
-                            value={orderDeliveryAddress.address.office.floor}
+                            value={orderDeliveryAddress.office_floor}
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  office: {
-                                    ...orderDeliveryAddress.address.office,
-                                    floor: e.target.value,
-                                  },
-                                },
+                                office_floor: e.target.value
                               })
                             }
                             placeholder="Floor"
@@ -884,19 +817,13 @@ export const CheckoutAll = () => {
                             <span className="text-primary"> *</span>
                           </h4>
                           <input
-                            // required
+                            required
                             className="border rounded-md w-full"
                             name=""
-                            value={orderDeliveryAddress.address.office.company}
+                            value={orderDeliveryAddress.office_company}
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  office: {
-                                    ...orderDeliveryAddress.address.office,
-                                    company: e.target.value,
-                                  },
-                                },
+                                office_company: e.target.value
                               })
                             }
                             placeholder="Company "
@@ -909,21 +836,15 @@ export const CheckoutAll = () => {
                             <span className="text-primary"> *</span>
                           </h4>
                           <input
-                            // required
+                            required
                             className="border rounded-md w-full"
                             name=""
                             value={
-                              orderDeliveryAddress.address.office.building_no
+                              orderDeliveryAddress.office_building_no
                             }
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  office: {
-                                    ...orderDeliveryAddress.address.office,
-                                    building_no: e.target.value,
-                                  },
-                                },
+                                office_building_no: e.target.value
                               })
                             }
                             placeholder="Building no. "
@@ -943,17 +864,11 @@ export const CheckoutAll = () => {
                             className="border rounded-md w-full"
                             name=""
                             value={
-                              orderDeliveryAddress.address.office.street_address
+                              orderDeliveryAddress.office_street_address
                             }
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  office: {
-                                    ...orderDeliveryAddress.address.office,
-                                    street_address: e.target.value,
-                                  },
-                                },
+                                office_street_address: e.target.value
                               })
                             }
                             placeholder="Street Address"
@@ -968,16 +883,10 @@ export const CheckoutAll = () => {
                             required
                             className="border rounded-md w-full"
                             name=""
-                            value={orderDeliveryAddress.address.office.city}
+                            value={orderDeliveryAddress.office_city}
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  office: {
-                                    ...orderDeliveryAddress.address.office,
-                                    city: e.target.value,
-                                  },
-                                },
+                                office_city: e.target.value
                               })
                             }
                             placeholder="City"
@@ -990,22 +899,14 @@ export const CheckoutAll = () => {
                           Additional Direction
                         </h4>
                         <input
-                          required
                           className="border rounded-md w-full"
                           name=""
                           value={
-                            orderDeliveryAddress.address.office
-                              .addition_direction
+                            orderDeliveryAddress.office_addition_direction
                           }
                           onChange={(e) =>
                             updateOrderDeliveryAddress({
-                              address: {
-                                ...orderDeliveryAddress.address,
-                                office: {
-                                  ...orderDeliveryAddress.address.office,
-                                  addition_direction: e.target.value,
-                                },
-                              },
+                              office_addition_direction: e.target.value
                             })
                           }
                           placeholder="Additional direction"
@@ -1026,19 +927,13 @@ export const CheckoutAll = () => {
                             <span className="text-primary"> *</span>
                           </h4>
                           <input
-                            // required
+                            required
                             className="border rounded-md w-full"
                             name=""
-                            value={orderDeliveryAddress.address.apartment.name}
+                            value={orderDeliveryAddress.apartment_name}
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  apartment: {
-                                    ...orderDeliveryAddress.address.apartment,
-                                    name: e.target.value,
-                                  },
-                                },
+                                apartment_name: e.target.value
                               })
                             }
                             placeholder="Building Name"
@@ -1050,22 +945,15 @@ export const CheckoutAll = () => {
                             <span className="text-primary"> *</span>
                           </h4>
                           <input
-                            // required
+                            required
                             className="border rounded-md w-full"
                             name=""
                             value={
-                              orderDeliveryAddress.address.apartment
-                                .apartment_no
+                              orderDeliveryAddress.apartment_apartment_no
                             }
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  apartment: {
-                                    ...orderDeliveryAddress.address.apartment,
-                                    apartment_no: e.target.value,
-                                  },
-                                },
+                                apartment_apartment_no: e.target.value
                               })
                             }
                             placeholder="Apartment No"
@@ -1077,19 +965,13 @@ export const CheckoutAll = () => {
                             Floor <span className="text-primary">*</span>
                           </h4>
                           <input
-                            // required
+                            required
                             className="border rounded-md w-full"
                             name=""
-                            value={orderDeliveryAddress.address.apartment.floor}
+                            value={orderDeliveryAddress.apartment_floor}
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  apartment: {
-                                    ...orderDeliveryAddress.address.apartment,
-                                    floor: e.target.value,
-                                  },
-                                },
+                                apartment_floor: e.target.value
                               })
                             }
                             placeholder="Floor"
@@ -1104,16 +986,10 @@ export const CheckoutAll = () => {
                             required
                             className="border rounded-md w-full"
                             name=""
-                            value={orderDeliveryAddress.address.apartment.city}
+                            value={orderDeliveryAddress.apartment_city}
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  apartment: {
-                                    ...orderDeliveryAddress.address.apartment,
-                                    city: e.target.value,
-                                  },
-                                },
+                                apartment_city: e.target.value
                               })
                             }
                             placeholder="City"
@@ -1130,18 +1006,11 @@ export const CheckoutAll = () => {
                             className="border rounded-md w-full"
                             name=""
                             value={
-                              orderDeliveryAddress.address.apartment
-                                .street_address
+                              orderDeliveryAddress.apartment_street_address
                             }
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  apartment: {
-                                    ...orderDeliveryAddress.address.apartment,
-                                    street_address: e.target.value,
-                                  },
-                                },
+                                apartment_street_address: e.target.value
                               })
                             }
                             placeholder="Street Address"
@@ -1153,22 +1022,14 @@ export const CheckoutAll = () => {
                             Additional Direction
                           </h4>
                           <input
-                            required
                             className="border rounded-md w-full"
                             name=""
                             value={
-                              orderDeliveryAddress.address.apartment
-                                .addition_direction
+                              orderDeliveryAddress.apartment_addition_direction
                             }
                             onChange={(e) =>
                               updateOrderDeliveryAddress({
-                                address: {
-                                  ...orderDeliveryAddress.address,
-                                  apartment: {
-                                    ...orderDeliveryAddress.address.apartment,
-                                    addition_direction: e.target.value,
-                                  },
-                                },
+                                apartment_addition_direction: e.target.value
                               })
                             }
                             placeholder="Additional direction"
