@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import Select from 'react-select';
+import Select from "react-select";
+import { handleGetAvailabilityTimeSlot } from "../../../services/shef";
 
 const DescScreen = ({
   description,
@@ -11,7 +12,7 @@ const DescScreen = ({
   is_friday,
   is_saturday,
   is_sunday,
-  availability_slot,  // new added to hold availability time of menu in array
+  availability_slot, // new added to hold availability time of menu in array
   limit_item_availibility,
   limit_start,
   limit_end,
@@ -32,40 +33,38 @@ const DescScreen = ({
   // TIme slot for dish availability
   const [timeSlot, setTimeSlot] = useState([
     {
-      start: "09:00",
-      end: "12:00",
+      time_start: "09:00",
+      time_end: "12:00",
       value: `${convertTo12Hour("09:00")} - ${convertTo12Hour("12:00")}`,
-      label:`${convertTo12Hour("09:00")} - ${convertTo12Hour("12:00")}`
+      label: `${convertTo12Hour("09:00")} - ${convertTo12Hour("12:00")}`,
     },
     {
-      start: "12:00",
-      end: "15:00",
+      time_start: "12:00",
+      time_end: "15:00",
       value: `${convertTo12Hour("12:00")} - ${convertTo12Hour("15:00")}`,
-      label: `${convertTo12Hour("12:00")} - ${convertTo12Hour("15:00")}`
+      label: `${convertTo12Hour("12:00")} - ${convertTo12Hour("15:00")}`,
     },
     {
-      start: "15:00",
-      end: "18:00",
+      time_start: "15:00",
+      time_end: "18:00",
       value: `${convertTo12Hour("15:00")} - ${convertTo12Hour("18:00")}`,
-      label: `${convertTo12Hour("15:00")} - ${convertTo12Hour("18:00")}`
+      label: `${convertTo12Hour("15:00")} - ${convertTo12Hour("18:00")}`,
     },
     {
-      start: "18:00",
-      end: "21:00",
+      time_start: "18:00",
+      time_end: "21:00",
       value: `${convertTo12Hour("18:00")} - ${convertTo12Hour("21:00")}`,
-      label: `${convertTo12Hour("18:00")} - ${convertTo12Hour("21:00")}`
+      label: `${convertTo12Hour("18:00")} - ${convertTo12Hour("21:00")}`,
     },
     {
-      start: "21:00",
-      end: "24:00",
+      time_start: "21:00",
+      time_end: "24:00",
       value: `${convertTo12Hour("21:00")} - ${convertTo12Hour("24:00")}`,
-      label: `${convertTo12Hour("21:00")} - ${convertTo12Hour("24:00")}`
+      label: `${convertTo12Hour("21:00")} - ${convertTo12Hour("24:00")}`,
     },
   ]);
 
-  
-
-  const [selectedAvailabilitySlot, setSelectedAvailabilitySlot] = useState([])
+  const [selectedAvailabilitySlot, setSelectedAvailabilitySlot] = useState([]);
 
   // Function to convert 24-hour time to 12-hour format
   function convertTo12Hour(time24) {
@@ -83,26 +82,59 @@ const DescScreen = ({
     return `${hours}:${minutes} ${suffix}`;
   }
 
+  // Fetch availability time slot
+  useEffect(() => {
+    const fetchAvailabilitySlot = async () => {
+      try {
+        const response = await handleGetAvailabilityTimeSlot();
+        // console.log("response of availbility ", response);
+        const reArrangeTimeSlot = response?.map((period) => {
+          return {
+            time_start: period.time_start,
+            time_end: period.time_end,
+            value: `${convertTo12Hour(period.time_start)} - ${convertTo12Hour(
+              period.time_end
+            )}`,
+            label: `${convertTo12Hour(period.time_start)} - ${convertTo12Hour(
+              period.time_end
+            )}`,
+          };
+        });
+        setTimeSlot(reArrangeTimeSlot);
+        // console.log("rearrage time slot ", reArrangeTimeSlot);
+      } catch (error) {
+        console.error("Error while fetching availability slot ", error);
+      }
+    };
+    fetchAvailabilitySlot();
+  }, []);
 
   const handleAvailabilitySlotChnage = (selectedValue) => {
-    const availability = []
-    selectedValue?.forEach(slot => {
-      availability.push({start: slot.start, end: slot.end})
+    const availability = [];
+    selectedValue?.forEach((slot) => {
+      availability.push({
+        time_start: slot.time_start,
+        time_end: slot.time_end,
+      });
     });
     // console.log("Selected availability time ", selectedValue, availability)
-    setSelectedAvailabilitySlot(selectedValue)
-    updateFields({ availability_slot: availability })
-  }
-
+    setSelectedAvailabilitySlot(selectedValue);
+    updateFields({ availability_slot: availability });
+  };
 
   // Already added availability fetch
-  useEffect(()=> {
-    if(availability_slot && availability_slot?.length>0){
-        const matchedAvailablity = timeSlot.filter((slot) => availability_slot.some((selectedAvailability) => selectedAvailability.start === slot.start));
-        setSelectedAvailabilitySlot(matchedAvailablity)
-        // console.log("already present availability ", matchedAvailablity)
+  useEffect(() => {
+    if (availability_slot && availability_slot?.length > 0) {
+      const matchedAvailablity = timeSlot.filter((slot) =>
+        availability_slot.some(
+          (selectedAvailability) =>
+            selectedAvailability.time_start === slot.time_start
+        )
+      );
+      setSelectedAvailabilitySlot(matchedAvailablity);
+      // console.log("already present availability ", matchedAvailablity)
     }
-  }, [timeSlot])
+  }, [timeSlot]);
 
   return (
     <div>
@@ -365,7 +397,7 @@ const DescScreen = ({
                 <option value="">Dish Available Time</option>
                 {timeSlot.map((time, index) => (
                   <option key={index} value={JSON.stringify(time)}>
-                    {convertTo12Hour(time.start)} - {convertTo12Hour(time.end)}
+                    {convertTo12Hour(time.start)} - {convertTo12Hour(time.time_end)}
                   </option>
                 ))}
               </select> */}

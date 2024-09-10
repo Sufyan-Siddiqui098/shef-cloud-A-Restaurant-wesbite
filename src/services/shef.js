@@ -241,3 +241,13 @@ export const handleDeleteDiscount = async (token, id) => {
     throw new Error(error.response.data.message);
   }
 };
+
+// Availability Time slot 
+export const handleGetAvailabilityTimeSlot = async () => {
+  try {
+    const {data} = await api.get("/api/availability_time_slots");
+    return data;
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
