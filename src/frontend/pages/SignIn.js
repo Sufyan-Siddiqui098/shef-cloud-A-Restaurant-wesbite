@@ -3,7 +3,11 @@ import "../assets/css/main-style.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import { handleFacebookLogin, handleForgetPassword, handleUserLogin } from "../auth/Auth";
+import { 
+  // handleFacebookLogin, 
+  handleForgetPassword, 
+  handleUserLogin 
+} from "../auth/Auth";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../store/slice/user";
 import { toast } from "react-toastify";
