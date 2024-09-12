@@ -71,8 +71,6 @@ const SignIn = () => {
   // Forget Password Modal
   const [forgetPassword, setForgetPassword] = useState({
     email: "",
-    password: "",
-    password_confirmation: "",
   });
   const [isOpen, setIsOpen] = useState(false);
   const onRequestClose = () => {
@@ -222,7 +220,7 @@ const SignIn = () => {
           {/* Modal content here */}
           <div className="flex items-center justify-between border-b pb-3 gap-3">
             <h2 className="text-lg font-semibold leading-tight mb-0">
-              Reset Your Password
+              Forget Your Password
             </h2>
             <button onClick={onRequestClose}>
               <svg
@@ -237,10 +235,10 @@ const SignIn = () => {
             </button>
           </div>
 
-          <form onSubmit={forgetPasswordSubmit} className=" mt-8 " action="">
+          <form onSubmit={forgetPasswordSubmit} className=" mt-5" action="">
             <p className="text-xs sm:text-base">
               {" "}
-              Enter your user account's email address and new password.
+              Enter your email address to recieve a reset password link.
             </p>
             <input
               value={forgetPassword.email}
@@ -249,56 +247,18 @@ const SignIn = () => {
                   return { ...prev, email: e.target.value };
                 })
               }
-              className="my-1"
+              className="my-1 mb-4"
               type="email"
               required
               name="email"
               placeholder="Enter your email address"
             />
-            <input
-              value={forgetPassword.password}
-              onChange={(e) =>
-                setForgetPassword((prev) => {
-                  return { ...prev, password: e.target.value };
-                })
-              }
-              minLength={8}
-              required
-              className="my-1"
-              type="password"
-              name="password"
-              id="password"
-              placeholder="Enter new Password"
-            />
-            <input
-              value={forgetPassword.password_confirmation}
-              onChange={(e) =>
-                setForgetPassword((prev) => {
-                  return { ...prev, password_confirmation: e.target.value };
-                })
-              }
-              minLength={8}
-              required
-              className={`my-1 mb-4 ${
-                forgetPassword.password_confirmation?.length > 0 &&
-                forgetPassword.password?.length > 0 &&
-                forgetPassword.password_confirmation !== forgetPassword.password &&
-                "bg-red-100"
-              }`}
-              type="password"
-              name="password_confirmation"
-              id="password_confirmation"
-              placeholder="Confirm Password"
-            />
             <button
-              disabled={
-                forgetPassword.email?.length < 1 ||
-                forgetPassword.password_confirmation !== forgetPassword.password
-              }
+              // disabled={forgetPassword.email?.length < 1}
               type="submit"
-              className="my-6 w-max bg-primary text-white text-lg uppercase px-6 py-2 font-semibold rounded-lg disabled:cursor-not-allowed disabled:opacity-60 mt-auto"
+              className="my-2 text-base w-max bg-primary text-white uppercase px-6 py-2 font-semibold rounded-lg disabled:cursor-not-allowed disabled:opacity-60 mt-auto"
             >
-              Confirm
+              Send Reset Password Link
             </button>
           </form>
         </div>
