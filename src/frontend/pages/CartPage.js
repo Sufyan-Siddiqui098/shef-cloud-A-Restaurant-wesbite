@@ -111,6 +111,10 @@ export const CartPage = () => {
                         {/* <h3 className='mb-1 text-lg font-semibold leading-tight'>Guajillo Grilled Shrimps </h3> */}
                         <h3 className="mb-1 text-lg font-semibold leading-tight">
                           {menu.name}
+                        <div className="flex flex-col">
+                        <p className="text-xs my-0 text-headGray mt-[2px] tracking-wider">Date: {new Date(chef.delivery_date).toDateString()}</p>
+                        <p className="text-xs my-0 text-headGray tracking-wider">Slot: {chef.delivery_slot}</p>
+                        </div>
                         </h3>
                       </div>
                       {/* <h6 className='text-lg font-semibold leading-tight w-[20%] text-right mb-0 pr-2'>1x</h6> */}
@@ -133,7 +137,7 @@ export const CartPage = () => {
                                             </div> */}
 
                     <Link
-                      to={`/checkout/${chef.id}`}
+                      to={`/checkout/${chef.id}/${chefIndex}`}
                       className="flex justify-center items-center gap-x-3 bg-primary rounded-lg py-3 px-3 "
                     >
                       <svg
