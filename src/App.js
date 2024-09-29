@@ -79,7 +79,7 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
       {/* Protected Route */}
       <Route element={<AuthProtected/>}>
-        <Route path="/checkout/:chefId" element={<Checkout />} />
+        <Route path="/checkout/:chefId/:chef_index" element={<Checkout />} />
         <Route path="/checkout-all" element={<CheckoutAll />} />
         <Route path="/order-summary/:orderId" element={<OrderSummary />} />
         <Route path="/order" element={<UserOrder />} />

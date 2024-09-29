@@ -12,7 +12,7 @@ import isValidURL from "../../ValidateUrl";
 import { updateUser } from "../../store/slice/user";
 import Modal from "react-modal";
 import { handleGetDefaultSetting } from "../../services/default_setting";
-import DatePicker from "react-datepicker";
+// import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 export const Checkout = () => {
@@ -22,7 +22,7 @@ export const Checkout = () => {
   const { cartItem } = useSelector((state) => state.cart);
 
   // Chef id - from url parameter
-  const { chefId } = useParams();
+  const { chefId, chef_index } = useParams();
 
   // Chef Tip
   const [activeButton, setActiveButton] = useState(null);
@@ -295,10 +295,13 @@ export const Checkout = () => {
     let deliverPriceSum = 0;
     let platformPriceSum = 0;
     let chefEarningSum = 0;
+    // delivery date and time 
+    let deliveryDateAndSlot = ""
 
     // Calculate the sub total, delivery price sum, and platform price sum
-    cartItem.forEach((chef) => {
-      if (chef.id === parseInt(chefId)) {
+    cartItem.forEach((chef, chefIndex) => {
+      if (chef.id === parseInt(chefId) && chefIndex === parseInt(chef_index)) {
+        deliveryDateAndSlot = `${chef.delivery_date}T${chef.delivery_slot}`
         chef.menu.forEach((menu) => {
           const chef_earning_fee = menu.chef_earning_fee || 0;
           const quantity = menu.quantity || 0;
@@ -358,9 +361,10 @@ export const Checkout = () => {
       ...prev,
       order_total: total,
     }));
-
+    // console.log("chef delivery date adn tiem ", deliveryDateAndSlot)
     // Update the order state with calculated values
     updateOrder({
+      delivery_time: deliveryDateAndSlot,
       chef_id: parseInt(chefId),
       city_id: city.id,
       sub_total: sub_total,
@@ -377,8 +381,8 @@ export const Checkout = () => {
     const menuDetails = [];
     const promoCodeMenu = [];
     // Select the chef according to menuDetails
-    cartItem.forEach((chef) => {
-      if (chef.id === parseInt(chefId)) {
+    cartItem.forEach((chef, chefIndex) => {
+      if (chef.id === parseInt(chefId) && chefIndex === parseInt(chef_index)) {
         chef.menu.forEach((menu) => {
           // --- Delivery Price - Default Setting
           const deliveryPercentageFee =
@@ -449,24 +453,6 @@ export const Checkout = () => {
     //eslint-disable-next-line
   }, [cartItem, order.tip_price, defaultSetting]);
 
-  // Merge date and time and make the result as "input:type=date-time"
-  const combineDateAndTime = (dateObj, timeObj) => {
-    // Extract date in YYYY-MM-DD format
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-    const day = String(dateObj.getDate()).padStart(2, "0");
-
-    // Extract time in HH:mm format (24-hour)
-    const hours = String(timeObj.getHours()).padStart(2, "0");
-    const minutes = String(timeObj.getMinutes()).padStart(2, "0");
-
-    // Combine date and time to form a datetime string in the format "YYYY-MM-DDTHH:mm"
-    const combinedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-    // console.log("Combined DateTime:", combinedDateTime);
-
-    return combinedDateTime;
-  };
 
   const navigate = useNavigate();
   //--- On Submit Function
@@ -474,9 +460,9 @@ export const Checkout = () => {
     try {
       e.preventDefault();
       setIsPending(true);
-      const datetimeString = combineDateAndTime(selectedDate, selectedTime);
+      // const datetimeString = combineDateAndTime(selectedDate, selectedTime);
       const payload = order;
-      payload.delivery_time = datetimeString;
+      // payload.delivery_time = datetimeString;
       payload.orderDeliveryAddress = orderDeliveryAddress;
       payload.orderDetails = orderDetails;
       console.log("Pyalod is ", payload);
@@ -530,245 +516,6 @@ export const Checkout = () => {
     setIsOpen(false);
   };
 
-  //----- matched days/time
-  const [availableDays, setAvailableDays] = useState([]);
-  // *****  delivery time modal
-  // const [deliveryTimeModal, setDeliveryTimeModal] = useState(false);
-  // const onDeliveryModalClose = () => {
-  //   setDeliveryTimeModal(false);
-  // };
-  // Selected date for Delivery modal
-  // const [selectedDeliveryDate, setSelectedDeliveryDate] = useState("");
-  // handle Delivery Date
-  // const SelectDeliveryDate = (obj) => {
-  //   // console.log("date is ", obj);
-  //   setSelectedDeliveryDate(obj);
-  // };
-
-  // Dliver Date and time Confirm
-  // const saveDeliveryDateTime = () => {
-  //   if (!selectedDeliveryDate.date || !selectedDeliveryDate.deliveryTime) {
-  //     toast.error("Please select the date and time");
-  //     return;
-  //   }
-  //   // else
-  //   const dateObj = new Date(selectedDeliveryDate.date);
-
-  //   // Extract the year, month, and day from the date object
-  //   const year = dateObj.getFullYear();
-  //   const month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed, so add 1
-  //   const day = String(dateObj.getDate()).padStart(2, "0");
-  //   // Combine them into the desired format
-  //   const formattedDate = `${year}-${month}-${day}`;
-  //   const dateTimeValue = `${formattedDate}T${selectedDeliveryDate.deliveryTime}`;
-  //   // console.log(" Complete date to be saved is  ", dateTimeValue);
-  //   updateOrder({ delivery_time: dateTimeValue });
-  //   setDeliveryTimeModal(false);
-  // };
-
-  // Function to convert 24-hour time to 12-hour format
-  // function convertTo12Hour(time24) {
-  //   if (!time24) return;
-  //   let [hours, minutes] = time24.split(":");
-  //   hours = parseInt(hours);
-
-  //   // Handle the edge case for "24:00"
-  //   if (hours === 24) {
-  //     hours = 0;
-  //   }
-
-  //   const suffix = hours >= 12 ? "PM" : "AM";
-  //   hours = hours % 12 || 12;
-
-  //   return `${hours}:${minutes} ${suffix}`;
-  // }
-
-  // ---- MODAL END for delivery date and time
-
-  useEffect(() => {
-    const getAvailableDays = (dish) => {
-      return {
-        monday: dish.is_monday,
-        tuesday: dish.is_tuesday,
-        wednesday: dish.is_wednesday,
-        thursday: dish.is_thursday,
-        friday: dish.is_friday,
-        saturday: dish.is_saturday,
-        sunday: dish.is_sunday,
-      };
-    };
-
-    const getCommonAvailableDays = (dishes) => {
-      return dishes.reduce(
-        (commonDays, dish) => {
-          const dishDays = getAvailableDays(dish);
-          Object.keys(commonDays).forEach((day) => {
-            commonDays[day] = commonDays[day] && dishDays[day];
-          });
-          return commonDays;
-        },
-        {
-          monday: 1,
-          tuesday: 1,
-          wednesday: 1,
-          thursday: 1,
-          friday: 1,
-          saturday: 1,
-          sunday: 1,
-        }
-      );
-    };
-
-    const getTimeRange = (dish) => {
-      // testing purpose
-      let testDish = { ...dish };
-      console.log("hi ", testDish);
-
-      // console.log("test ", testDish)
-      if (!dish.availability_slot || dish.availability_slot.length < 1) {
-        console.log("time slot is not present");
-        testDish.availability_slot = [
-          {
-            time_start: "00:00",
-            time_end: "23:59",
-          },
-        ];
-      }
-      return testDish.availability_slot?.map((slot) => ({
-        start: slot.time_start || "00:00", // Default to "00:00" if time_start is not provided
-        end: slot.time_end || "23:59", // Default to "23:59" if time_end is not provided
-      }));
-      // --- testing end
-
-      // Return array of time ranges for the dish
-      // return dish.availability_slot?.map(slot => ({
-      //   start: slot.time_start || "00:00",  // Default to "00:00" if time_start is not provided
-      //   end: slot.time_end || "23:59",      // Default to "23:59" if time_end is not provided
-      // }));
-    };
-
-    // Helper function to convert time "HH:MM" to minutes since midnight
-    const timeToMinutes = (time) => {
-      const [hours, minutes] = time.split(":").map(Number);
-      return hours * 60 + minutes;
-    };
-
-    // Helper function to convert minutes since midnight back to "HH:MM" format
-    const minutesToTime = (minutes) => {
-      const hours = Math.floor(minutes / 60);
-      const mins = minutes % 60;
-      return `${String(hours).padStart(2, "0")}:${String(mins).padStart(
-        2,
-        "0"
-      )}`;
-    };
-
-    const getCommonTimeRanges = (dishes) => {
-      if (!dishes || dishes.length === 0) {
-        console.log("No dishes provided");
-        return []; // Return an empty array if no dishes are provided
-      }
-
-      const timeRangesPerDish = dishes.map((dish) => getTimeRange(dish));
-      console.log("Time ranges per dish: ", timeRangesPerDish);
-
-      let commonTimeRanges = timeRangesPerDish[0];
-
-      if (!commonTimeRanges || commonTimeRanges.length === 0) {
-        console.log("No common time ranges found");
-        return [];
-      }
-
-      for (let i = 1; i < timeRangesPerDish.length; i++) {
-        const timeRanges = timeRangesPerDish[i];
-
-        if (!timeRanges || timeRanges.length === 0) {
-          console.log("Dish with no available time ranges");
-          return [];
-        }
-
-        let matchingRange = [];
-
-        commonTimeRanges.forEach((commonRange) => {
-          timeRanges.forEach((range) => {
-            // Convert time strings to minutes for comparison
-            const commonStartMinutes = timeToMinutes(commonRange.start);
-            const commonEndMinutes = timeToMinutes(commonRange.end);
-            const rangeStartMinutes = timeToMinutes(range.start);
-            const rangeEndMinutes = timeToMinutes(range.end);
-
-            // Calculate overlap
-            const overlapStart = Math.max(
-              commonStartMinutes,
-              rangeStartMinutes
-            );
-            const overlapEnd = Math.min(commonEndMinutes, rangeEndMinutes);
-
-            // console.log(
-            //   "Overlap start (minutes): ",
-            //   overlapStart,
-            //   "Overlap end (minutes): ",
-            //   overlapEnd
-            // );
-
-            if (overlapStart < overlapEnd) {
-              // Convert back to "HH:MM" format and add to matchingRange
-              matchingRange.push({
-                start: minutesToTime(overlapStart),
-                end: minutesToTime(overlapEnd),
-              });
-            }
-          });
-        });
-
-        commonTimeRanges = matchingRange;
-
-        if (commonTimeRanges.length === 0) {
-          console.log("No common time ranges after filtering");
-          return [];
-        }
-      }
-
-      return commonTimeRanges;
-    };
-
-
-    const getNext7AvailableDays = (commonDays, commonTimeRanges) => {
-      const availableDates = [];
-      let i = 0;
-
-      while (availableDates.length < 7 && i < 14) {
-        // Loop through the next 14 days, assuming at least 7 days will match
-        const date = new Date();
-        date.setDate(date.getDate() + i);
-        const day = date
-          .toLocaleString("en-us", { weekday: "long" })
-          .toLowerCase();
-
-        if (commonDays[day]) {
-          availableDates.push({
-            date,
-            timeRanges: commonTimeRanges, // Store array of common time ranges
-          });
-        }
-
-        i++;
-      }
-
-      return availableDates;
-    };
-
-    const chef = cartItem?.filter((chef) => chef.id === parseInt(chefId));
-
-    const commonDays = getCommonAvailableDays(chef[0]?.menu);
-    const commonTimeRanges = getCommonTimeRanges(chef[0]?.menu);
-    const next7Days = getNext7AvailableDays(commonDays, commonTimeRanges);
-    console.log("Next seven days with multiple time slots", next7Days);
-    setAvailableDays(next7Days);
-
-    //eslint-disable-next-line
-  }, [chefId]);
-
   const [addressPlace, setAddressPlace] = useState("home");
   const changeAddressPlace = (placeName) => {
     if (placeName === "home") {
@@ -783,23 +530,23 @@ export const Checkout = () => {
   };
 
   // Custom date and time picker
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
+  // const [selectedDate, setSelectedDate] = useState(null);
+  // const [selectedTime, setSelectedTime] = useState(null);
 
   // Handle time for delivery sync with date
-  const handleTimeChange = (time) => {
-    // Extract the time from the Date object
-    const hours = time.getHours();
-    const minutes = time.getMinutes();
+  // const handleTimeChange = (time) => {
+  //   // Extract the time from the Date object
+  //   const hours = time.getHours();
+  //   const minutes = time.getMinutes();
 
-    // Format the time as HH:MM (24-hour) or h:mm aa (12-hour)
-    const formattedTime = `${String(hours).padStart(2, "0")}:${String(
-      minutes
-    ).padStart(2, "0")}`;
-    console.log("Selected time:", formattedTime);
+  //   // Format the time as HH:MM (24-hour) or h:mm aa (12-hour)
+  //   const formattedTime = `${String(hours).padStart(2, "0")}:${String(
+  //     minutes
+  //   ).padStart(2, "0")}`;
+  //   console.log("Selected time:", formattedTime);
 
-    setSelectedTime(time); // Save the full Date object or formatted time based on your use case
-  };
+  //   setSelectedTime(time); // Save the full Date object or formatted time based on your use case
+  // };
 
   return (
     <>
@@ -889,8 +636,8 @@ export const Checkout = () => {
                 <div className="border-b mb-3 border-primary border-dashed"></div>
 
                 {/* Address */}
-                <div className="border- border-primary border-dashed mb-3 rounded bg-slate-50 px-3 py-4">
-                  {userInfo.user_addresses &&
+                <div className="border- border-primary border-dashed mb-3 rounded bg-slate-50 px-3 py-3">
+                  {/* {userInfo.user_addresses &&
                     userInfo.user_addresses.length > 0 && (
                       <button
                         type="button"
@@ -899,9 +646,12 @@ export const Checkout = () => {
                       >
                         Select Existing Address
                       </button>
-                    )}
+                    )} */}
                   {/* 3 different Addresses */}
-                  <div className="grid grid-cols-3 gap-2 mb-5 w- mx-auto">
+                  <div className="grid grid-cols-3 gap-x-2 mb-5 w- mx-auto">
+                    <div className="col-span-3">
+                      <p className="text-sm text-primary opacity-80 text-center">* Select the tab where you want your food delivered</p>
+                    </div>
                     {/* Home */}
                     <div
                       onClick={() => changeAddressPlace("home")}
@@ -1418,8 +1168,9 @@ export const Checkout = () => {
                 <div className="border-b border-primary border-dashed pb-4 mb-4 ">
                   <div className="relative grid grid-cols-2 gap-2">
                     <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
-                      Delivery Date <span className="text-primary">*</span>
+                      Selected Delivery Date <span className="text-primary">*</span>
                     </h4>
+                    <input type="text" className="" value={new Date(order.delivery_time.split("T")[0]).toDateString()}  disabled/>
                     {/* <input
                       min={new Date().toISOString().slice(0, 16)}
                       required
@@ -1434,7 +1185,7 @@ export const Checkout = () => {
                       readOnly
                       placeholder=""
                     /> */}
-                    <DatePicker
+                    {/* <DatePicker
                       required
                       popperClassName="!z-50"
                       selected={selectedDate}
@@ -1442,14 +1193,15 @@ export const Checkout = () => {
                       includeDates={availableDays.map((day) => day.date)}
                       placeholderText="Pick a delivery date"
                       dateFormat="MMMM d, yyyy"
-                    />
-                    {selectedDate && (
+                    /> */}
+                    {/* {selectedDate && ( */}
                       <div className="relative">
                         <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
-                          Select Delivery Time{" "}
+                          Selected Delivery Time{" "}
                           <span className="text-primary">*</span>
                         </h4>
-                        <DatePicker
+                        <input type="text" value={order.delivery_time.split("T")[1]}  disabled/>
+                        {/* <DatePicker
                           required
                           selected={selectedTime}
                           onChange={handleTimeChange} // Use the custom handler
@@ -1477,9 +1229,9 @@ export const Checkout = () => {
                             }
                             return false;
                           }}
-                        />
+                        /> */}
                       </div>
-                    )}
+                    {/* )} */}
                   </div>
                 </div>
                 {/* ------ Promo Code ------ */}
@@ -1685,7 +1437,7 @@ export const Checkout = () => {
                 {/* Order Box */}
                 {cartItem.map(
                   (chef, chefIndex) =>
-                    chef.id === parseInt(chefId) && (
+                    chef.id === parseInt(chefId) && chefIndex === parseInt(chef_index) && (
                       <div key={chefIndex}>
                         <div className="flex items-center gap-x-2 bg-primaryLight p-2 rounded-lg">
                           <img
