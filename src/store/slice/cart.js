@@ -9,9 +9,13 @@ const cartSlice = createSlice({
   },
   reducers: {
     addToCart: (state, action) => {
-      // console.log("action ", action.payload);
+      console.log("action ", action.payload);
       const chefIndex = state.cartItem.findIndex(
-        (chef) => chef.id === action.payload.user_id
+        (chef) => chef.id === action.payload.user_id 
+        &&
+        chef.delivery_date === action.payload.chef.delivery_date
+        &&
+        chef.delivery_slot === action.payload.chef.delivery_slot
       );
 
       // console.log("chef index ", chefIndex);
@@ -47,7 +51,7 @@ const cartSlice = createSlice({
     },
     removeFromCart: (state, action) => {
       const { chefIndex, menuIndex } = action.payload;
-      console.log("Action delete", action.payload)
+      // console.log("Action delete", action.payload)
       // Ensure chefIndex and menuIndex are valid
       if (chefIndex >= 0 && menuIndex >= 0) {
         const updatedMenu = state.cartItem[chefIndex].menu.filter(
@@ -90,7 +94,7 @@ const cartSlice = createSlice({
     // },
     updateCartItem : (state, action) => {
       const { chefIndex, menuIndex, key, value } = action.payload;
-    console.log("actoin", action.payload)
+    // console.log("actoin", action.payload)
       if (chefIndex >= 0 && menuIndex >= 0) {
         // Create a new menu array with the updated item
         const updatedMenu = state.cartItem[chefIndex].menu.map((menu, index) => {
