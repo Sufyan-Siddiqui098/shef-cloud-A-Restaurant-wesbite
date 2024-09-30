@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CartModal from "../cartWidget/CartModal";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -29,6 +29,31 @@ const FilterAndDate = ({ chefAndDishes }) => {
 
   // Cart item from Redux
   const { cartItem } = useSelector((state) => state.cart);
+
+  const [sortingWithDays, setSortingWithDays] = useState("");
+  const [dishesOfChef, setDishesOfChef] = useState(chefAndDishes.menus);
+  useEffect(() => {
+    let dishes = chefAndDishes?.menus;
+    if (sortingWithDays) {
+      dishes = chefAndDishes?.menus?.filter((dish) => {
+        return dish[`${sortingWithDays.toLowerCase()}`] === 1;
+      });
+    }
+
+    setDishesOfChef(dishes);
+
+    // console.log("filtered dishes ", dishes);
+  }, [chefAndDishes, sortingWithDays]);
+
+  const days = [
+    { name: "Mon", value: "is_monday" },
+    { name: "Tue", value: "is_tuesday" },
+    { name: "Wed", value: "is_wednesday" },
+    { name: "Thu", value: "is_thursday" },
+    { name: "Fri", value: "is_friday" },
+    { name: "Sat", value: "is_saturday" },
+    { name: "Sun", value: "is_sunday" },
+  ];
 
   const dispatch = useDispatch();
   // increment/decrement Quantity - Update directly in redux-store
@@ -116,9 +141,10 @@ const FilterAndDate = ({ chefAndDishes }) => {
                             </div>
                         )}
                     </div> */}
-          {/* <div>
-                        <div className='grid lg:grid-cols-12 md:grid-cols-8 grid-cols-4 gap-3 mb-4'>
-                            <div className={`chefDateBtn ${activeButton === 'btn1' ? 'active' : ''}`}
+          <div>
+            <div className="grid lg:grid-cols-12 md:grid-cols-8 grid-cols-4 gap-3 mb-4">
+              <h6 className="lg:col-span-12 md:col-span-8 col-span-4 text-[18px] tracking-wide  -mb-1 text-headGray font-smibold">Filter dishes</h6>
+              {/* <div className={`chefDateBtn ${activeButton === 'btn1' ? 'active' : ''}`}
                                 onClick={() => handleButtonClick('btn1')}
                             >
                                 <h6 className='text-[10px] font-bold text-[#777] uppercase mb-1 leading-tight'>Mon</h6>
@@ -237,15 +263,33 @@ const FilterAndDate = ({ chefAndDishes }) => {
                             >
                                 <h6 className='text-[10px] font-bold uppercase text-[#777] mb-1 leading-tight'>Sat</h6>
                                 <h4 className='text-[14px] font-bold mb-0 leading-tight'>Feb 20</h4>
-                            </div>
-                            <div className={`chefDateBtn ${activeButton === 'btn21' ? 'active' : ''}`}
-                                onClick={() => handleButtonClick('btn21')}
-                            >
-                                <h6 className='text-[10px] font-bold uppercase text-[#777] mb-1 leading-tight'>Sun</h6>
-                                <h4 className='text-[14px] font-bold mb-0 leading-tight'>Feb 21</h4>
-                            </div>
-                        </div>
-                    </div> */}
+                            </div> */}
+              {days.map((day) => (
+                <div
+                  className={`chefDateBtn ${
+                    sortingWithDays === day.value ? "active" : ""
+                  }`}
+                  onClick={() => setSortingWithDays(day.value)}
+                  // onClick={() => handleButtonClick('btn21')}
+                >
+                  <h6 className="text font-bold uppercase text-[#777] mb-1 leading-">
+                    {day.name}
+                  </h6>
+                  {/* <h4 className='text-[14px] font-bold mb-0 leading-tight'>Feb 21</h4> */}
+                </div>
+              ))}
+              {/* Reset days */}
+              <div
+                  className={`border flex justify-center items-center rounded-md cursor-pointer hover:border-primary`}
+                  onClick={() => setSortingWithDays("")}
+                > 
+                  <h6 className="text font-bold uppercase text-primary mb-1">
+                    Reset
+                  </h6>
+                  {/* <h4 className='text-[14px] font-bold mb-0 leading-tight'>Feb 21</h4> */}
+                </div>
+            </div>
+          </div>
           <div className="grid grid-cols-12 md:gap-x-4 gap-x-0 gap-y-4 my-12">
             <div className="lg:col-span-8 col-span-12">
               {/* <h2 className='md:text-3xl text-2xl uppercase font-bold -tracking-wider mb-6'>MONDAY'S MAIN ITEMS</h2> */}
@@ -253,7 +297,8 @@ const FilterAndDate = ({ chefAndDishes }) => {
                 MAIN ITEMS
               </h2>
               <div className="grid grid-cols-12 md:gap-x-4 gap-x-3 md:gap-y-3 gap-y-4">
-                {chefAndDishes?.menus?.map((dish) => (
+                {dishesOfChef?.map((dish) => (
+                  // {chefAndDishes?.menus?.map((dish) => (
                   <div
                     key={dish.id}
                     className="lg:col-span-4 sm:col-span-6 col-span-12"
@@ -383,7 +428,7 @@ const FilterAndDate = ({ chefAndDishes }) => {
                                                 <h4 className='bg-primaryLight px-3 py-1 text-sm rounded-[4px] inline-block mb-0'>1 serving</h4>
                                             </div> */}
                         <div className="border- border-primary mt- mb-4"></div>
-                        
+
                         {/* Dish Availability */}
                         <div className="border-t pt-3 mt-2">
                           <div className="grid grid-cols-12 gap-x-1">
@@ -514,6 +559,13 @@ const FilterAndDate = ({ chefAndDishes }) => {
                     </div>
                   </div>
                 ))}
+                {dishesOfChef?.length < 1 && (
+                  <div className="col-span-12">
+                    <p className="text-headGray text-lg mb-6 font-semibold">
+                      No dishe available{" "}
+                    </p>
+                  </div>
+                )}
                 {/* <div className='lg:col-span-4 sm:col-span-6 col-span-12'>
                                     <div className="product-box mb-md-20">
                                         <div className="product-img relative">
