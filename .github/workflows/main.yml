@@ -36,3 +36,4 @@ jobs:
             .github/
             *.zip
             .env
+            axios.js
