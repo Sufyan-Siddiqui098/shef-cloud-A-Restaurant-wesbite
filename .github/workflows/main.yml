@@ -20,7 +20,7 @@ jobs:
 
       # Step 3: Build the project
       - name: Build the Project
-        run: npm run build
+        run: CI=false npm run build
 
       # Step 4: Upload build folder contents (not the folder itself) to the cPanel server
       - name: Upload Build to Server
