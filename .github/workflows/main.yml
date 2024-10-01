@@ -1,0 +1,37 @@
+name: Publish Frontend to cPanel - Shefcloud
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code from GitHub repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Install dependencies
+      - name: Install Dependencies
+        run: npm install
+
+      # Step 3: Build the project
+      - name: Build the Project
+        run: npm run build
+
+      # Step 4: Upload build folder contents (not the folder itself) to the cPanel server
+      - name: Upload Build to Server
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ftp.exactomark.com
+          username: bz0enlz6x73k@shef.exactomark.com
+          password: FhH$OahB$63W
+          local-dir: build                         # Only the content of the 'build' folder will be uploaded
+          exclude: |
+            node_modules/
+            .git/
+            .github/
+            *.zip
