@@ -4,12 +4,13 @@ import Header from "../../shef_dashboard/components/Header";
 import { handleChangeOrderStatus, handleGetOrders } from "../../services/order";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import moment from 'moment';
+import moment from "moment";
 import { handleGetDefaultSetting } from "../../services/default_setting";
+import OrderList from "../components/order/OrderList";
 
 export const Order = () => {
   const { authToken } = useSelector((state) => state.user);
-  const {userInfo} = useSelector(state => state.user);
+  const { userInfo } = useSelector((state) => state.user);
   const [defaultSettings, setDefaultSettings] = useState([]);
   const [orderDetails, setOrderDetails] = useState([]);
   // Pending
@@ -22,12 +23,19 @@ export const Order = () => {
   // Refetch orders - when update status of order
   const [refetchOrder, setRefetchOrder] = useState(false);
 
+  // Tab for different orders
+  const [currentTab, setCurrentTab] = useState("all_orders");
+  // Order list to pass accroding to tab
+  const [orderListToPass, setOrderListToPass] = useState([]);
+
   // Fetch All Orders
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         setIsFetching(true);
-        const ordersRetrieved = await handleGetOrders(authToken, { chef_id: userInfo.id });
+        const ordersRetrieved = await handleGetOrders(authToken, {
+          chef_id: userInfo.id,
+        });
         // console.log("Order detail of shef ", ordersRetrieved);
         setOrderDetails(ordersRetrieved);
         setAllOrders(ordersRetrieved);
@@ -37,28 +45,29 @@ export const Order = () => {
         setIsFetching(false);
       }
     };
-    
+
     fetchOrders();
     console.log("useEffect is running for fetching order");
   }, [authToken, refetchOrder, userInfo.id]);
 
   // Default Settings API
-  useEffect(()=> {
+  useEffect(() => {
     const getDefaultSettings = async () => {
       try {
         setIsFetching(true);
-        const retrieveDefaultSettings = await handleGetDefaultSetting(authToken);
+        const retrieveDefaultSettings = await handleGetDefaultSetting(
+          authToken
+        );
         setDefaultSettings(retrieveDefaultSettings);
       } catch (error) {
         console.log("Error While Fetching Order Settings \n", error);
       } finally {
         setIsFetching(false);
       }
-    }
+    };
     getDefaultSettings();
     console.log("Use Effect for default setting ");
-    
-  }, [authToken])
+  }, [authToken]);
 
   // Function to handle search input change
   const handleOnChange = (e) => {
@@ -72,9 +81,9 @@ export const Order = () => {
   // Searching - Filter
   function searchOrders(orders, searchTerm, filterDate) {
     return orders?.filter((order) => {
-      const orderDate = moment(order.created_at).format('YYYY-MM-DD');
+      const orderDate = moment(order.created_at).format("YYYY-MM-DD");
       const matchesDate = !filterDate || orderDate === filterDate;
-      const matchesSearch = 
+      const matchesSearch =
         order.order_code.includes(searchTerm) ||
         order.order_details.some((detail) =>
           detail?.name?.toLowerCase().includes(searchTerm)
@@ -103,7 +112,7 @@ export const Order = () => {
           console.log(ordersRetrieved);
           if (ordersRetrieved.success) {
             toast.success("Order Status Updated!");
-            setRefetchOrder((prevState) => !prevState)
+            setRefetchOrder((prevState) => !prevState);
           }
         }
         // setOrderDetails(ordersRetrieved);
@@ -114,6 +123,49 @@ export const Order = () => {
     };
     saveStatus();
   };
+
+  // UseEffect for orderlist to pass
+  useEffect(() => {
+    if (currentTab === "all_orders") {
+      setOrderListToPass(orderDetails);
+    } else if (currentTab === "pending") {
+      // Pending order
+      const filteredOrders = orderDetails?.filter(
+        (order) => order.status === "pending"
+      );
+      setOrderListToPass(filteredOrders);
+    } else if (currentTab === "accepted") {
+      // Order accepted for cooking
+      const filteredOrders = orderDetails?.filter(
+        (order) => order.status === "accepted"
+      );
+      setOrderListToPass(filteredOrders);
+    } else if (currentTab === "delivering") {
+      // Ready to deliver ordersw
+      const filteredOrders = orderDetails?.filter(
+        (order) => order.status === "delivering"
+      );
+      setOrderListToPass(filteredOrders);
+    } else if (currentTab === "preparing") {
+      // In process order
+      const filteredOrders = orderDetails?.filter(
+        (order) => order.status === "preparing"
+      );
+      setOrderListToPass(filteredOrders);
+    } else if (currentTab === "delivered") {
+      // delivered orders
+      const filteredOrders = orderDetails?.filter(
+        (order) => order.status === "delivered"
+      );
+      setOrderListToPass(filteredOrders);
+    } else if (currentTab === "canceled") {
+      // canceled orders
+      const filteredOrders = orderDetails?.filter(
+        (order) => order.status === "canceled"
+      );
+      setOrderListToPass(filteredOrders);
+    }
+  }, [currentTab, orderDetails]);
   return (
     <>
       <div className="">
@@ -262,14 +314,113 @@ export const Order = () => {
               </div>
               */}
               <div>
-                <h3 className="text-xl font-semibold leading-tight uppercase pt-2 mb-3 mt-6 border-b pb-2">
-                  Active Orders (
-                  {
-                    orderDetails?.filter((order) => order.status !== "canceled" && order?.order_details?.length>0)
-                      ?.length
-                  }
-                  )
-                </h3>
+                <div className="flex gap-1 -ml-1 flex-nowrap overflow-x-auto">
+                  <button
+                    className={`w-max text-nowrap text-left text-xs tracking-wide font-semibold leading-tigh uppercase pt-2 mb-3 mt-6  px-2 rounded-md text-primary ${
+                      currentTab === "all_orders" && "bg-primary text-white"
+                    } pb-2`}
+                    onClick={() => setCurrentTab("all_orders")}
+                  >
+                    All <br /> Orders ({orderDetails?.length})
+                  </button>
+
+                  <button
+                    className={`w-max text-nowrap text-left text-xs tracking-wide font-semibold leading-tigh uppercase pt-2 mb-3 mt-6  px-2 rounded-md text-primary ${
+                      currentTab === "pending" && "bg-primary text-white"
+                    } pb-2`}
+                    onClick={() => setCurrentTab("pending")}
+                  >
+                    Pending <br /> Orders (
+                    {
+                      orderDetails?.filter(
+                        (order) =>
+                          order.status === "pending" &&
+                          order?.order_details?.length > 0
+                      )?.length
+                    }
+                    )
+                  </button>
+                  <button
+                    className={`w-max text-nowrap text-left text-xs tracking-wide font-semibold leading-tigh uppercase pt-2 mb-3 mt-6  px-2 rounded-md text-primary ${
+                      currentTab === "accepted" && "bg-primary text-white"
+                    } pb-2`}
+                    onClick={() => setCurrentTab("accepted")}
+                  >
+                    Accepted <br /> Orders (
+                    {
+                      orderDetails?.filter(
+                        (order) =>
+                          order.status === "accepted" &&
+                          order?.order_details?.length > 0
+                      )?.length
+                    }
+                    )
+                  </button>
+                  <button
+                    className={`w-max text-nowrap text-left text-xs tracking-wide font-semibold leading-tigh uppercase pt-2 mb-3 mt-6  px-2 rounded-md text-primary ${
+                      currentTab === "preparing" && "bg-primary text-white"
+                    } pb-2`}
+                    onClick={() => setCurrentTab("preparing")}
+                  >
+                    In Process <br /> Orders (
+                    {
+                      orderDetails?.filter(
+                        (order) =>
+                          order.status === "preparing" &&
+                          order?.order_details?.length > 0
+                      )?.length
+                    }
+                    )
+                  </button>
+                  <button
+                    className={`w-max text-nowrap text-left text-xs tracking-wide font-semibold leading-tigh uppercase pt-2 mb-3 mt-6  px-2 rounded-md text-primary ${
+                      currentTab === "delivering" && "bg-primary text-white"
+                    } pb-2`}
+                    onClick={() => setCurrentTab("delivering")}
+                  >
+                    Ready to <br /> Deliver (
+                    {
+                      orderDetails?.filter(
+                        (order) =>
+                          order.status === "delivering" &&
+                          order?.order_details?.length > 0
+                      )?.length
+                    }
+                    )
+                  </button>
+                  <button
+                    className={`w-max text-nowrap text-left text-xs tracking-wide font-semibold leading-tigh uppercase pt-2 mb-3 mt-6  px-2 rounded-md text-primary ${
+                      currentTab === "delivered" && "bg-primary text-white"
+                    } pb-2`}
+                    onClick={() => setCurrentTab("delivered")}
+                  >
+                    Delivered <br /> Orders (
+                    {
+                      orderDetails?.filter(
+                        (order) =>
+                          order.status === "delivered" &&
+                          order?.order_details?.length > 0
+                      )?.length
+                    }
+                    )
+                  </button>
+                  <button
+                    className={`w-max text-nowrap text-left text-xs tracking-wide font-semibold leading-tigh uppercase pt-2 mb-3 mt-6  px-2 rounded-md text-primary ${
+                      currentTab === "canceled" && "bg-primary text-white"
+                    } pb-2`}
+                    onClick={() => setCurrentTab("canceled")}
+                  >
+                    Cancelled <br /> Orders (
+                    {
+                      orderDetails?.filter(
+                        (order) =>
+                          order.status === "canceled" &&
+                          order?.order_details?.length > 0
+                      )?.length
+                    }
+                    )
+                  </button>
+                </div>
                 <div className="overflow-x-auto">
                   <table className="text-left w-full menuTable border-0">
                     <thead>
@@ -285,8 +436,8 @@ export const Order = () => {
                         <th className="w-[14%]">Action</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {orderDetails?.map((order) =>
+                    {/* <tbody> */}
+                    {/* {orderDetails?.map((order) =>
                         order.order_details?.map((detail) => {
                           // Calculate if the order can be cancelled or confirmed based on the timespan
                           const orderCreatedTime = moment(order.created_at);
@@ -343,7 +494,7 @@ export const Order = () => {
                               {/* <td>
                                                     <h4 className='text-[14px] mb-0 leading-tight'>{order.zip_code || 'N/A'}</h4>
                                                 </td> */}
-                              <td>
+                    {/* <td>
                                 <h4 className="text-[14px] mb-0 leading-tight">
                                   x{detail.quantity}
                                 </h4>
@@ -418,16 +569,15 @@ export const Order = () => {
                                     }
                                   >
                                     {/*when do you don't want to show cancel?*/}
-                                    Cancelled
-                                  </option>
+                    {/* Cancelled */}
+                    {/*</option>
                                 </select>
                               </td>
                             </tr>
                           );
                         })
-                      )}
-
-                      {orderDetails?.length < 1 && !isFetching && (
+                      )} */}
+                    {/* {orderDetails?.length < 1 && !isFetching && (
                         <tr>
                           <td colSpan="5" className="font-semibold text-headGray">No Order Found</td>
                         </tr>
@@ -441,14 +591,21 @@ export const Order = () => {
                             Fetching Orders...
                           </td>
                         </tr>
-                      )}
-                    </tbody>
+                      )} */}
+                    {/* </tbody> */}
+                    {/* Different order list according to tab */}
+                    <OrderList
+                      orderDetails={orderListToPass}
+                      handleStatusChange={handleStatusChange}
+                      defaultSettings={defaultSettings}
+                      isFetching={isFetching}
+                    />
                   </table>
                 </div>
               </div>
             </div>
           </div>
-          <div className="mt-6 p-5 bg-white rounded-xl border border-borderClr">
+          {/* <div className="mt-6 p-5 bg-white rounded-xl border border-borderClr">
             <div>
               <h3 className="text-xl font-semibold leading-tight uppercase mb-3 border-b pb-2">
                 Refunded Order (0)
@@ -504,7 +661,7 @@ export const Order = () => {
                 </table>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </>
