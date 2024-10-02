@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "../components/Header";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,14 +10,12 @@ import {
 } from "../../services/get_without_auth";
 import isValidURL from "../../ValidateUrl";
 import { handleGetAvailabilityTimeSlot } from "../../services/shef";
-import Modal from "react-modal";
 import DatePicker from "react-datepicker";
+import convertTo12Hour from "../../convertTo12Hours";
 
 export const DishDetailSingle = () => {
   // Description Tabs Start
   const [activeDescTab, setDescActiveTab] = useState(1);
-  //delivery date and time modal
-  const [isOpen, setIsOpen] = useState(false);
   // Allowed Delivery date
   const [availableDates, setAvailableDates] = useState([]);
 
@@ -68,6 +66,10 @@ export const DishDetailSingle = () => {
   const [dish, setDish] = useState({});
   // --- Api is fetching
   const [isFetching, setIsFetching] = useState(false);
+
+  // ---- reference to delivery date & slot
+  const deliveryDateRef = useRef(null);
+  const deliverySlotRef = useRef(null);
 
   const { cartItem } = useSelector((state) => state.cart);
 
@@ -174,7 +176,6 @@ export const DishDetailSingle = () => {
         // console.log("Chef discounted ", discount);
         // console.log("response of single dish ", dishResponse);
         setDish(dishResponse);
-        setIsOpen(true);
         const getNext14AvailableDays = getAvailableDates(dishResponse);
         // console.log("avaialble days ", getNext14AvailableDays)
         if (getNext14AvailableDays) {
@@ -192,6 +193,22 @@ export const DishDetailSingle = () => {
   // add to cart
   const dispatch = useDispatch();
   const handleAddToCart = () => {
+    if (
+      !selectedDeliverDateAndSlot.delivery_date ||
+      selectedDeliverDateAndSlot.delivery_date === ""
+    ) {
+      toast.error("Please pick the delivery date first.");
+      deliveryDateRef.current.toggleCalendar();
+      return;
+    }
+    if (
+      !selectedDeliverDateAndSlot.delivery_slot ||
+      selectedDeliverDateAndSlot.delivery_slot === ""
+    ) {
+      deliverySlotRef.current.focus();
+      toast.error("Please pick the delivery slot first.");
+      return;
+    }
     const unit_price = parseFloat(
       (
         dish.chef_earning_fee +
@@ -211,12 +228,12 @@ export const DishDetailSingle = () => {
       delivery_date: selectedDeliverDateAndSlot.delivery_date,
       delivery_slot: selectedDeliverDateAndSlot.delivery_slot,
     };
-    // console.log("dish " , { ...dish, quantity, unit_price, chef })
+    console.log("dish ", { ...dish, quantity, unit_price, chef });
     dispatch(addToCart({ ...dish, quantity, unit_price, chef }));
     // dispatch(addToCart(payload));
     toast.dismiss();
     toast.success("Added to Cart ", { autoClose: 2000 });
-    setQuantity(0);
+    setQuantity(1);
   };
 
   useEffect(() => {
@@ -230,31 +247,20 @@ export const DishDetailSingle = () => {
         chef.menu?.forEach((menu, menuIdex) => {
           if (menu.id === dish.id && menu.quantity > 0) {
             // console.log("Quantity already exist ", menu.quantity);
-            setAlreadyInCartCount(menu.quantity);
+            setAlreadyInCartCount(menu.quantity + 1); // because defualt quantity === 1
           }
         });
       }
     });
     // console.log("Count useEffect is running ");
-  }, [dish, cartItem, selectedDeliverDateAndSlot.delivery_date, selectedDeliverDateAndSlot.delivery_slot]);
+  }, [
+    dish,
+    cartItem,
+    selectedDeliverDateAndSlot.delivery_date,
+    selectedDeliverDateAndSlot.delivery_slot,
+  ]);
 
   const navigate = useNavigate();
-
-  // modal for selecting date and time for delivery
-  const hanldeSelectedDeliverDateAndTimeSlot = (e) => {
-    e.preventDefault();
-
-    if (
-      !selectedDeliverDateAndSlot.delivery_date ||
-      !selectedDeliverDateAndSlot.delivery_slot
-    ) {
-      toast.error("Delivery date and slot are required.");
-      return;
-    }
-
-    toast.success("Delivery date and slot selected for " + dish?.name);
-    setIsOpen(false);
-  };
 
   return (
     <>
@@ -802,33 +808,113 @@ export const DishDetailSingle = () => {
               </div>
 
               <div className="grid grid-cols-12 gap-3">
-                {/* <div className='lg:col-span-6 col-span-12 '> */}
+                {/******* Delivery Date and Slot *******/}
+                <div className="flex flex-wrap gap-2 mt-4 col-span-12 mb-2">
+                  <h4 className="text-lg font-bold uppercase mb-2 w-full">
+                    Pick Delivery Date & Slot
+                  </h4>
+                  <div className="relative mb-2">
+                    <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                      Delivery Date <span className="text-primary">*</span>
+                    </h4>
+
+                    <DatePicker
+                      ref={deliveryDateRef}
+                      required
+                      wrapperClassName="w-max"
+                      popperClassName="!z-50 h-max"
+                      selected={selectedDeliverDateAndSlot.delivery_date}
+                      onChange={(date) =>
+                        setSelectedDeliveryDateAndSlot((prev) => {
+                          return {
+                            ...prev,
+                            delivery_date: date.toLocaleDateString(),
+                          };
+                        })
+                      }
+                      includeDates={availableDates.map((day) => day)}
+                      placeholderText="Pick a delivery date"
+                      dateFormat="MMMM d, yyyy"
+                    />
+                  </div>
+                  <div className="relative ">
+                    <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
+                      Select Delivery Time{" "}
+                      <span className="text-primary">*</span>
+                    </h4>
+                    <select
+                      className="focus:border-2"
+                      ref={deliverySlotRef}
+                      required
+                      onChange={(e) =>
+                        setSelectedDeliveryDateAndSlot((prev) => {
+                          return { ...prev, delivery_slot: e.target.value };
+                        })
+                      }
+                      value={selectedDeliverDateAndSlot.delivery_slot}
+                    >
+                      <option value="">--- Pick a delivery slot</option>
+                      {dish?.availability_slot?.map((date) => (
+                        <option
+                          value={
+                            date.time_start.toString() +
+                            "-" +
+                            date.time_end.toString()
+                          }
+                        >
+                          {convertTo12Hour(date.time_start.toString()) +
+                            "-" +
+                            convertTo12Hour(date.time_end.toString())}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* <div className="lg:col-span-6 col-span-12 "> */}
                 {/*****  DISH REVIEW SUMMARY *****/}
-                {/* <div className='mt-4'>
-                                    <h4 className='text-lg font-bold uppercase mb-2'>Dish Review Summary</h4>
-                                    <ul className='block-inline'>
-                                        <li className='inline-block mr-2 mb-2'>
-                                            <div className='inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]'>
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12" fill="rgba(0,0,0,1)">
-                                                    <path d="M14.5998 8.00033H21C22.1046 8.00033 23 8.89576 23 10.0003V12.1047C23 12.3659 22.9488 12.6246 22.8494 12.8662L19.755 20.3811C19.6007 20.7558 19.2355 21.0003 18.8303 21.0003H2C1.44772 21.0003 1 20.5526 1 20.0003V10.0003C1 9.44804 1.44772 9.00033 2 9.00033H5.48184C5.80677 9.00033 6.11143 8.84246 6.29881 8.57701L11.7522 0.851355C11.8947 0.649486 12.1633 0.581978 12.3843 0.692483L14.1984 1.59951C15.25 2.12534 15.7931 3.31292 15.5031 4.45235L14.5998 8.00033ZM7 10.5878V19.0003H18.1606L21 12.1047V10.0003H14.5998C13.2951 10.0003 12.3398 8.77128 12.6616 7.50691L13.5649 3.95894C13.6229 3.73105 13.5143 3.49353 13.3039 3.38837L12.6428 3.0578L7.93275 9.73038C7.68285 10.0844 7.36341 10.3746 7 10.5878ZM5 11.0003H3V19.0003H5V11.0003Z"></path>
-                                                </svg>
-                                                <h4 className='text-base mb-0 font-semibold'>
-                                                    100% <span className='text-[12px] font-normal'>(230)</span>
-                                                </h4>
-                                            </div>
-                                        </li>
-                                        <li className='inline-block mr-2 mb-2'>
-                                            <h4 className='bg-primaryLight px-2 py-2 text-xs rounded-[4px] inline-block text-base mb-0'>Good for lunch</h4>
-                                        </li>
-                                        <li className='inline-block mr-2 mb-2'>
-                                            <h4 className='bg-primaryLight px-2 py-1 text-xs rounded-[4px] inline-block text-base mb-0'>Healthy</h4>
-                                        </li>
-                                        <li className='inline-block mr-2 mb-2'>
-                                            <h4 className='bg-primaryLight px-2 py-1 text-xs rounded-[4px] inline-block text-base mb-0'>Authentic taste</h4>
-                                        </li>
-                                    </ul>
-                                </div> 
-                            </div>*/}
+                {/* <div className="mt-4">
+                    <h4 className="text-lg font-bold uppercase mb-2">
+                      Dish Review Summary
+                    </h4>
+                    <ul className="block-inline">
+                      <li className="inline-block mr-2 mb-2">
+                        <div className="inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            width="12"
+                            height="12"
+                            fill="rgba(0,0,0,1)"
+                          >
+                            <path d="M14.5998 8.00033H21C22.1046 8.00033 23 8.89576 23 10.0003V12.1047C23 12.3659 22.9488 12.6246 22.8494 12.8662L19.755 20.3811C19.6007 20.7558 19.2355 21.0003 18.8303 21.0003H2C1.44772 21.0003 1 20.5526 1 20.0003V10.0003C1 9.44804 1.44772 9.00033 2 9.00033H5.48184C5.80677 9.00033 6.11143 8.84246 6.29881 8.57701L11.7522 0.851355C11.8947 0.649486 12.1633 0.581978 12.3843 0.692483L14.1984 1.59951C15.25 2.12534 15.7931 3.31292 15.5031 4.45235L14.5998 8.00033ZM7 10.5878V19.0003H18.1606L21 12.1047V10.0003H14.5998C13.2951 10.0003 12.3398 8.77128 12.6616 7.50691L13.5649 3.95894C13.6229 3.73105 13.5143 3.49353 13.3039 3.38837L12.6428 3.0578L7.93275 9.73038C7.68285 10.0844 7.36341 10.3746 7 10.5878ZM5 11.0003H3V19.0003H5V11.0003Z"></path>
+                          </svg>
+                          <h4 className="text-base mb-0 font-semibold">
+                            100%{" "}
+                            <span className="text-[12px] font-normal">
+                              (230)
+                            </span>
+                          </h4>
+                        </div>
+                      </li>
+                      <li className="inline-block mr-2 mb-2">
+                        <h4 className="bg-primaryLight px-2 py-2 text-xs rounded-[4px] inline-block text-base mb-0">
+                          Good for lunch
+                        </h4>
+                      </li>
+                      <li className="inline-block mr-2 mb-2">
+                        <h4 className="bg-primaryLight px-2 py-1 text-xs rounded-[4px] inline-block text-base mb-0">
+                          Healthy
+                        </h4>
+                      </li>
+                      <li className="inline-block mr-2 mb-2">
+                        <h4 className="bg-primaryLight px-2 py-1 text-xs rounded-[4px] inline-block text-base mb-0">
+                          Authentic taste
+                        </h4>
+                      </li>
+                    </ul>
+                  </div> */}
+                {/* </div> */}
                 <div className="lg:col-span-6 col-span-12 my-auto">
                   {/*****  COUNT & ADD TO CART BUTTON SUMMARY *****/}
                   <div className="grid grid-cols-12 mt-4 gap-3 ">
@@ -892,114 +978,6 @@ export const DishDetailSingle = () => {
           </div>
         </div>
       </div>
-
-      {/* Forget Password Modla  */}
-      <Modal
-        isOpen={isOpen}
-        // onRequestClose={onRequestClose}
-        contentLabel="Delivery date and slot"
-        style={{
-          content: {
-            height: "max-content",
-            top: "20%",
-            // minWidth: "max-content",
-            maxWidth: "500px",
-            marginLeft: "auto",
-            marginRight: "auto",
-            overflow: "visible",
-          },
-        }}
-      >
-        <div className="">
-          {/* Modal content here */}
-          <div className="flex items-center justify-between border-b pb-3 gap-3">
-            <h2 className="text-lg font-semibold leading-tight mb-0">
-              Select delivery date and slot
-            </h2>
-            {/* <button onClick={onRequestClose}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                fill="rgba(0,0,0,1)"
-              >
-                <path d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z"></path>
-              </svg>
-            </button> */}
-          </div>
-
-          <form
-            onSubmit={hanldeSelectedDeliverDateAndTimeSlot}
-            className=" mt-5"
-            action=""
-          >
-            <p className="text-xs sm:text-base">
-              {" "}
-              Select your delivery date and time slot *
-            </p>
-            <div className="relative w-full my-5">
-              <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
-                Delivery Date <span className="text-primary">*</span>
-              </h4>
-
-              <DatePicker
-                required
-                popperClassName="!z-50 h-max"
-                selected={selectedDeliverDateAndSlot.delivery_date}
-                onChange={(date) =>
-                  setSelectedDeliveryDateAndSlot((prev) => {
-                    return {
-                      ...prev,
-                      delivery_date: date.toLocaleDateString(),
-                    };
-                  })
-                }
-                includeDates={availableDates.map((day) => day)}
-                placeholderText="Pick a delivery date"
-                dateFormat="MMMM d, yyyy"
-              />
-            </div>
-            <div className="relative my-4">
-              <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
-                Select Delivery Time <span className="text-primary">*</span>
-              </h4>
-              <select
-                required
-                onChange={(e) =>
-                  setSelectedDeliveryDateAndSlot((prev) => {
-                    return { ...prev, delivery_slot: e.target.value };
-                  })
-                }
-                value={selectedDeliverDateAndSlot.delivery_slot}
-              >
-                <option value="">--- Pick a delivery slot</option>
-                {dish?.availability_slot?.map((date) => (
-                  <option
-                    value={
-                      date.time_start.toString() +
-                      "-" +
-                      date.time_end.toString()
-                    }
-                  >
-                    {date.time_start.toString() +
-                      "-" +
-                      date.time_end.toString()}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              // disabled={forgetPassword.email?.length < 1}
-              type="submit"
-              className="my-2 text-base w-max bg-primary text-white uppercase px-6 py-2 font-semibold rounded-lg disabled:cursor-not-allowed disabled:opacity-60 mt-auto"
-            >
-              Done
-            </button>
-          </form>
-        </div>
-      </Modal>
     </>
   );
 };
