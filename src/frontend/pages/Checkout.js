@@ -14,6 +14,7 @@ import Modal from "react-modal";
 import { handleGetDefaultSetting } from "../../services/default_setting";
 // import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import convertTo12Hour from "../../convertTo12Hours";
 
 export const Checkout = () => {
   // User Info - redux store
@@ -1166,11 +1167,12 @@ export const Checkout = () => {
                   ></textarea>
                 </div> */}
                 <div className="border-b border-primary border-dashed pb-4 mb-4 ">
+                  <p className="text-sm text-primary opacity-80 text-center -mt-2 mb-5">* To change the delivery time, remove this item and place a new order.</p>
                   <div className="relative grid grid-cols-2 gap-2">
                     <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
                       Selected Delivery Date <span className="text-primary">*</span>
                     </h4>
-                    <input type="text" className="" value={new Date(order.delivery_time.split("T")[0]).toDateString()}  disabled/>
+                    <input type="text" className="" value={new Date(order.delivery_time?.split("T")[0]).toDateString()}  disabled/>
                     {/* <input
                       min={new Date().toISOString().slice(0, 16)}
                       required
@@ -1200,7 +1202,7 @@ export const Checkout = () => {
                           Selected Delivery Time{" "}
                           <span className="text-primary">*</span>
                         </h4>
-                        <input type="text" value={order.delivery_time.split("T")[1]}  disabled/>
+                        <input type="text" value={convertTo12Hour(order.delivery_time?.split("T")[1]?.split("-")[0]) + " - " + convertTo12Hour(order.delivery_time?.split("T")[1]?.split("-")[1])}  disabled/>
                         {/* <DatePicker
                           required
                           selected={selectedTime}
