@@ -85,7 +85,7 @@ const SignIn = () => {
     try {
       const response = await handleForgetPassword(forgetPassword);
       if(response.message || response.msg){
-        toast(response.message || response.msg)
+        toast.success(response.message || response.msg)
         onRequestClose();
       }
       // console.log("reponse of forget password ", response);
