@@ -84,8 +84,8 @@ const SignIn = () => {
     e.preventDefault();
     try {
       const response = await handleForgetPassword(forgetPassword);
-      if(response.message){
-        toast(response.message)
+      if(response.message || response.msg){
+        toast(response.message || response.msg)
         onRequestClose();
       }
       // console.log("reponse of forget password ", response);
