@@ -428,6 +428,7 @@ export const Order = () => {
                         <th className="w-[10%]">Order ID</th>
                         <th className="w-[16%]">Dish Name</th>
                         <th className="w-[15%]">Delivery Date/Day/Time</th>
+                        <th className="w-[15%]">Delivery Address</th>
                         <th className="w-[13%]">Customer</th>
                         {/* <th className='w-[9%]'>Zip Code</th> */}
                         <th className="w-[8%]">Quantity</th>

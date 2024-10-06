@@ -1,7 +1,12 @@
 import React from "react";
 import moment from "moment";
 
-const OrderList = ({ orderDetails, handleStatusChange, defaultSettings, isFetching }) => {
+const OrderList = ({
+  orderDetails,
+  handleStatusChange,
+  defaultSettings,
+  isFetching,
+}) => {
   return (
     <>
       <tbody>
@@ -46,8 +51,23 @@ const OrderList = ({ orderDetails, handleStatusChange, defaultSettings, isFetchi
                     - {new Date(order.delivery_time).toLocaleTimeString()}
                   </h4>
                 </td>
+                {/* Delivery address */}
                 <td>
-                  <h4 className="text-[14px] mb-0 leading-tight">
+                  <h4 className="text-[12px] mb-1 leading-tight">
+                    -{" "}
+                    {order?.order_delivery_address?.address || "not available"}
+                  </h4>
+                  {order?.order_delivery_address?.city && (
+                    <h4 className="text-[12px] mb-1 leading-tight">
+                      - {order?.order_delivery_address?.city}
+                    </h4>
+                  )}
+                  {/* <h4 className="text-[12px] mb-1 leading-tight capitalize">
+                    - {order?.order_delivery_address?.address_type}
+                  </h4> */}
+                </td>
+                <td>
+                  <h4 className="text-[12px] mb-0 leading-tight">
                     {order.name}
                   </h4>
                 </td>
