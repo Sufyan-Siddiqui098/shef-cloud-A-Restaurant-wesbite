@@ -25,7 +25,7 @@ export const Dashboard = () => {
                                         </svg>
                                     </NavLink>
                                 </div>
-                                <div className='lg:w-[80%] w-full mx-auto'>
+                                {/* <div className='lg:w-[80%] w-full mx-auto'>
                                     <div className='mt-5 grid md:grid-cols-7 grid-cols-4 gap-3'>
                                         <NavLink to="/shef/order" className="text-center bg-grayBg p-3 rounded-lg">
                                             <h4 className='text-base font-semibold mb-0'>Mon</h4>
@@ -56,7 +56,7 @@ export const Dashboard = () => {
                                             <h3 className='md:text-4xl text-2xl font-semibold leading-tight mb-0'>26</h3>
                                         </NavLink>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         <div className='md:col-span-6 col-span-12'>
@@ -84,7 +84,8 @@ export const Dashboard = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className='md:col-span-6 col-span-12'>
+                        {/* Wallet - temporary commented */}
+                        {/* <div className='md:col-span-6 col-span-12'>
                             <div className='rounded-xl p-5 border border-borderClr h-full'>
                                 <div className='flex justify-between items-center gap-x-2'>
                                     <div className='flex items-center gap-3'>
@@ -106,7 +107,7 @@ export const Dashboard = () => {
                                     <h5 className='sm:text-lg text-base font-semibold leading-tight mt-2 mb-0' >WALLET BALANCE</h5>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                         <div className='md:col-span-6 col-span-12'>
                             <NavLink to="/shef/profile">
                                 <div className='rounded-xl p-5 border border-borderClr h-full'>
