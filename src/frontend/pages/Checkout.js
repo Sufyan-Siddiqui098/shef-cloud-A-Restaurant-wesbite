@@ -38,6 +38,7 @@ export const Checkout = () => {
     chef_id: 1,
     chef_availability_id: 1,
     delivery_time: "", //date and Time
+    delivery_slot: "", // delivery slot
     // get userInfo from redux-store
     name: `${userInfo?.first_name} ${userInfo?.last_name}` || "",
     email: userInfo?.email || "",
@@ -97,7 +98,7 @@ export const Checkout = () => {
     state: "",
     delivery_instruction: "",
     delivery_notes: "",
-    address_type: "", // to make sure where to deliver (home | office | building)
+    address_type: "home", // to make sure where to deliver (home | office | building)
   };
   //--- END - Initial Value for State
 
@@ -297,12 +298,14 @@ export const Checkout = () => {
     let platformPriceSum = 0;
     let chefEarningSum = 0;
     // delivery date and time 
-    let deliveryDateAndSlot = ""
+    let deliveryDate = ""
+    let deliverySlot = ""
 
     // Calculate the sub total, delivery price sum, and platform price sum
     cartItem.forEach((chef, chefIndex) => {
       if (chef.id === parseInt(chefId) && chefIndex === parseInt(chef_index)) {
-        deliveryDateAndSlot = `${chef.delivery_date}T${chef.delivery_slot}`
+        deliveryDate = chef.delivery_date;
+        deliverySlot = chef.delivery_slot;
         chef.menu.forEach((menu) => {
           const chef_earning_fee = menu.chef_earning_fee || 0;
           const quantity = menu.quantity || 0;
@@ -362,10 +365,12 @@ export const Checkout = () => {
       ...prev,
       order_total: total,
     }));
-    // console.log("chef delivery date adn tiem ", deliveryDateAndSlot)
     // Update the order state with calculated values
     updateOrder({
-      delivery_time: deliveryDateAndSlot,
+      // delivery slot and date seperated
+      delivery_time: deliveryDate, 
+      delivery_slot: deliverySlot, 
+      //--
       chef_id: parseInt(chefId),
       city_id: city.id,
       sub_total: sub_total,
