@@ -34,6 +34,7 @@ import ShefOrderSummary from "./shef_dashboard/pages/ShefOrderSummary";
 import UserProfile from "./frontend/pages/UserProfile";
 import CheckoutAll from "./frontend/pages/CheckoutAll";
 import ResetPassword from "./frontend/pages/ResetPassword";
+import EmailVerification from "./frontend/pages/EmailVerification";
 
 function App() {
   useEffect(() => {
@@ -66,6 +67,7 @@ function App() {
       <Route path="/login" element={<SignIn />} />
       <Route path="/register" element={<SignUp />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/email-verification/:id" element={<EmailVerification />} />
       <Route path="/become-a-chef" element={<BecomeChef />} />
       <Route path="/shef-detail/:chefId?" element={<ShefDetailPage />} />
       <Route path="/all-dish-detail" element={<AllDishDetail />} />
