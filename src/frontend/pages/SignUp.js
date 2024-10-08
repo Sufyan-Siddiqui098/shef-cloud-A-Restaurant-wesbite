@@ -121,7 +121,7 @@ const SignUp = () => {
       }
 
       const res = await handleUserSignUp(credentials);
-      if (res.email) {
+      if (res.email || res.success) {
         toast.success(res.message || "Register Successfully");
         navigate("/login");
       }
