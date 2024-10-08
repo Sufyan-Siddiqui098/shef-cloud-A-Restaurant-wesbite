@@ -85,6 +85,11 @@ const SignUp = () => {
         ...credentials,
         [name]: onlyNumbers,
       });
+    } else if (name === "email") {
+      setCredentials({
+        ...credentials,
+        [name]: value.toLowerCase(),
+      });
     } else {
       setCredentials({
         ...credentials,
@@ -113,7 +118,7 @@ const SignUp = () => {
       if (!validateEmail(credentials.email)) {
         toast.error("Please enter a valid email address.");
         return;
-      } 
+      }
 
       const res = await handleUserSignUp(credentials);
       if (res.email) {

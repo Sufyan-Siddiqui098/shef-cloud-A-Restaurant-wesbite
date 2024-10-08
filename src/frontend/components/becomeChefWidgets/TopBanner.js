@@ -80,7 +80,14 @@ const TopBanner = () => {
         ...formData,
         [name]: onlyNumbers,
       });
-    } else {
+    }
+    else if (name === "email"){
+      setFormData({
+        ...formData,
+        [name]: value.toLowerCase(),
+      });
+    }
+    else {
       setFormData({
         ...formData,
         [name]: value,
