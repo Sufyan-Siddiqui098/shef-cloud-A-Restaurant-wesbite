@@ -60,7 +60,7 @@ export const handleUserLogin = async (credentials) => {
   try {
     const { data } = await api.post("/api/login", credentials);
     localStorage.setItem("user", JSON.stringify(data.data));
-    localStorage.setItem("auth", data.data.access_token );
+    localStorage.setItem("auth", data.data.access_token);
     return data;
   } catch (error) {
     throw new Error(error.response?.data.message || error.message);
@@ -86,11 +86,13 @@ export const handleUserSignUp = async (credentials) => {
   }
 };
 
-// Forget Password 
+// Forget Password
 export const handleForgetPassword = async (credentials) => {
   try {
     // const { data } = await api.post("/api/forget-password", credentials);
-    const { data } = await api.post(`/api/forget-password?email=${credentials.email}`);
+    const { data } = await api.post(
+      `/api/forget-password?email=${credentials.email}`
+    );
     return data;
   } catch (error) {
     console.log(error);
@@ -104,34 +106,90 @@ export const handleForgetPassword = async (credentials) => {
     }
     throw new Error(error.message);
   }
-} 
+};
 // Reset Password - Verify token
 export const handleForgetTokenVerification = async (token) => {
   try {
     const { data } = await api.post(`/api/verify-token?token=${token}`);
     return data;
   } catch (error) {
-    throw new Error(error.message)
+    throw new Error(error.message);
   }
-}
+};
 // Reset Password - Change Password
-export const handlePostResetPassword = async(token, credentials) =>{
+export const handlePostResetPassword = async (token, credentials) => {
   try {
     // const { data } = await api.post(`/api/resetpassword?token=${token}`, credentials);
-    const { data } = await api.post(`/api/resetpassword?token=${token}&password=${credentials.password}&password_confirmation=${credentials.password_confirmation}`);
+    const { data } = await api.post(
+      `/api/resetpassword?token=${token}&password=${credentials.password}&password_confirmation=${credentials.password_confirmation}`
+    );
     return data;
   } catch (error) {
     throw new Error(error.message);
   }
-}
+};
 
+// Email Verification
+export const handleEmailVerification = async ({
+  id,
+  expires,
+  hash,
+  signature,
+}) => {
+  try {
+    const { data } = await api.get(
+      `/api/email/verify/${id}?expires=${expires}&hash=${hash}&signature=${signature}`
+    );
+    return data;
+  } catch (error) {
+    if (error.response.data.errors) {
+      //Error Object
+      const errorObj = error.response.data.errors;
+      // Error object's key OR keys
+      const errorObjKey = Object.keys(error.response.data.errors)[0];
+      //Array of Error message - getting first message
+      throw new Error(errorObj[errorObjKey][0]);
+    }
+    if (
+      error.response.data.message &&
+      typeof error.response.data.message === "string"
+    ) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error(error.message);
+  }
+};
+
+// Resend Email Verification Link
+export const handleResendEmailVerificationLink = async (email) => {
+  try {
+    const { data } = await api.post(`/api/resend-verification?email=${email}`);
+    return data;
+  } catch (error) {
+    if (error.response.data.errors) {
+      //Error Object
+      const errorObj = error.response.data.errors;
+      // Error object's key OR keys
+      const errorObjKey = Object.keys(error.response.data.errors)[0];
+      //Array of Error message - getting first message
+      throw new Error(errorObj[errorObjKey][0]);
+    }
+    if (
+      error.response.data.message &&
+      typeof error.response.data.message === "string"
+    ) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error(error.message);
+  }
+};
 // Become Chef - Register
 export const handleChefSignUp = async (credentials) => {
   try {
     const { data } = await api.post("/api/register", credentials, {
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+        "Content-Type": "multipart/form-data",
+      },
     });
     return data;
   } catch (error) {
@@ -161,39 +219,36 @@ export const handleShowProfile = async (token) => {
 
 export const handleUpdateProfile = async (token, credentials) => {
   try {
-    const { data } = await api.post(
-      "/api/update-profile",
-      credentials ,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    const { data } = await api.post("/api/update-profile", credentials, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return data;
   } catch (error) {
-    if(error.response){
+    if (error.response) {
       throw new Error(error.response.data.message);
     }
-    throw new Error(error.message ? error.message : "Something went wrong")
-    
+    throw new Error(error.message ? error.message : "Something went wrong");
   }
 };
 
 export const handleUpdateAddress = async (token, credentials) => {
   try {
-    const {data} = await api.post("/api/update-address", credentials, {
+    const { data } = await api.post("/api/update-address", credentials, {
       headers: {
-        Authorization:  `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
     return data;
   } catch (error) {
-    console.log("error of update address ", error)
-    if(error.response){
-       //Error Object
-       const errorObj = error.response.data.message;
-       // Error object's key OR keys
-       const errorObjKey = Object.keys(error.response.data.message)[0];
-       //Array of Error message - getting first message
-       throw new Error(errorObj[errorObjKey][0]);
+    console.log("error of update address ", error);
+    if (error.response) {
+      //Error Object
+      const errorObj = error.response.data.message;
+      // Error object's key OR keys
+      const errorObjKey = Object.keys(error.response.data.message)[0];
+      //Array of Error message - getting first message
+      throw new Error(errorObj[errorObjKey][0]);
     }
-    throw new Error(error.message ? error.message : "Something went wrong")
+    throw new Error(error.message ? error.message : "Something went wrong");
   }
-}
+};
