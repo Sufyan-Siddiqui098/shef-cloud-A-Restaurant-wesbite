@@ -75,9 +75,9 @@ export const handleUserSignUp = async (credentials) => {
   } catch (error) {
     if (error.response) {
       //Error Object
-      const errorObj = error.response.data.message;
+      const errorObj = error.response.data.errors;
       // Error object's key OR keys
-      const errorObjKey = Object.keys(error.response.data.message)[0];
+      const errorObjKey = Object.keys(error.response.data.errors)[0];
       //Array of Error message - getting first message
       throw new Error(errorObj[errorObjKey][0]);
     }
@@ -137,9 +137,9 @@ export const handleChefSignUp = async (credentials) => {
   } catch (error) {
     if (error.response) {
       //Error Object
-      const errorObj = error.response.data.message;
+      const errorObj = error.response.data.errors;
       // Error object's key OR keys
-      const errorObjKey = Object.keys(error.response.data.message)[0];
+      const errorObjKey = Object.keys(error.response.data.errors)[0];
       //Array of Error message - getting first message
       throw new Error(errorObj[errorObjKey][0]);
     }
