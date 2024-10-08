@@ -15,8 +15,8 @@ const SignUp = () => {
     last_name: "",
   });
 
-  // For user to see formatted phone number 
-  const [formattedPhone, setFormattedPhone]= useState('')
+  // For user to see formatted phone number
+  const [formattedPhone, setFormattedPhone] = useState("");
   const [isPending, setIsPending] = useState(false);
 
   const { userInfo } = useSelector((state) => state.user);
@@ -24,7 +24,7 @@ const SignUp = () => {
 
   // phone validation error
   const [error, setError] = useState("");
-  
+
   // Input field - OnChnage
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,7 +32,7 @@ const SignUp = () => {
     if (name === "phone") {
       // Validate the phone number length (exactly 13 characters)
       // console.log("value length ", value.length, credentials.phone.length);
-      if (value.length > 16 ) {
+      if (value.length > 16) {
         setError("Phone number must be exactly 13 characters long.");
         setTimeout(() => {
           setError("");
@@ -69,8 +69,8 @@ const SignUp = () => {
       let formattedNumber = value;
       if (value.length === 3) {
         formattedNumber = `(+92) ${value.slice(3)}`;
-      } else if(value.length===5 && value[0]==="(") {
-        formattedNumber = `(+92) ${value.slice(5)}`
+      } else if (value.length === 5 && value[0] === "(") {
+        formattedNumber = `(+92) ${value.slice(5)}`;
       }
 
       // Clear error if the phone number is valid
@@ -78,7 +78,7 @@ const SignUp = () => {
 
       // Set the formatted phone number
       setFormattedPhone(formattedNumber);
-      const onlyNumbers = formattedNumber.replace(/[^+\d]/g, '');
+      const onlyNumbers = formattedNumber.replace(/[^+\d]/g, "");
       // console.log("only number ", onlyNumbers)
       // for payload
       setCredentials({
@@ -92,17 +92,34 @@ const SignUp = () => {
       });
     }
   };
-  
+
+  // const validateEmail = (email) => {
+  //   const regex =
+  //     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov|mil|co|info|io|pk)$/;
+  //   return regex.test(email);
+  // };
+
+  const validateEmail = (email) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(email);
+  };
+
   // Form submit
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
       setIsPending(true);
+
+      if (!validateEmail(credentials.email)) {
+        toast.error("Please enter a valid email address.");
+        return;
+      } 
+
       const res = await handleUserSignUp(credentials);
-      // if(res.email) {
-      toast.success(res.message || "Register Successfully");
-      navigate("/login");
-      // }
+      if (res.email) {
+        toast.success(res.message || "Register Successfully");
+        navigate("/login");
+      }
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -119,7 +136,7 @@ const SignUp = () => {
   };
   return (
     <>
-    <Header/>
+      <Header />
       <div className="position-relative h-[97vh] md:px-2 px-4">
         <div className="lg:w-2/3 w-full mx-auto h-full flex items-center my-auto py-5">
           <div className="authForm">
@@ -157,8 +174,7 @@ const SignUp = () => {
                       required
                     />
                     <div className="mb-3">
-
-                        <input
+                      <input
                         className=""
                         value={formattedPhone}
                         onChange={handleChange}
@@ -166,12 +182,12 @@ const SignUp = () => {
                         type="text"
                         placeholder="(+92) xxxxxxxxxx"
                         required
-                        />
-                        {error && (
+                      />
+                      {error && (
                         <div className="bg-[#ff1c1c31] mt-1 text-red-900 py-1 px-1 text-[12px] font-semibold text-start">
-                            {error}
+                          {error}
                         </div>
-                        )}
+                      )}
                     </div>
                     <input
                       className="mb-3"

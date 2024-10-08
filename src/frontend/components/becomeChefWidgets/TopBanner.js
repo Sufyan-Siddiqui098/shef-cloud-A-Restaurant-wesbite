@@ -172,6 +172,17 @@ const TopBanner = () => {
   const navigate = useNavigate();
   const { authToken } = useSelector((state) => state.user);
 
+  // const validateEmail = (email) => {
+  //   const regex =
+  //     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov|mil|co|info|io|pk)$/;
+  //   return regex.test(email);
+  // };
+
+  const validateEmail = (email) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(email);
+  };
+
   const onSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -186,6 +197,11 @@ const TopBanner = () => {
         toast.error("Cover is required");
         return;
       }
+
+      if (!validateEmail(formData.email)) {
+        toast.error("Please enter a valid email address.");
+        return;
+      } 
       
       await handleChefSignUp(formData);
       // console.log("reponse ", response)
