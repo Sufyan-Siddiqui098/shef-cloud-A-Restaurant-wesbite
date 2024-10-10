@@ -104,6 +104,12 @@ export const handleForgetPassword = async (credentials) => {
       //Array of Error message - getting first message
       throw new Error(errorObj[errorObjKey][0]);
     }
+    if (
+      error.response.data.message &&
+      typeof error.response.data.message === "string"
+    ) {
+      throw new Error(error.response.data.message);
+    }
     throw new Error(error.message);
   }
 };
