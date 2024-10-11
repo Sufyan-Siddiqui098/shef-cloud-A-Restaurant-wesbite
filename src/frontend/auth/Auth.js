@@ -127,7 +127,7 @@ export const handlePostResetPassword = async (token, credentials) => {
   try {
     // const { data } = await api.post(`/api/resetpassword?token=${token}`, credentials);
     const { data } = await api.post(
-      `/api/resetpassword?token=${token}&password=${credentials.password}&password_confirmation=${credentials.password_confirmation}`
+      `/api/reset-password?token=${token}&password=${credentials.password}&password_confirmation=${credentials.password_confirmation}`
     );
     return data;
   } catch (error) {
