@@ -8,6 +8,8 @@ import { Pagination } from "swiper/modules";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCartItem } from "../../../store/slice/cart";
 import isValidURL from "../../../ValidateUrl";
+import { handleGetAvailabilityTimeSlot } from "../../../services/shef";
+import convertTo12Hour from "../../../convertTo12Hours";
 const FilterAndDate = ({ chefAndDishes }) => {
   const [isBoxVisible, setBoxVisible] = useState(false);
   const toggleBox = () => {
@@ -31,19 +33,76 @@ const FilterAndDate = ({ chefAndDishes }) => {
   const { cartItem } = useSelector((state) => state.cart);
 
   const [sortingWithDays, setSortingWithDays] = useState("");
-  const [dishesOfChef, setDishesOfChef] = useState(chefAndDishes.menus);
+  const [sortingWithSlot, setSortingWithSlot] = useState("");
+  const [dishesOfChef, setDishesOfChef] = useState([]);
+
+  const [slot, setSlot] = useState([]);
   useEffect(() => {
-    let dishes = chefAndDishes?.menus;
+    const fetchTimeSlots = async () => {
+      try {
+        const timeslotResponse = await handleGetAvailabilityTimeSlot();
+        const formatedTimeSlotArray = timeslotResponse.map((time) => {
+          return {
+            time_start: time.time_start.slice(0, 5),
+            time_end: time.time_end.slice(0, 5),
+          };
+        });
+        console.log("tiem ", formatedTimeSlotArray);
+        setSlot(formatedTimeSlotArray);
+      } catch (error) {
+        console.error(
+          "Error while fetching availabilit time slot of dishes ",
+          error.message
+        );
+      }
+    };
+    console.log("slot is running ");
+    fetchTimeSlots();
+  }, []);
+
+  useEffect(() => {
+    let dishes = chefAndDishes?.menus?.filter((menu) => menu.is_live === 1);
     if (sortingWithDays) {
-      dishes = chefAndDishes?.menus?.filter((dish) => {
+      dishes = dishes.filter((dish) => {
         return dish[`${sortingWithDays.toLowerCase()}`] === 1;
+      });
+    }
+
+    if (sortingWithSlot) {
+      const targetTimeStart = sortingWithSlot.split("-")[0];
+      const targetTimeEnd = sortingWithSlot.split("-")[1];
+      // console.log("start ", targetTimeStart, " end time ", targetTimeEnd)
+      // Now filter by availability slot time range
+      dishes = dishes.filter((dish) => {
+        return dish.availability_slot?.some((slot) => {
+          return (
+            slot.time_start <= targetTimeStart && slot.time_end >= targetTimeEnd
+          );
+        });
+      });
+    }
+
+    // Check if both day and slot are selected, apply combined filtering
+    if (sortingWithDays && sortingWithSlot) {
+      const targetTimeStart = sortingWithSlot.split("-")[0];
+      const targetTimeEnd = sortingWithSlot.split("-")[1];
+      dishes = dishes.filter((dish) => {
+        const dayMatches = dish[`${sortingWithDays.toLowerCase()}`] === 1;
+        const slotMatches = dish.availability_slot?.some((slot) => {
+          return (
+            slot.time_start <= targetTimeStart && slot.time_end >= targetTimeEnd
+          );
+        });
+
+        // Only return dishes that match both day and slot
+        return dayMatches && slotMatches;
       });
     }
 
     setDishesOfChef(dishes);
 
     // console.log("filtered dishes ", dishes);
-  }, [chefAndDishes, sortingWithDays]);
+  }, [chefAndDishes, sortingWithDays, sortingWithSlot]);
 
   const days = [
     { name: "Mon", value: "is_monday" },
@@ -143,7 +202,10 @@ const FilterAndDate = ({ chefAndDishes }) => {
                     </div> */}
           <div>
             <div className="grid lg:grid-cols-12 md:grid-cols-8 grid-cols-4 gap-3 mb-4">
-              <h6 className="lg:col-span-12 md:col-span-8 col-span-4 text-[18px] tracking-wide  -mb-1 text-headGray font-smibold">Filter dishes</h6>
+              <h6 className="lg:col-span-12 md:col-span-8 col-span-4 text-[18px] tracking-wide  -mb-1 text-headGray font-smibold">
+                Filter dishes
+              </h6>
+
               {/* <div className={`chefDateBtn ${activeButton === 'btn1' ? 'active' : ''}`}
                                 onClick={() => handleButtonClick('btn1')}
                             >
@@ -264,8 +326,9 @@ const FilterAndDate = ({ chefAndDishes }) => {
                                 <h6 className='text-[10px] font-bold uppercase text-[#777] mb-1 leading-tight'>Sat</h6>
                                 <h4 className='text-[14px] font-bold mb-0 leading-tight'>Feb 20</h4>
                             </div> */}
-              {days.map((day) => (
+              {days.map((day, index) => (
                 <div
+                  key={index}
                   className={`chefDateBtn ${
                     sortingWithDays === day.value ? "active" : ""
                   }`}
@@ -280,14 +343,47 @@ const FilterAndDate = ({ chefAndDishes }) => {
               ))}
               {/* Reset days */}
               <div
-                  className={`border flex justify-center items-center rounded-md cursor-pointer hover:border-primary`}
-                  onClick={() => setSortingWithDays("")}
-                > 
-                  <h6 className="text font-bold uppercase text-primary mb-1">
-                    Reset
-                  </h6>
-                  {/* <h4 className='text-[14px] font-bold mb-0 leading-tight'>Feb 21</h4> */}
+                className={`border flex justify-center items-center rounded-md cursor-pointer hover:border-primary`}
+                onClick={() => setSortingWithDays("")}
+              >
+                <h6 className="text font-bold uppercase text-primary mb-1">
+                  Reset
+                </h6>
+                {/* <h4 className='text-[14px] font-bold mb-0 leading-tight'>Feb 21</h4> */}
+              </div>
+              <div className="lg:col-span-12 md:col-span-8 col-span-4 mt-2">
+                <div className="relative ">
+                  <h4 className="text-sm  bg-white text-headGray absolute -top-2 left-2 px-1 z-20">
+                    Filter by time
+                  </h4>
+                  <select
+                    onChange={(e) => setSortingWithSlot(e.target.value)}
+                    className="w-max"
+                    value={sortingWithSlot}
+                    name=""
+                    id=""
+                  >
+                    <option value="">--- Select time slot ---</option>
+                    {slot.map((availability_time) => (
+                      <option
+                        value={
+                          availability_time.time_start.toString() +
+                          "-" +
+                          availability_time.time_end.toString()
+                        }
+                      >
+                        {convertTo12Hour(
+                          availability_time.time_start.toString()
+                        ) +
+                          "-" +
+                          convertTo12Hour(
+                            availability_time.time_end.toString()
+                          )}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+              </div>
             </div>
           </div>
           <div className="grid grid-cols-12 md:gap-x-4 gap-x-0 gap-y-4 my-12">
@@ -297,25 +393,26 @@ const FilterAndDate = ({ chefAndDishes }) => {
                 MAIN ITEMS
               </h2>
               <div className="grid grid-cols-12 md:gap-x-4 gap-x-3 md:gap-y-3 gap-y-4">
-                {dishesOfChef?.map((dish) => (
-                  // {chefAndDishes?.menus?.map((dish) => (
-                  <div
-                    key={dish.id}
-                    className="lg:col-span-4 sm:col-span-6 col-span-12"
-                  >
-                    <div className="product-box mb-md-20">
-                      <div className="product-img relative">
-                        {/* <img src={(dish.logo && isValidURL(dish.logo)) ? dish.logo : "/media/frontend/img/restaurants/255x104/order-1.jpg"} className="img-fluid  full-width h-24 max-h-24 object-cover" alt="product-img" /> */}
-                        <img
-                          src={
-                            dish.logo && isValidURL(dish.logo)
-                              ? dish.logo
-                              : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
-                          }
-                          className="img-fluid  full-width h-24 max-h-24 object-cover"
-                          alt="product-img"
-                        />
-                        {/* <div className="absolute bottom-[12px] right-0 px-4">
+                {dishesOfChef?.map(
+                  (dish) => (
+                    // dish.is_live === 1 && (
+                    <div
+                      key={dish.id}
+                      className="lg:col-span-4 sm:col-span-6 col-span-12"
+                    >
+                      <div className="product-box mb-md-20">
+                        <div className="product-img relative">
+                          {/* <img src={(dish.logo && isValidURL(dish.logo)) ? dish.logo : "/media/frontend/img/restaurants/255x104/order-1.jpg"} className="img-fluid  full-width h-24 max-h-24 object-cover" alt="product-img" /> */}
+                          <img
+                            src={
+                              dish.logo && isValidURL(dish.logo)
+                                ? dish.logo
+                                : "https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg"
+                            }
+                            className="img-fluid  full-width h-24 max-h-24 object-cover"
+                            alt="product-img"
+                          />
+                          {/* <div className="absolute bottom-[12px] right-0 px-4">
                           <div
                             className="bg-primary p-[5px] rounded-[5px] cursor-pointer"
                             onClick={() => openModal(dish)}
@@ -331,9 +428,9 @@ const FilterAndDate = ({ chefAndDishes }) => {
                             </svg>
                           </div>
                         </div> */}
-                      </div>
-                      <div className="p-3">
-                        {/* <div className='flex items-center justify-between'>
+                        </div>
+                        <div className="p-3">
+                          {/* <div className='flex items-center justify-between'>
                                                 <div className='flex items-center'>
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="rgba(236,32,68,1)">
                                                         <path d="M17 3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7V1H9V3H15V1H17V3ZM4 9V19H20V9H4ZM6 11H8V13H6V11ZM6 15H8V17H6V15ZM10 11H18V13H10V11ZM10 15H15V17H10V15Z"></path>
@@ -343,80 +440,81 @@ const FilterAndDate = ({ chefAndDishes }) => {
                                                 <h2 className='bg-greenLight py-1 px-3 rounded-[5px] text-secondary font-medium text-[12px] mb-0 inline-block leading-tight'>Mexican</h2>
                                             </div> */}
 
-                        <h6 className="text-lg text-secondary font-bold mb-1">
-                          {/* <Link> Chilli Chicken Pizza</Link> */}
-                          <Link to={`/dish-detail-single/${dish.id}`}>
-                            {" "}
-                            {dish.name}{" "}
-                          </Link>
-                        </h6>
-                        {/* Reveiw/Rate & Price */}
+                          <h6 className="text-lg text-secondary font-bold mb-1">
+                            {/* <Link> Chilli Chicken Pizza</Link> */}
+                            <Link to={`/dish-detail-single/${dish.id}`}>
+                              {" "}
+                              {dish.name}{" "}
+                            </Link>
+                          </h6>
+                          {/* Reveiw/Rate & Price */}
 
-                        <div className="flex justify-between items-center gap-x-2">
-                          <div className="inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]">
-                            {/* Thumbs up SVG */}
-                            {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="10" height="10" fill="rgba(0,0,0,1)">
+                          <div className="flex justify-between items-center gap-x-2">
+                            <div className="inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]">
+                              {/* Thumbs up SVG */}
+                              {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="10" height="10" fill="rgba(0,0,0,1)">
                                                 <path d="M14.5998 8.00033H21C22.1046 8.00033 23 8.89576 23 10.0003V12.1047C23 12.3659 22.9488 12.6246 22.8494 12.8662L19.755 20.3811C19.6007 20.7558 19.2355 21.0003 18.8303 21.0003H2C1.44772 21.0003 1 20.5526 1 20.0003V10.0003C1 9.44804 1.44772 9.00033 2 9.00033H5.48184C5.80677 9.00033 6.11143 8.84246 6.29881 8.57701L11.7522 0.851355C11.8947 0.649486 12.1633 0.581978 12.3843 0.692483L14.1984 1.59951C15.25 2.12534 15.7931 3.31292 15.5031 4.45235L14.5998 8.00033ZM7 10.5878V19.0003H18.1606L21 12.1047V10.0003H14.5998C13.2951 10.0003 12.3398 8.77128 12.6616 7.50691L13.5649 3.95894C13.6229 3.73105 13.5143 3.49353 13.3039 3.38837L12.6428 3.0578L7.93275 9.73038C7.68285 10.0844 7.36341 10.3746 7 10.5878ZM5 11.0003H3V19.0003H5V11.0003Z"></path>
                                             </svg> */}
 
-                            {/* Star SVG */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              width="12"
-                              height="12"
-                              fill="#323232"
-                            >
-                              <path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path>
-                            </svg>
-                            <h4 className="text-xs mb-0 font-semibold">
-                              {/* 100%{" "} */}
-                              {dish?.average_rating
-                                ? parseFloat(dish.average_rating).toFixed(1)
-                                : 0}{" "}
-                              <span className="text-[12px] font-normal">
-                                ({dish?.total_reviews})
-                              </span>
-                            </h4>
-                          </div>
-                          {/* <h4 className='text-xl text-secondary font-semibold mb-0'>$ 12.99 </h4> */}
-                          <h4 className="text-lg text-secondary font-semibold mb-0">
-                            {(
-                              dish.chef_earning_fee +
-                              dish.platform_price +
-                              dish.delivery_price
-                            ).toLocaleString("en-PK", {
-                              style: "currency",
-                              currency: "PKR",
-                            })}
-                            {dish?.auto_applied_discounts?.length > 0 && (
-                              <span className="block text-[13px] -mt-2 text-green-700">
-                                [
-                                {/* {` ${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `} */}
-                                {dish.auto_applied_discounts[0]
-                                  .discount_type === "$"
-                                  ? dish.auto_applied_discounts[0].discount.toLocaleString(
-                                      "en-PK",
-                                      {
+                              {/* Star SVG */}
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                width="12"
+                                height="12"
+                                fill="#323232"
+                              >
+                                <path d="M12.0006 18.26L4.94715 22.2082L6.52248 14.2799L0.587891 8.7918L8.61493 7.84006L12.0006 0.5L15.3862 7.84006L23.4132 8.7918L17.4787 14.2799L19.054 22.2082L12.0006 18.26Z"></path>
+                              </svg>
+                              <h4 className="text-xs mb-0 font-semibold">
+                                {/* 100%{" "} */}
+                                {dish?.average_rating
+                                  ? parseFloat(dish.average_rating).toFixed(1)
+                                  : 0}{" "}
+                                <span className="text-[12px] font-normal">
+                                  ({dish?.total_reviews})
+                                </span>
+                              </h4>
+                            </div>
+                            {/* <h4 className='text-xl text-secondary font-semibold mb-0'>$ 12.99 </h4> */}
+                            <h4 className="text-lg text-secondary font-semibold mb-0">
+                              {(
+                                dish.chef_earning_fee +
+                                dish.platform_price +
+                                dish.delivery_price
+                              ).toLocaleString("en-PK", {
+                                style: "currency",
+                                currency: "PKR",
+                              })}
+                              {dish?.auto_applied_discounts?.length > 0 && (
+                                <span className="block text-[13px] -mt-2 text-green-700">
+                                  [
+                                  {/* {` ${dish.auto_applied_discounts[0].discount} ${dish.auto_applied_discounts[0].discount_type} `} */}
+                                  {dish.auto_applied_discounts[0]
+                                    .discount_type === "$"
+                                    ? dish.auto_applied_discounts[0].discount.toLocaleString(
+                                        "en-PK",
+                                        {
+                                          style: "currency",
+                                          currency: "PKR",
+                                        }
+                                      )
+                                    : (
+                                        dish.chef_earning_fee *
+                                        (dish.auto_applied_discounts[0]
+                                          .discount /
+                                          100)
+                                      ).toLocaleString("en-PK", {
                                         style: "currency",
                                         currency: "PKR",
-                                      }
-                                    )
-                                  : (
-                                      dish.chef_earning_fee *
-                                      (dish.auto_applied_discounts[0].discount /
-                                        100)
-                                    ).toLocaleString("en-PK", {
-                                      style: "currency",
-                                      currency: "PKR",
-                                    })}
-                                <span className="text-[10px]"> Off</span> ]
-                              </span>
-                            )}
-                          </h4>
-                        </div>
+                                      })}
+                                  <span className="text-[10px]"> Off</span> ]
+                                </span>
+                              )}
+                            </h4>
+                          </div>
 
-                        {/* <div className='flex items-center gap-3'>
+                          {/* <div className='flex items-center gap-3'>
                                                 <div className='inline-flex gap-x-2 items-center bg-[#ffc00047] px-2 py-1 rounded-[4px]'>
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="rgba(0,0,0,1)">
                                                         <path d="M14.5998 8.00033H21C22.1046 8.00033 23 8.89576 23 10.0003V12.1047C23 12.3659 22.9488 12.6246 22.8494 12.8662L19.755 20.3811C19.6007 20.7558 19.2355 21.0003 18.8303 21.0003H2C1.44772 21.0003 1 20.5526 1 20.0003V10.0003C1 9.44804 1.44772 9.00033 2 9.00033H5.48184C5.80677 9.00033 6.11143 8.84246 6.29881 8.57701L11.7522 0.851355C11.8947 0.649486 12.1633 0.581978 12.3843 0.692483L14.1984 1.59951C15.25 2.12534 15.7931 3.31292 15.5031 4.45235L14.5998 8.00033ZM7 10.5878V19.0003H18.1606L21 12.1047V10.0003H14.5998C13.2951 10.0003 12.3398 8.77128 12.6616 7.50691L13.5649 3.95894C13.6229 3.73105 13.5143 3.49353 13.3039 3.38837L12.6428 3.0578L7.93275 9.73038C7.68285 10.0844 7.36341 10.3746 7 10.5878ZM5 11.0003H3V19.0003H5V11.0003Z"></path>
@@ -427,142 +525,144 @@ const FilterAndDate = ({ chefAndDishes }) => {
                                                 </div>
                                                 <h4 className='bg-primaryLight px-3 py-1 text-sm rounded-[4px] inline-block mb-0'>1 serving</h4>
                                             </div> */}
-                        <div className="border- border-primary mt- mb-4"></div>
+                          <div className="border- border-primary mt- mb-4"></div>
 
-                        {/* Dish Availability */}
-                        <div className="border-t pt-3 mt-2">
-                          <div className="grid grid-cols-12 gap-x-1">
-                            <div className="lg:col-span-8 col-span-9">
-                              <h4 className="text-[10px] text-headGray mb-0">
-                                Availibility:{" "}
-                              </h4>
-                              <ul className="flex gap-1 flex-wrap">
-                                {/* Days - starting from sunday */}
-                                <div className="relative group">
-                                  <li
-                                    className={`text w-4 h-4 text-center ${
-                                      dish?.is_sunday === 1
-                                        ? "bg-primary text-white"
-                                        : "border"
-                                    } rounded-full mb-0 flex items-center justify-center`}
-                                  >
-                                    S
-                                  </li>
-                                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
-                                    Sunday
+                          {/* Dish Availability */}
+                          <div className="border-t pt-3 mt-2">
+                            <div className="grid grid-cols-12 gap-x-1">
+                              <div className="lg:col-span-8 col-span-9">
+                                <h4 className="text-[10px] text-headGray mb-0">
+                                  Availibility:{" "}
+                                </h4>
+                                <ul className="flex gap-1 flex-wrap">
+                                  {/* Days - starting from sunday */}
+                                  <div className="relative group">
+                                    <li
+                                      className={`text w-4 h-4 text-center ${
+                                        dish?.is_sunday === 1
+                                          ? "bg-primary text-white"
+                                          : "border"
+                                      } rounded-full mb-0 flex items-center justify-center`}
+                                    >
+                                      S
+                                    </li>
+                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                      Sunday
+                                    </div>
                                   </div>
-                                </div>
 
-                                <div className="relative group">
-                                  <li
-                                    className={`text w-4 h-4 text-center ${
-                                      dish?.is_monday === 1
-                                        ? "bg-primary text-white"
-                                        : "border"
-                                    } rounded-full mb-0 flex items-center justify-center`}
-                                  >
-                                    M
-                                  </li>
-                                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
-                                    Monday
+                                  <div className="relative group">
+                                    <li
+                                      className={`text w-4 h-4 text-center ${
+                                        dish?.is_monday === 1
+                                          ? "bg-primary text-white"
+                                          : "border"
+                                      } rounded-full mb-0 flex items-center justify-center`}
+                                    >
+                                      M
+                                    </li>
+                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                      Monday
+                                    </div>
                                   </div>
-                                </div>
 
-                                <div className="relative group">
-                                  <li
-                                    className={`text w-4 h-4 text-center ${
-                                      dish?.is_tuesday === 1
-                                        ? "bg-primary text-white"
-                                        : "border"
-                                    } rounded-full mb-0 flex items-center justify-center`}
-                                  >
-                                    T
-                                  </li>
-                                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
-                                    Tuesday
+                                  <div className="relative group">
+                                    <li
+                                      className={`text w-4 h-4 text-center ${
+                                        dish?.is_tuesday === 1
+                                          ? "bg-primary text-white"
+                                          : "border"
+                                      } rounded-full mb-0 flex items-center justify-center`}
+                                    >
+                                      T
+                                    </li>
+                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                      Tuesday
+                                    </div>
                                   </div>
-                                </div>
 
-                                <div className="relative group">
-                                  <li
-                                    className={`text w-4 h-4 text-center ${
-                                      dish?.is_wednesday === 1
-                                        ? "bg-primary text-white"
-                                        : "border"
-                                    } rounded-full mb-0 flex items-center justify-center`}
-                                  >
-                                    W
-                                  </li>
-                                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
-                                    Wednesday
+                                  <div className="relative group">
+                                    <li
+                                      className={`text w-4 h-4 text-center ${
+                                        dish?.is_wednesday === 1
+                                          ? "bg-primary text-white"
+                                          : "border"
+                                      } rounded-full mb-0 flex items-center justify-center`}
+                                    >
+                                      W
+                                    </li>
+                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                      Wednesday
+                                    </div>
                                   </div>
-                                </div>
 
-                                <div className="relative group">
-                                  <li
-                                    className={`text w-4 h-4 text-center ${
-                                      dish?.is_thursday === 1
-                                        ? "bg-primary text-white"
-                                        : "border"
-                                    } rounded-full mb-0 flex items-center justify-center`}
-                                  >
-                                    T
-                                  </li>
-                                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
-                                    Thursday
+                                  <div className="relative group">
+                                    <li
+                                      className={`text w-4 h-4 text-center ${
+                                        dish?.is_thursday === 1
+                                          ? "bg-primary text-white"
+                                          : "border"
+                                      } rounded-full mb-0 flex items-center justify-center`}
+                                    >
+                                      T
+                                    </li>
+                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                      Thursday
+                                    </div>
                                   </div>
-                                </div>
 
-                                <div className="relative group">
-                                  <li
-                                    className={`text w-4 h-4 text-center ${
-                                      dish?.is_friday === 1
-                                        ? "bg-primary text-white"
-                                        : "border"
-                                    } rounded-full mb-0 flex items-center justify-center`}
-                                  >
-                                    F
-                                  </li>
-                                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
-                                    Friday
+                                  <div className="relative group">
+                                    <li
+                                      className={`text w-4 h-4 text-center ${
+                                        dish?.is_friday === 1
+                                          ? "bg-primary text-white"
+                                          : "border"
+                                      } rounded-full mb-0 flex items-center justify-center`}
+                                    >
+                                      F
+                                    </li>
+                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                      Friday
+                                    </div>
                                   </div>
-                                </div>
 
-                                <div className="relative group">
-                                  <li
-                                    className={`text w-4 h-4 text-center ${
-                                      dish?.is_saturday === 1
-                                        ? "bg-primary text-white"
-                                        : "border"
-                                    } rounded-full mb-0 flex items-center justify-center`}
-                                  >
-                                    S
-                                  </li>
-                                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
-                                    Saturday
+                                  <div className="relative group">
+                                    <li
+                                      className={`text w-4 h-4 text-center ${
+                                        dish?.is_saturday === 1
+                                          ? "bg-primary text-white"
+                                          : "border"
+                                      } rounded-full mb-0 flex items-center justify-center`}
+                                    >
+                                      S
+                                    </li>
+                                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-sm rounded-md opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                                      Saturday
+                                    </div>
                                   </div>
-                                </div>
-                              </ul>
-                            </div>
-                            <div className="col-span-3 my-auto">
-                              <Link
-                                to={`/dish-detail-single/${dish.id}`}
-                                className="bg-primary px-3 py-1 rounded-[4px] font-medium text-xs !text-white tracking-wide"
-                              >
-                                {" "}
-                                Detail
-                              </Link>
+                                </ul>
+                              </div>
+                              <div className="col-span-3 my-auto">
+                                <Link
+                                  to={`/dish-detail-single/${dish.id}`}
+                                  className="bg-primary px-3 py-1 rounded-[4px] font-medium text-xs !text-white tracking-wide"
+                                >
+                                  {" "}
+                                  Detail
+                                </Link>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                  // )
+                )}
                 {dishesOfChef?.length < 1 && (
                   <div className="col-span-12">
                     <p className="text-headGray text-lg mb-6 font-semibold">
-                      No dishe available{" "}
+                      No dish available{" "}
                     </p>
                   </div>
                 )}
