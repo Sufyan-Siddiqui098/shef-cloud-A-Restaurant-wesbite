@@ -1177,7 +1177,7 @@ export const Checkout = () => {
                     <h4 className="text-sm font-semibold bg-white absolute -top-2 left-2 px-1 z-20">
                       Selected Delivery Date <span className="text-primary">*</span>
                     </h4>
-                    <input type="text" className="" value={new Date(order.delivery_time?.split("T")[0]).toDateString()}  disabled/>
+                    <input type="text" className="" value={order.delivery_time}  disabled/>
                     {/* <input
                       min={new Date().toISOString().slice(0, 16)}
                       required
@@ -1207,7 +1207,7 @@ export const Checkout = () => {
                           Selected Delivery Time{" "}
                           <span className="text-primary">*</span>
                         </h4>
-                        <input type="text" value={convertTo12Hour(order.delivery_time?.split("T")[1]?.split("-")[0]) + " - " + convertTo12Hour(order.delivery_time?.split("T")[1]?.split("-")[1])}  disabled/>
+                        <input type="text" value={convertTo12Hour(order.delivery_slot?.split("-")[0]) + " - " + convertTo12Hour(order.delivery_slot?.split("-")[1])}  disabled/>
                         {/* <DatePicker
                           required
                           selected={selectedTime}
