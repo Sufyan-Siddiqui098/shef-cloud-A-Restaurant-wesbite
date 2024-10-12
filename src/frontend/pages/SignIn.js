@@ -83,6 +83,7 @@ const SignIn = () => {
   const forgetPasswordSubmit = async (e) => {
     e.preventDefault();
     try {
+      setIsPending(true)
       const response = await handleForgetPassword(forgetPassword);
       if(response.message || response.msg){
         toast.success(response.message || response.msg)
@@ -92,6 +93,8 @@ const SignIn = () => {
     } catch (error) {
       console.error(error);
       toast.error(error.message);
+    }finally {
+      setIsPending(false);
     }
   };
 
@@ -258,11 +261,11 @@ const SignIn = () => {
               placeholder="Enter your email address"
             />
             <button
-              // disabled={forgetPassword.email?.length < 1}
+              disabled={isPending}
               type="submit"
               className="my-2 text-base w-max bg-primary text-white uppercase px-6 py-2 font-semibold rounded-lg disabled:cursor-not-allowed disabled:opacity-60 mt-auto"
             >
-              Send Reset Password Link
+              {isPending ? "Proccessing " : "Send Reset Password Link"}
             </button>
           </form>
         </div>
