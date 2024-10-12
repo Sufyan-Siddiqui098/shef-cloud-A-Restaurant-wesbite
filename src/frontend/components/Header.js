@@ -289,7 +289,7 @@ const Header = () => {
                                                     className="font-semibold font-sans px-1 py-1 text-xs !text-white border border-transparent bg-primary rounded hover:!bg-primaryDark sm:text-lg  sm:px-3 sm:py-2"    
                                                     to='/become-a-chef'
                                                 >
-                                                        Become A Chef
+                                                        Become a Shef
                                                 </NavLink>
                                             {/* </div> */}
                                             {/* <div className='hover:bg-primary my-1 bg-transparent border transition rounded '> */}

@@ -42,7 +42,7 @@ const Footer = () => {
                         </div>
                         <div className="flex md:flex-row flex-col md:gap-x-4 gap-x-0 md:gap-y-0 gap-y-4 justify-center">
                             <NavLink to="/become-a-chef" className="footerChefBxBtn !text-[#323232]">
-                                <img src="/media/frontend/img/chef-icon.svg" alt="Become A Chef" />
+                                <img src="/media/frontend/img/chef-icon.svg" alt="Become a Shef" />
                                 <button type='submit'>Become A Shef</button>
                             </NavLink>
                             {/* <div className="footerChefBxBtn"> */}
