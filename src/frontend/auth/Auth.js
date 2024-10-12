@@ -119,6 +119,12 @@ export const handleForgetTokenVerification = async (token) => {
     const { data } = await api.post(`/api/verify-token?token=${token}`);
     return data;
   } catch (error) {
+    if (
+      error.response.data.message &&
+      typeof error.response.data.message === "string"
+    ) {
+      throw new Error(error.response.data.message);
+    }
     throw new Error(error.message);
   }
 };
@@ -131,6 +137,12 @@ export const handlePostResetPassword = async (token, credentials) => {
     );
     return data;
   } catch (error) {
+    if (
+      error.response.data.message &&
+      typeof error.response.data.message === "string"
+    ) {
+      throw new Error(error.response.data.message);
+    }
     throw new Error(error.message);
   }
 };
