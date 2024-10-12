@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
-import {
-  // handleGetPlatformRate,
-  handleGetPortionType,
-} from "../../../services/shef";
+// import {
+//   // handleGetPlatformRate,
+//   handleGetPortionType,
+// } from "../../../services/shef";
 import { toast } from "react-toastify";
 import { handleGetDefaultSetting } from "../../../services/default_setting";
 const MenuModal = ({
@@ -17,6 +17,7 @@ const MenuModal = ({
   platform_price,
   chef_earning_fee,
   updateFields,
+  portionTypes
 }) => {
   // Tabs Section Start
   const [activeTab, setActiveTab] = useState(1);
@@ -92,7 +93,7 @@ const MenuModal = ({
     onClose();
   };
 
-  const [portionTypes, setPortionTypes] = useState([]);
+  // const [portionTypes, setPortionTypes] = useState([]);
   // const [platformRate, setPlatformRate] = useState({
   //   platform_percentage: 0,
   //   delivery_percentage: 0,
@@ -146,19 +147,19 @@ const MenuModal = ({
   }, [authToken]);
 
   //--- Handle Portion Type -api
-  useEffect(() => {
-    const fetchPortionTypes = async () => {
-      try {
-        const portionTypeResponse = await handleGetPortionType(authToken);
-        setPortionTypes(portionTypeResponse);
-        // console.log("Portion type response", portionTypeResponse);
-      } catch (error) {
-        console.error("Error while fetching Portion Type:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchPortionTypes = async () => {
+  //     try {
+  //       const portionTypeResponse = await handleGetPortionType(authToken);
+  //       setPortionTypes(portionTypeResponse);
+  //       // console.log("Portion type response", portionTypeResponse);
+  //     } catch (error) {
+  //       console.error("Error while fetching Portion Type:", error);
+  //     }
+  //   };
 
-    fetchPortionTypes();
-  }, [authToken]);
+  //   fetchPortionTypes();
+  // }, [authToken]);
 
   //--- Handle data from Chef-Menu
   useEffect(() => {
