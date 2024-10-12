@@ -7,7 +7,7 @@ const WhyBecomeShef = () => {
                     <div className='container mx-auto'>
                         <div className='mb-12'>
                             <h1 className='font-semibold text-3xl uppercase tracking-widest text-center '>
-                                Why become a Shef Cloud?
+                                Why become a member of Shefs Cloud?
                             </h1>
                             <div className='w-[60px] h-[2px] bg-primary my-4 mx-auto'></div>
                         </div>

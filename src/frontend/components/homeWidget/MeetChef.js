@@ -19,10 +19,7 @@ const MeetChef = () => {
                                     <div className='mt-8 mb-6'>
                                         <div className='lg:w-4/5 w-full'>
                                             <p className='mb-0 text-lg text-headGray'>
-                                                Lorem ipsum dolor sit amet consectetur, adipisicing elit. 
-                                                Fuga, animi assumenda! Mollitia nemo dicta ad, veniam ab iste 
-                                                omnis ipsa magni sapiente quas sed fuga, nulla ducimus 
-                                                laboriosam repellat id.
+                                                Welcome to our Shefs Cloud! Our chefs bring passion, creativity, and years of experience to every plate. Each of our chefs are dedicated to crafting unforgettable dining experiences by blending their unique culinary expertise with fresh, hygenic and local ingredients. Get to know the masters behind the flavors you love:
                                             </p>
                                         </div>
                                     </div>
