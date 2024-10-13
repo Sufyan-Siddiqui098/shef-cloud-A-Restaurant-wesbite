@@ -346,41 +346,48 @@ const DetailStep = ({
               </button>
             </div>
 
-            {(base_type_id && portion_type_id && chef_earning_fee && portion_size) && <div className="block w-full">
-              <table className="w-full text-center mt-2 p-0 rounded">
-                <thead className="[&>*]:p-2">
-                  <th>Base Type</th>
-                  <th>Portion Size</th>
-                  <th>Serving</th>
-                  <th>Price</th>
-                </thead>
-                <tbody className="[&>*]:p-1">
-                  <td>
-                    {(base_type_id === 1 && "Container") ||
-                      (base_type_id === 2 && "Pieces") ||
-                      (base_type_id === 3 && "Other")}
-                  </td>
-                  <td>
-                    {(base_type_id === 1 && `${portion_size} grams`) ||
-                      (base_type_id === 2 && `${portion_size} pieces`) ||
-                      (base_type_id === 3 && portion_size)}
-                  </td>
-                  <td>
-                    {portionTypes.find((item) => item.id === portion_type_id)
-                      ?.name || ""}
-                  </td>
-                  <td>
-                    {chef_earning_fee?.toLocaleString("en-PK", {
-                      style: "currency",
-                      currency: "PKR",
-                    })}
-                  </td>
-                </tbody>
-
-                {/* <p>{base_type_id ===1 && "Container" ||  base_type_id === 2 && "Pieces" || base_type_id === 3 && "Other"}</p>
-                                    <p>{base_type_id ===1 && `${portion_size} grams` || base_type_id === 2 && `${portion_size} pieces` || base_type_id === 3 && portion_size }</p> */}
-              </table>
-            </div>}
+            {base_type_id &&
+              portion_type_id &&
+              chef_earning_fee &&
+              portion_size && (
+                <div className="block w-full">
+                  <table className="w-full text-center mt-2 p-0 rounded">
+                    <thead className="[&>*]:p-2">
+                      <tr className="[&>*]:p-2">
+                        <th>Base Type</th>
+                        <th>Portion Size</th>
+                        <th>Serving</th>
+                        <th>Price</th>
+                      </tr>
+                    </thead>
+                    <tbody className="[&>*]:p-1">
+                      <tr className="[&>*]:p-1">
+                        <td>
+                          {(base_type_id === 1 && "Container") ||
+                            (base_type_id === 2 && "Pieces") ||
+                            (base_type_id === 3 && "Other")}
+                        </td>
+                        <td>
+                          {(base_type_id === 1 && `${portion_size} grams`) ||
+                            (base_type_id === 2 && `${portion_size} pieces`) ||
+                            (base_type_id === 3 && portion_size)}
+                        </td>
+                        <td>
+                          {portionTypes.find(
+                            (item) => item.id === portion_type_id
+                          )?.name || ""}
+                        </td>
+                        <td>
+                          {chef_earning_fee?.toLocaleString("en-PK", {
+                            style: "currency",
+                            currency: "PKR",
+                          })}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
             <div className="rounded-lg bg-grayBg p-4 mt-4">
               <div className="flex items-center gap-2">
                 <svg
