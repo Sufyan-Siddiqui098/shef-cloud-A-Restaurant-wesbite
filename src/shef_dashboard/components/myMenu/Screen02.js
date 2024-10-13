@@ -90,6 +90,7 @@ const DescScreen = ({
         // console.log("response of availbility ", response);
         const reArrangeTimeSlot = response?.map((period) => {
           return {
+            id: period.id,
             time_start: period.time_start,
             time_end: period.time_end,
             value: `${convertTo12Hour(period.time_start)} - ${convertTo12Hour(
@@ -111,12 +112,15 @@ const DescScreen = ({
 
   const handleAvailabilitySlotChnage = (selectedValue) => {
     const availability = [];
+    // selectedValue?.forEach((slot) => {
+    //   availability.push({
+    //     time_start: slot.time_start,
+    //     time_end: slot.time_end,
+    //   });
+    // });
     selectedValue?.forEach((slot) => {
-      availability.push({
-        time_start: slot.time_start,
-        time_end: slot.time_end,
-      });
-    });
+      availability.push(slot.id);
+    })
     // console.log("Selected availability time ", selectedValue, availability)
     setSelectedAvailabilitySlot(selectedValue);
     updateFields({ availability_time_slots: availability });
@@ -124,17 +128,23 @@ const DescScreen = ({
 
   // Already added availability fetch
   useEffect(() => {
-    if (availability_time_slots && availability_time_slots?.length > 0) {
-      const matchedAvailablity = timeSlot.filter((slot) =>
-        availability_time_slots.some(
-          (selectedAvailability) =>
-            selectedAvailability.time_start === slot.time_start
-        )
+    // if (availability_time_slots && availability_time_slots?.length > 0) {
+    //   const matchedAvailablity = timeSlot.filter((slot) =>
+    //     availability_time_slots.some(
+    //       (selectedAvailability) =>
+    //         selectedAvailability.time_start === slot.time_start
+    //     )
+    //   );
+    // }
+    if ((availability_time_slots && availability_time_slots?.length > 0) && timeSlot.length > 0) {
+      // console.log("avilable slot ", availability_time_slots, " time slot from api ", timeSlot)
+      const matchedAvailablity = timeSlot.filter((item) =>
+        availability_time_slots.some((id) => (id.availability_time_slots_id === item.id || id === item.id))
       );
       setSelectedAvailabilitySlot(matchedAvailablity);
       // console.log("already present availability ", matchedAvailablity)
     }
-  }, [timeSlot]);
+  }, [timeSlot, availability_time_slots]);
 
   return (
     <div>
