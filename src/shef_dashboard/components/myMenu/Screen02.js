@@ -12,7 +12,7 @@ const DescScreen = ({
   is_friday,
   is_saturday,
   is_sunday,
-  availability_slot, // new added to hold availability time of menu in array
+  availability_time_slots, // new added to hold availability time of menu in array
   limit_item_availibility,
   limit_start,
   limit_end,
@@ -119,14 +119,14 @@ const DescScreen = ({
     });
     // console.log("Selected availability time ", selectedValue, availability)
     setSelectedAvailabilitySlot(selectedValue);
-    updateFields({ availability_slot: availability });
+    updateFields({ availability_time_slots: availability });
   };
 
   // Already added availability fetch
   useEffect(() => {
-    if (availability_slot && availability_slot?.length > 0) {
+    if (availability_time_slots && availability_time_slots?.length > 0) {
       const matchedAvailablity = timeSlot.filter((slot) =>
-        availability_slot.some(
+        availability_time_slots.some(
           (selectedAvailability) =>
             selectedAvailability.time_start === slot.time_start
         )

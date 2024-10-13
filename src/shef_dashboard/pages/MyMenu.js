@@ -46,7 +46,7 @@ export const MyMenu = () => {
     is_saturday: 0,
     is_sunday: 0,
     // New added
-    availability_slot: [],
+    availability_time_slots: [],
     // -- 
     limit_item_availibility: "", // Optional
     limit_start: "", // Optional - YYYY-MM-DD
@@ -213,7 +213,7 @@ export const MyMenu = () => {
       }
 
       // availablity slot
-      if(chefMenu.availability_slot?.length<1 ){
+      if(chefMenu.availability_time_slots?.length<1 ){
         toast.error("Please Select Availablity Slot");
         return;
       }

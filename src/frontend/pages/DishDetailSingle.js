@@ -130,8 +130,8 @@ export const DishDetailSingle = () => {
           };
         });
 
-        if (!dishResponse.availability_slot) {
-          dishResponse.availability_slot = formatedTimeSlotArray;
+        if (!dishResponse.availability_time_slots) {
+          dishResponse.availability_time_slots = formatedTimeSlotArray;
         }
 
         chefReponse.forEach((chef) => {
@@ -854,7 +854,7 @@ export const DishDetailSingle = () => {
                       value={selectedDeliverDateAndSlot.delivery_slot}
                     >
                       <option value="">--- Pick a delivery slot</option>
-                      {dish?.availability_slot?.map((date) => (
+                      {dish?.availability_time_slots?.map((date) => (
                         <option
                           value={
                             date.time_start.toString() +
