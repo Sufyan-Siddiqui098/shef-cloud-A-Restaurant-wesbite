@@ -384,11 +384,20 @@ export const MyMenu = () => {
       toast.dismiss();
       if (isUpdateDish) {
         // Handle update api
-        console.log("Update-menu is called");
+        const availability_time_slots_id_only = []
+        chefMenu.availability_time_slots?.forEach((item)=> {
+          if(item.availability_time_slots_id){
+            availability_time_slots_id_only.push(item.availability_time_slots_id);
+          }
+        })
+        const payload = {...chefMenu, availability_time_slots: (availability_time_slots_id_only.length>0 ? availability_time_slots_id_only : chefMenu.availability_time_slots)}
+
+        // console.log("Update-menu is called ", payload, chefMenu);
         const updateMenu = await handleUpdateMenu(
           chefMenu.id,
           authToken,
-          chefMenu
+          // chefMenu
+          payload
         );
         // --- When req is successfull
         toast.success(updateMenu.message);
