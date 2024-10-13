@@ -74,7 +74,7 @@ const FilterAndDate = ({ chefAndDishes }) => {
       // console.log("start ", targetTimeStart, " end time ", targetTimeEnd)
       // Now filter by availability slot time range
       dishes = dishes.filter((dish) => {
-        return dish.availability_slot?.some((slot) => {
+        return dish.availability_time_slots?.some((slot) => {
           return (
             slot.time_start <= targetTimeStart && slot.time_end >= targetTimeEnd
           );
@@ -88,7 +88,7 @@ const FilterAndDate = ({ chefAndDishes }) => {
       const targetTimeEnd = sortingWithSlot.split("-")[1];
       dishes = dishes.filter((dish) => {
         const dayMatches = dish[`${sortingWithDays.toLowerCase()}`] === 1;
-        const slotMatches = dish.availability_slot?.some((slot) => {
+        const slotMatches = dish.availability_time_slots?.some((slot) => {
           return (
             slot.time_start <= targetTimeStart && slot.time_end >= targetTimeEnd
           );
