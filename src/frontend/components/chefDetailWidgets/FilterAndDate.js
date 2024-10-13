@@ -45,9 +45,10 @@ const FilterAndDate = ({ chefAndDishes }) => {
           return {
             time_start: time.time_start.slice(0, 5),
             time_end: time.time_end.slice(0, 5),
+            id: time.id,
           };
         });
-        console.log("tiem ", formatedTimeSlotArray);
+        console.log("tiem ", formatedTimeSlotArray, timeslotResponse);
         setSlot(formatedTimeSlotArray);
       } catch (error) {
         console.error(
@@ -69,32 +70,62 @@ const FilterAndDate = ({ chefAndDishes }) => {
     }
 
     if (sortingWithSlot) {
-      const targetTimeStart = sortingWithSlot.split("-")[0];
-      const targetTimeEnd = sortingWithSlot.split("-")[1];
+      // const targetTimeStart = sortingWithSlot.split("-")[0];
+      // const targetTimeEnd = sortingWithSlot.split("-")[1];
       // console.log("start ", targetTimeStart, " end time ", targetTimeEnd)
       // Now filter by availability slot time range
+      // dishes = dishes.filter((dish) => {
+      //   return dish.availability_time_slots?.some((slot) => {
+      //     return (
+      //       slot.time_start <= targetTimeStart && slot.time_end >= targetTimeEnd
+      //     );
+      //   });
+      // });
+      // console.log("soritn ", sortingWithSlot, typeof sortingWithSlot)
       dishes = dishes.filter((dish) => {
         return dish.availability_time_slots?.some((slot) => {
-          return (
-            slot.time_start <= targetTimeStart && slot.time_end >= targetTimeEnd
-          );
+          // console.log(
+          //   dish,
+          //   sortingWithSlot === slot.availability_time_slots_id
+          // );
+          return sortingWithSlot === slot.availability_time_slots_id;
         });
       });
+
+      console.log("diseh s", dishes);
     }
 
     // Check if both day and slot are selected, apply combined filtering
+    // if (sortingWithDays && sortingWithSlot) {
+    //   const targetTimeStart = sortingWithSlot.split("-")[0];
+    //   const targetTimeEnd = sortingWithSlot.split("-")[1];
+    //   dishes = dishes.filter((dish) => {
+    //     const dayMatches = dish[`${sortingWithDays.toLowerCase()}`] === 1;
+    //     const slotMatches = dish.availability_time_slots?.some((slot) => {
+    //       return (
+    //         slot.time_start <= targetTimeStart && slot.time_end >= targetTimeEnd
+    //       );
+    //     });
+
+    //     // Only return dishes that match both day and slot
+    //     return dayMatches && slotMatches;
+    //   });
+    // }
     if (sortingWithDays && sortingWithSlot) {
-      const targetTimeStart = sortingWithSlot.split("-")[0];
-      const targetTimeEnd = sortingWithSlot.split("-")[1];
       dishes = dishes.filter((dish) => {
+        // Check if the dish is available on the given day
         const dayMatches = dish[`${sortingWithDays.toLowerCase()}`] === 1;
+
+        // Check if the dish has a matching availability time slot by ID
         const slotMatches = dish.availability_time_slots?.some((slot) => {
-          return (
-            slot.time_start <= targetTimeStart && slot.time_end >= targetTimeEnd
-          );
+          // console.log(
+          //   dish,
+          //   sortingWithSlot === slot.availability_time_slots_id
+          // );
+          return sortingWithSlot === slot.availability_time_slots_id;
         });
 
-        // Only return dishes that match both day and slot
+        // Return only the dishes that match both day and slot criteria
         return dayMatches && slotMatches;
       });
     }
@@ -357,7 +388,9 @@ const FilterAndDate = ({ chefAndDishes }) => {
                     Filter by time
                   </h4>
                   <select
-                    onChange={(e) => setSortingWithSlot(e.target.value)}
+                    onChange={(e) =>
+                      setSortingWithSlot(parseInt(e.target.value))
+                    }
                     className="w-max"
                     value={sortingWithSlot}
                     name=""
@@ -365,13 +398,7 @@ const FilterAndDate = ({ chefAndDishes }) => {
                   >
                     <option value="">--- Select time slot ---</option>
                     {slot.map((availability_time) => (
-                      <option
-                        value={
-                          availability_time.time_start.toString() +
-                          "-" +
-                          availability_time.time_end.toString()
-                        }
-                      >
+                      <option value={availability_time.id}>
                         {convertTo12Hour(
                           availability_time.time_start.toString()
                         ) +
