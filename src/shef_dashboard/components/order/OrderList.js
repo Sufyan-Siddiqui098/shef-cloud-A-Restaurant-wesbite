@@ -55,13 +55,30 @@ const OrderList = ({
                 <td>
                   <h4 className="text-[12px] mb-1 leading-tight">
                     -{" "}
-                    {order?.order_delivery_address?.address || "not available"}
+                    {(order?.order_delivery_address?.address_type === "home" &&
+                      order?.order_delivery_address?.home_street_address) ||
+                      (order?.order_delivery_address?.address_type ===
+                        "office" &&
+                        `${order?.order_delivery_address?.office_street_address}, ${order?.order_delivery_address?.office_building_no} ${order?.order_delivery_address?.office_floor}, ${order?.order_delivery_address?.office_company}`) ||
+                      (order?.order_delivery_address?.address_type ===
+                        "apartment" &&
+                        `${order?.order_delivery_address?.apartment_street_address}, ${order?.order_delivery_address?.apartment_name}, ${order?.order_delivery_address?.apartment_apartment_no}, ${order?.order_delivery_address?.apartment_floor}`) ||
+                      "not available"}
                   </h4>
-                  {order?.order_delivery_address?.city && (
-                    <h4 className="text-[12px] mb-1 leading-tight">
-                      - {order?.order_delivery_address?.city}
-                    </h4>
-                  )}
+                  {/* {order?.order_delivery_address?.city && ( */}
+                  <h4 className="text-[12px] mb-1 leading-tight">
+                    {/* - {order?.order_delivery_address?.city} */}
+                    {(order?.order_delivery_address?.address_type === "home" &&
+                      `- ${order?.order_delivery_address?.home_city}`) ||
+                      (order?.order_delivery_address?.address_type ===
+                        "office" &&
+                        `- ${order?.order_delivery_address?.office_city}`) ||
+                      (order?.order_delivery_address?.address_type ===
+                        "apartment" &&
+                        `- ${order?.order_delivery_address?.apartment_city}`) ||
+                      ""}
+                  </h4>
+                  {/* )} */}
                   {/* <h4 className="text-[12px] mb-1 leading-tight capitalize">
                     - {order?.order_delivery_address?.address_type}
                   </h4> */}
