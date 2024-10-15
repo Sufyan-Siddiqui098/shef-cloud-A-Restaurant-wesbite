@@ -130,9 +130,9 @@ export const DishDetailSingle = () => {
           };
         });
 
-        if (!dishResponse.availability_time_slots) {
+        // if (!dishResponse.availability_time_slots) {
           dishResponse.availability_time_slots = formatedTimeSlotArray;
-        }
+        // }
 
         chefReponse.forEach((chef) => {
           if (chef.id === dishResponse.user_id) {
