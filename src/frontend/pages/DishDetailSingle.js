@@ -857,14 +857,14 @@ export const DishDetailSingle = () => {
                       {dish?.availability_time_slots?.map((date) => (
                         <option
                           value={
-                            date.time_start.toString() +
+                            date.time_start?.toString() +
                             "-" +
-                            date.time_end.toString()
+                            date.time_end?.toString()
                           }
                         >
-                          {convertTo12Hour(date.time_start.toString()) +
+                          {convertTo12Hour(date.time_start?.toString()) +
                             "-" +
-                            convertTo12Hour(date.time_end.toString())}
+                            convertTo12Hour(date.time_end?.toString())}
                         </option>
                       ))}
                     </select>
