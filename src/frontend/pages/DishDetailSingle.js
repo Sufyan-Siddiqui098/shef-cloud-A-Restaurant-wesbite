@@ -125,14 +125,25 @@ export const DishDetailSingle = () => {
         const timeslotResponse = await handleGetAvailabilityTimeSlot();
         const formatedTimeSlotArray = timeslotResponse.map((time) => {
           return {
+            id: time.id,
             time_start: time.time_start.slice(0, 5),
             time_end: time.time_end.slice(0, 5),
           };
         });
 
-        // if (!dishResponse.availability_time_slots) {
+        if (
+          dishResponse.availability_time_slots &&
+          dishResponse.availability_time_slots?.length > 0
+        ) {
+          dishResponse.availability_time_slots = formatedTimeSlotArray.filter(
+            (time) =>
+              dishResponse.availability_time_slots?.some(
+                (av_slot) => av_slot.availability_time_slots_id === time.id
+              )
+          );
+        } else {
           dishResponse.availability_time_slots = formatedTimeSlotArray;
-        // }
+        }
 
         chefReponse.forEach((chef) => {
           if (chef.id === dishResponse.user_id) {
