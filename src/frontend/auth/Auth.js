@@ -156,7 +156,7 @@ export const handleEmailVerification = async ({
 }) => {
   try {
     const { data } = await api.get(
-      `/api/email/verify/${id}?expires=${expires}&hash=${hash}&signature=${signature}`
+      `/api/email-verification/${id}?expires=${expires}&hash=${hash}&signature=${signature}`
     );
     return data;
   } catch (error) {
@@ -181,7 +181,7 @@ export const handleEmailVerification = async ({
 // Resend Email Verification Link
 export const handleResendEmailVerificationLink = async (email) => {
   try {
-    const { data } = await api.post(`/api/resend-verification?email=${email}`);
+    const { data } = await api.post(`/api/email-verification?email=${email}`);
     return data;
   } catch (error) {
     if (error.response.data.errors) {
