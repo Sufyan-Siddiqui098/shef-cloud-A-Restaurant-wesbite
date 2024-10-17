@@ -28,6 +28,10 @@ export const Order = () => {
   // Order list to pass accroding to tab
   const [orderListToPass, setOrderListToPass] = useState([]);
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
+
   // Fetch All Orders
   useEffect(() => {
     const fetchOrders = async () => {
@@ -49,6 +53,15 @@ export const Order = () => {
     fetchOrders();
     console.log("useEffect is running for fetching order");
   }, [authToken, refetchOrder, userInfo.id]);
+
+  // Paginate the orders
+  const indexOfLastOrder = currentPage * itemsPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
+  const currentOrders = orderListToPass?.slice(indexOfFirstOrder, indexOfLastOrder);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const totalPages = Math.ceil(orderListToPass?.length / itemsPerPage);
+  // const totalPages = 5;
 
   // Default Settings API
   useEffect(() => {
@@ -314,6 +327,7 @@ export const Order = () => {
               </div>
               */}
               <div>
+                  <p className="text-xs mt-2 text-primary font-semibold opacity-90">* Orders that fail to deliver by delivery date will automatically be cancelled.</p>
                 <div className="flex gap-1 -ml-1 flex-nowrap overflow-x-auto">
                   <button
                     className={`w-max text-nowrap text-left text-xs tracking-wide font-semibold leading-tigh uppercase pt-2 mb-3 mt-6  px-2 rounded-md text-primary ${
@@ -596,12 +610,36 @@ export const Order = () => {
                     {/* </tbody> */}
                     {/* Different order list according to tab */}
                     <OrderList
-                      orderDetails={orderListToPass}
+                      orderDetails={currentOrders}
+                      // orderDetails={orderListToPass}
                       handleStatusChange={handleStatusChange}
                       defaultSettings={defaultSettings}
                       isFetching={isFetching}
                     />
                   </table>
+
+                  {/* Pagination UI */}
+                  <div className="flex justify-center mt-4">
+                    <ul className="flex space-x-2">
+                      {Array.from(
+                        { length: totalPages },
+                        (_, index) => index + 1
+                      ).map((pageNumber) => (
+                        <li key={pageNumber}>
+                          <button
+                            onClick={() => paginate(pageNumber)}
+                            className={`px-3 py-2 rounded-md ${
+                              pageNumber === currentPage
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-200 hover:bg-blue-500 hover:text-white"
+                            }`}
+                          >
+                            {pageNumber}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
