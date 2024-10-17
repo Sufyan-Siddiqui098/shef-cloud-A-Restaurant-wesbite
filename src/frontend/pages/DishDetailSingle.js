@@ -77,7 +77,7 @@ export const DishDetailSingle = () => {
   function getAvailableDates(
     availability,
     startDaysFromNow = 0,
-    totalDays = 14
+    totalDays = 8
   ) {
     const daysOfWeek = [
       "sunday",
