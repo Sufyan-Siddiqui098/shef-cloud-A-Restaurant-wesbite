@@ -121,10 +121,10 @@ const SignUp = () => {
       }
 
       const res = await handleUserSignUp(credentials);
-      if (res.email || res.success) {
+      // if (res.email || res.success) {
         toast.success(res.message || "Register Successfully");
         navigate("/login");
-      }
+      // }
     } catch (error) {
       toast.error(error.message);
     } finally {
