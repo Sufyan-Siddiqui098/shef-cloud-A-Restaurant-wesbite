@@ -5,6 +5,8 @@ import {
   handleEmailVerification,
   handleResendEmailVerificationLink,
 } from "../auth/Auth";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../../store/slice/user";
 
 const EmailVerification = () => {
   const [isPending, setIsPending] = useState(false);
@@ -19,6 +21,8 @@ const EmailVerification = () => {
   const getQueryParams = (search) => {
     return new URLSearchParams(search);
   };
+
+  const dispatch =  useDispatch();
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -48,7 +52,12 @@ const EmailVerification = () => {
         );
 
         setIsVerified(true);
-        navigate("/login");
+        if(response.status === 200){
+          localStorage.setItem("user", JSON.stringify(response.data));
+          localStorage.setItem("auth", response.data.access_token);
+          dispatch(loginUser(response)); // To update user in store instantly
+          navigate("/");
+        }
       } catch (error) {
         toast.error(error.message);
         setIsVerified(false);
