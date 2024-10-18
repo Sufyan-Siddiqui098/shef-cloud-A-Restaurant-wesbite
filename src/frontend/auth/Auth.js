@@ -73,11 +73,12 @@ export const handleUserSignUp = async (credentials) => {
     const { data } = await api.post("/api/register", credentials);
     return data;
   } catch (error) {
-    if (error.response) {
+    if (error.response.data.message && typeof error.response.data.message!=="string" ) {
+      // console.log("response ", error.response)
       //Error Object
-      const errorObj = error.response.data.errors;
+      const errorObj = error.response.data.message;
       // Error object's key OR keys
-      const errorObjKey = Object.keys(error.response.data.errors)[0];
+      const errorObjKey = Object.keys(error.response.data.message)[0];
       //Array of Error message - getting first message
       throw new Error(errorObj[errorObjKey][0]);
     }
