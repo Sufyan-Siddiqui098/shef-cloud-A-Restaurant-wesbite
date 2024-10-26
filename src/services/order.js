@@ -59,7 +59,11 @@ export const handleChangeOrderStatus = async (token, payload, id) => {
     });
     return data;
   } catch (error) {
-    console.error("Error While fetching orders\n", error);
+    console.error("Error While updating orders status \n", error);
+    if(error.error){
+      throw new Error(error.error)
+    } 
+    throw new Error(error.message || "Something wrong while updating order status")
   }
 };
 // Get Discount - Promo Code (Checkout page)

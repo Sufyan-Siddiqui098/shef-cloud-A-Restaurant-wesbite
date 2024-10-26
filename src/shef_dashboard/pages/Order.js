@@ -124,14 +124,14 @@ export const Order = () => {
           );
           console.log(ordersRetrieved);
           if (ordersRetrieved.success) {
-            toast.success("Order Status Updated!");
+            toast.success( ordersRetrieved.success || "Order Status Updated!");
             setRefetchOrder((prevState) => !prevState);
           }
         }
         // setOrderDetails(ordersRetrieved);
       } catch (error) {
-        console.log("Error While Fetching Orders \n", error);
-        toast.warn("Order Status Failed to Update!");
+        console.log("Error While Changning Orders' state \n", error);
+        toast.warn(error.message || "Order Status Failed to Update!");
       }
     };
     saveStatus();
