@@ -478,7 +478,7 @@ export const Checkout = () => {
         theme: "colored",
       });
 
-      dispatch(onOrderSubmit({ chefId: parseInt(chefId) }));
+      dispatch(onOrderSubmit({ chefId: parseInt(chefId), delivery_date: order.delivery_time, delivery_slot : order.delivery_slot }));
       const updatedUserInfo = {
         ...userInfo,
         last_order_address: {
