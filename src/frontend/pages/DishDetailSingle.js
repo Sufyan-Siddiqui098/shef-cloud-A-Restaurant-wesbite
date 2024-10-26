@@ -552,7 +552,9 @@ export const DishDetailSingle = () => {
                     </div>
                     <div>
                       {activeDescTab === 1 && (
-                        <p className="text-base">{dish.description}</p>
+                        <p className="text-base break-words">
+                          {dish.description}
+                        </p>
                       )}
                       {activeDescTab === 2 && (
                         <p className="text-base">
@@ -834,6 +836,7 @@ export const DishDetailSingle = () => {
                       required
                       wrapperClassName="w-max"
                       popperClassName="!z-50 h-max"
+                      popperPlacement="top-end"
                       selected={selectedDeliverDateAndSlot.delivery_date}
                       onChange={(date) =>
                         setSelectedDeliveryDateAndSlot((prev) => {
