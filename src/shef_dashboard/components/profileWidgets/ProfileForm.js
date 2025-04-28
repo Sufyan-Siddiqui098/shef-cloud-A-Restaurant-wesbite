@@ -43,7 +43,7 @@ export const ProfileForm = () => {
   const { authToken } = useSelector((state) => state.user);
 
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyCKU3ow8iRNEBhi1St_gMdG5Tn7_Vf3Wzo",
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAP_API_KEY,
     libraries: libraries,
   });
 
